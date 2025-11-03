@@ -193,6 +193,6 @@ void Bot::cmdUptime(const Channel* ch, const Client* from)
     (void)from;
     std::time_t now = std::time(NULL); long s = (long)difftime(now, start);
     long h = s/3600; s%=3600; long m = s/60; s%=60;
-    std::ostringstream oss; oss << "Uptime: " << h << "h " << m << "m " << s << "s";
+    std::ostringstream oss; oss << "Channel uptime: " << h << "h " << m << "m " << s << "s";
     replyChannel(ch->getName(), oss.str());
 }
