@@ -93,7 +93,7 @@ void	Channel::addUser(const Client *newUser)
 	{
 		users[newUser->getNickname()] = newUser;
 
-		if (this->users.size() == 1)
+		if (this->users.size() == 2)
 		{
 			addOperator(newUser);
 		}
