@@ -210,8 +210,7 @@ void	Server::acceptNewClient()
 	}
 	else
 	{
-		int flags = fcntl(clientFd, F_GETFL, 0);
-		fcntl(clientFd, F_SETFL, flags | O_NONBLOCK);
+		fcntl(clientFd, F_SETFL, O_NONBLOCK);
 
 		logMessage("New client accepted");
 		Client *newClient = new Client(clientFd);
