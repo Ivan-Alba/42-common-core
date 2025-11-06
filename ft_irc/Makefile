@@ -6,7 +6,7 @@
 #    By: igarcia2 <igarcia2@student.42barcel>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/21 21:07:38 by igarcia2          #+#    #+#              #
-#    Updated: 2025/04/18 17:54:45 by igarcia2         ###   ########.fr        #
+#    Updated: 2025/11/06 19:20:14 by mirifern         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,16 +47,6 @@ INFO      = ℹ️
 define SHOW_MESSAGE
 	@echo "$(1)$(2)$(RESET)"
 endef
-
-
-# Length of the progress bar
-BAR_LENGTH = 50
-
-# Function to display a progress bar
-define SHOW_PROGRESS
-	@printf "$(YELLOW)[[[[%${BAR_LENGTH}s] %3d%%\r" "$(1)" $(2)
-endef
-
 
 all: $(NAME)	
 
