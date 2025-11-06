@@ -48,6 +48,8 @@ class ClientMessageHandler
 			const std::vector<std::string> &tokens);
 		static void handlePrivMsg(Server &server, Client &client,
 			const std::vector<std::string> &tokens);
+		static void handleNotice(Server &server, Client &client,
+			const std::vector<std::string> &tokens);
 		static void handleJoin(Server &server, Client &client,
 			const std::vector<std::string> &tokens);
 		static void handlePart(Server &server, Client &client,

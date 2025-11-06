@@ -41,6 +41,7 @@ void	ClientMessageHandler::initCommandMap()
 	commandMap["NICK"]		= &ClientMessageHandler::handleNick;
 	commandMap["USER"]		= &ClientMessageHandler::handleUser;
 	commandMap["PRIVMSG"]	= &ClientMessageHandler::handlePrivMsg;
+	commandMap["NOTICE"]	= &ClientMessageHandler::handleNotice;
 	commandMap["JOIN"]		= &ClientMessageHandler::handleJoin;
 	commandMap["PART"]		= &ClientMessageHandler::handlePart;
 	commandMap["QUIT"]		= &ClientMessageHandler::handleQuit;
@@ -241,6 +242,59 @@ void	ClientMessageHandler::handlePrivMsg(
 	}
 }
 
+// ------------- NOTICE -----------//
+void	ClientMessageHandler::handleNotice(
+			Server &server, Client &client, const std::vector<std::string> &tokens)
+{
+	if (!client.isAuthenticated())
+	{
+		server.sendNumeric(&client, ERR_NOTREGISTERED, ":You have not registered");
+		return ;
+	}
+
+	if (tokens.size() != 3)
+	{
+		return;
+	}
+	
+	if (tokens[1][0] == '#')
+	{
+		std::map<std::string, Channel*> channels = server.getChannels();
+		std::map<std::string, Channel*>::iterator it = channels.find(tokens[1]);
+
+		if (it != channels.end())
+		{
+			Channel 	*channel = it->second;
+
+			const std::map<std::string, const Client*>& users = channel->getUsers();
+
+			if (users.find(client.getNickname()) == users.end())
+			{
+				return ;
+			}
+
+			for (std::map<std::string, const Client*>::const_iterator i = users.begin();
+				i != users.end(); ++i)
+			{
+				if (i->second != &client)
+					server.sendPrivMsg(&client, tokens[1] ,i->second, tokens[2]);
+			}
+
+		}
+	}
+	else
+	{
+		std::map<std::string, Client*> clients = server.getClientsByNick();
+		std::map<std::string, Client*>::iterator it = clients.find(tokens[1]);
+
+		if (it != clients.end())
+		{
+			if (it->second != &client)
+				server.sendPrivMsg(&client, it->second->getNickname() ,it->second, tokens[2]);
+       	}
+	}
+}
+
 // ------------- JOIN -----------//
 void	ClientMessageHandler::handleJoin(
 			Server &server, Client &client, const std::vector<std::string> &tokens)
@@ -317,9 +371,6 @@ void	ClientMessageHandler::handleJoin(
 				userList += ui->second->getNickname();
 			}
 
-			server.sendNameReply(&client, channelsToJoin[i], userList);
-			server.sendEndOfNames(&client, channelsToJoin[i]);
-
 			channel->addUser(&client);
 
 			std::string joinMsg = ":" + client.getNickname() + "!"
@@ -332,6 +383,9 @@ void	ClientMessageHandler::handleJoin(
 			{
 				server.sendRaw(ui->second, joinMsg);
 			}
+
+			server.sendNameReply(&client, channelsToJoin[i], userList);
+			server.sendEndOfNames(&client, channelsToJoin[i]);
 
 			// Bot notification
 			if (server.getBot())
@@ -780,10 +834,6 @@ void ClientMessageHandler::handleMode(
 		}
 		changeMode(execCmd[i], currentSign, modeCtx);	
 	}
-
-	// TODO Print last message (only changes from original state)
-
-
 }
 
 void	ClientMessageHandler::changeMode(char mode, char symbol, ModeContext &modeCtx)
@@ -807,34 +857,33 @@ void	ClientMessageHandler::changeMode(char mode, char symbol, ModeContext &modeC
 
 		case 'k':
 		{
-			if (modeCtx.tokens->size() <= modeCtx.paramIndex)
+			if (symbol == '+')
 			{
-				modeCtx.server->sendNumeric(modeCtx.client, ERR_NEEDMOREPARAMS, "MODE :Not enough parameters");
-				return ;
-			}
+				if (modeCtx.tokens->size() <= modeCtx.paramIndex)
+				{
+					modeCtx.server->sendNumeric(modeCtx.client, ERR_NEEDMOREPARAMS, "MODE :Not enough parameters");
+					return ;
+				}
 
-			if (symbol == '+' && modeCtx.channel->getKey().empty())
-			{
-				modeCtx.channel->setKey((*modeCtx.tokens)[modeCtx.paramIndex]);
-				modeCtx.server->notifyModeChange(
+				if (modeCtx.channel->getKey().empty())
+				{
+					modeCtx.channel->setKey((*modeCtx.tokens)[modeCtx.paramIndex]);
+					modeCtx.server->notifyModeChange(
 					modeCtx.channel, modeCtx.client, "+k", (*modeCtx.tokens)[modeCtx.paramIndex]);
-			}
-			else if (symbol == '+')
-			{
-				modeCtx.server->sendNumeric(modeCtx.client, ERR_KEYSET,
+				}
+				else
+				{
+					modeCtx.server->sendNumeric(modeCtx.client, ERR_KEYSET,
 					modeCtx.client->getNickname() + " " + modeCtx.channel->getName()
-					+ " :Channel key already set");
+						+ " :Channel key already set");
+				}
+				++(modeCtx.paramIndex);
 			}
 			else if (symbol == '-' && !modeCtx.channel->getKey().empty())
 			{
-				if (modeCtx.channel->getKey() == (*modeCtx.tokens)[modeCtx.paramIndex])
-				{
-					modeCtx.channel->setKey("");
-					modeCtx.server->notifyModeChange(modeCtx.channel, modeCtx.client, "-k");
-				}
-			}
-			++(modeCtx.paramIndex);
-			
+				modeCtx.channel->setKey("");
+				modeCtx.server->notifyModeChange(modeCtx.channel, modeCtx.client, "-k");
+			}	
 			break;
 		}
 		
@@ -896,31 +945,32 @@ void	ClientMessageHandler::changeMode(char mode, char symbol, ModeContext &modeC
 
 		case 'l':
 		{
-			if ((*modeCtx.tokens).size() <= modeCtx.paramIndex)
-			{
-				modeCtx.server->sendNumeric(modeCtx.client, ERR_NEEDMOREPARAMS,
-									"MODE :Not enough parameters");
-				return ;
-			}
-
-			const std::string &extra = (*modeCtx.tokens)[modeCtx.paramIndex];
-
 			if (symbol == '+')
 			{
+				if ((*modeCtx.tokens).size() <= modeCtx.paramIndex)
+				{
+					modeCtx.server->sendNumeric(modeCtx.client, ERR_NEEDMOREPARAMS,
+									"MODE :Not enough parameters");
+					return ;
+				}
+				const std::string &extra = (*modeCtx.tokens)[modeCtx.paramIndex];
+
 				int	newLimit = parseUserLimit((*modeCtx.tokens)[modeCtx.paramIndex]);
 				if (newLimit != -1)
 				{
 					modeCtx.channel->setUserLimit(newLimit);
 					modeCtx.server->notifyModeChange(modeCtx.channel, modeCtx.client,
-												"+l", extra);
-				
-					++(modeCtx.paramIndex);
+												"+l", extra);	
 				}
+				++(modeCtx.paramIndex);
 			}
 			else
 			{
-				modeCtx.channel->setUserLimit(-1);
-				modeCtx.server->notifyModeChange(modeCtx.channel, modeCtx.client, "-l");
+				if (modeCtx.channel->getUserLimit() != -1)
+				{	
+					modeCtx.channel->setUserLimit(-1);
+					modeCtx.server->notifyModeChange(modeCtx.channel, modeCtx.client, "-l");
+				}
 			}
 	
 			break;
