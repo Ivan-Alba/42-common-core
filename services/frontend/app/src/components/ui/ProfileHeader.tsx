@@ -1,9 +1,10 @@
-import { FaUser, FaEdit } from "react-icons/fa";
+import { FaUser, FaEdit, FaUserPlus, FaCheck, FaHourglassHalf } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 interface ProfileHeaderProps {
     userData: {
+        id?: number | string;
         username: string;
         email: string;
         avatar?: string;
@@ -11,19 +12,19 @@ interface ProfileHeaderProps {
         experience?: number;
     };
     isOwnProfile: boolean;
+    // Nuevas props opcionales para gestionar la amistad desde el perfil
+    friendshipStatus?: 'none' | 'pending' | 'accepted' | 'outgoing';
+    onAddFriend?: (id: number | string) => void;
 }
 
-const ProfileHeader = ({ userData, isOwnProfile }: ProfileHeaderProps) => {
+const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAddFriend }: ProfileHeaderProps) => {
     const { t } = useTranslation();
 
     const getFullAvatarUrl = (avatarPath?: string) => {
         if (!avatarPath) return undefined;
-
         if (avatarPath.startsWith('http') || avatarPath.startsWith('data:') || avatarPath.startsWith('/src/assets/')) {
             return avatarPath;
         }
-
-        // Si es una ruta de base de datos como "avatars/xyz.png", le añadimos la ruta pública de Laravel
         const cleanPath = avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`;
         return cleanPath.includes('storage/') ? cleanPath : `/storage${cleanPath}`;
     };
@@ -37,7 +38,6 @@ const ProfileHeader = ({ userData, isOwnProfile }: ProfileHeaderProps) => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 relative z-10">
                 <div className="relative shrink-0">
                     <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-dark-800 shadow-2xl overflow-hidden bg-dark-900 flex items-center justify-center">
-						
                         {finalAvatarUrl ? (
                             <img src={finalAvatarUrl} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
@@ -77,13 +77,36 @@ const ProfileHeader = ({ userData, isOwnProfile }: ProfileHeaderProps) => {
                             </div>
                         </div>
 
-                        {isOwnProfile && (
+                        {/* Botonera Dinámica */}
+                        {isOwnProfile ? (
                             <Link to="/edit_profile" className="w-full md:w-auto">
                                 <button className="btn-secondary rounded-full px-8 py-2.5 flex items-center justify-center gap-3 text-sm font-bold transition-all border border-white/10 hover:bg-white/5">
                                     <FaEdit className="text-brand-400" />
                                     {t('profile.edit_profile')}
                                 </button>
                             </Link>
+                        ) : (
+                            // Lógica de amistad en el perfil ajeno
+                            <div className="w-full md:w-auto">
+                                {friendshipStatus === 'none' && userData.id && (
+                                    <button 
+                                        onClick={() => onAddFriend && onAddFriend(userData.id!)}
+                                        className="btn-primary rounded-full px-8 py-2.5 w-full flex items-center justify-center gap-3 text-sm font-bold"
+                                    >
+                                        <FaUserPlus /> {t('friends.add_friend')}
+                                    </button>
+                                )}
+                                {friendshipStatus === 'accepted' && (
+                                    <div className="px-8 py-2.5 rounded-full border border-success/30 bg-success/10 text-success flex items-center justify-center gap-3 text-sm font-bold cursor-default">
+                                        <FaCheck /> {t('friends.already_friend')}
+                                    </div>
+                                )}
+                                {friendshipStatus === 'outgoing' && (
+                                    <div className="px-8 py-2.5 rounded-full border border-slate-500/30 bg-slate-500/10 text-slate-400 flex items-center justify-center gap-3 text-sm font-bold cursor-default">
+                                        <FaHourglassHalf /> {t('friends.sent')}
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>

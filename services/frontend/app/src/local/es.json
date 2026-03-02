@@ -12,7 +12,8 @@
     "submit": "Enviar",
     "loading": "Cargando...",
 	"accept": "Aceptar",
-	"decline": "Cancelar"
+	"decline": "Cancelar",
+	"you": "Tú"
   },
   "validation": {
     "required": "Este campo es obligatorio.",
@@ -116,10 +117,17 @@
 	"find_match": "Buscar partida"
   },
   "friends": {
-    "title": "Lista de amigos",
+    "title": "Amigos",
+	"subtitle": "Tu lista de amigos",
     "search_placeholder": "Introduce el nombre de usuario para agregar",
 	"no_friends": "Aún no tienes amigos agregados.",
+	"already_friend": "Amigo",
+	"pending": "Pendiente",
+	"sent": "Enviada",
+	"add_friend": "Añadir amigo",
 	"remove_friend": "Eliminar amigo",
+	"request_sent": "Quiere ser tu amigo",
+	"pending_requests": "Solicitudes Pendientes",
 	"remove_alert": "¿Estás seguro de que quieres eliminar a este amigo? Esta acción no se puede deshacer."
   },
   "profile": {
@@ -175,8 +183,6 @@
 	"search_player": "Buscar jugador...",
 	"no_ranking": "No hay datos de ranking disponibles.",
 	"position": "Posición",
-	"name": "Nombre de usuario",
-	"you": "TÚ",
 	"trend": "Tendencia",
 	"points": "Puntos"
 	

@@ -42,14 +42,14 @@ type ProfileFormState = Pick<UserProfile, 'username' | 'email' | 'bio' | 'langua
 
 // Función helper para previsualizar el avatar de BD en EditProfile
 const getPreviewUrl = (avatarPath?: string) => {
-	console.log("Avatar path from DB:", avatarPath);
     if (!avatarPath) return undefined;
-    if (avatarPath.startsWith('http') ) {
+
+    if (avatarPath.startsWith('http') || avatarPath.startsWith('data:') || avatarPath.startsWith('blob:') || avatarPath.startsWith('/src/assets/'))
         return avatarPath;
-    }
+
     const cleanPath = avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`;
-	console.log("Cleaned avatar path:", cleanPath);
-    return cleanPath;
+    
+    return cleanPath.includes('/storage/') ? cleanPath : `/storage${cleanPath}`;
 };
 
 const EditProfile = () => {
@@ -198,7 +198,7 @@ const EditProfile = () => {
             setFormData(prev => prev ? { ...prev, avatarFile: file } : null);
         } catch (error) {
             console.error("Error al convertir el preset a archivo:", error);
-            setAvatarError(t('edit_profile.avatar_error_file') || "Error al procesar la imagen predefinida");
+            setAvatarError(t('edit_profile.avatar_error_file'));
         }
     };
 
@@ -244,7 +244,7 @@ const EditProfile = () => {
 
         } catch (error: any) {
             console.error("Error devuelto por la API:", error.response?.data);
-            const errorMessage = error.response?.data?.message || "Error al actualizar";
+            const errorMessage = error.response?.data?.message || "Error";
             setProfileError(errorMessage); 
         } finally {
             setIsSaving(false);
@@ -352,14 +352,14 @@ const EditProfile = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><MdDescription className="text-brand-500" size={iconSize} /> {t('edit_profile.bio') || "Biografía"}</label>
+                                <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><MdDescription className="text-brand-500" size={iconSize} /> {t('edit_profile.bio')}</label>
                                 <textarea name="bio" value={formData.bio || ""} onChange={handleInputChange} className="input-nexus w-full h-24 resize-none py-2" maxLength={150} />
                                 <div className="text-right text-xs text-slate-500">{(formData.bio || "").length}/150</div>
                             </div>
 
                             <div className="space-y-2 relative">
                                 <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2">
-                                    <FaGlobe className="text-brand-500" size={iconSize} /> {t('edit_profile.language') || "Idioma"}
+                                    <FaGlobe className="text-brand-500" size={iconSize} /> {t('edit_profile.language')}
                                 </label>
 
                                 <button
@@ -409,7 +409,7 @@ const EditProfile = () => {
 
                     <div className="glass-panel p-6 md:p-8 space-y-6 relative z-0">
                         <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-white/5 pb-4">
-                            <FaLock className="text-brand-500" size={iconSize} /> {t('edit_profile.security') || "Seguridad"}
+                            <FaLock className="text-brand-500" size={iconSize} /> {t('edit_profile.security')}
                         </h3>
                         {passwordError && (
                             <div className="bg-danger/10 border border-danger/20 text-danger text-sm p-3 rounded-lg animate-pulse border-l-4 border-l-danger">
@@ -418,11 +418,11 @@ const EditProfile = () => {
                         )}
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><FaKey className="text-slate-500" /> {t('edit_profile.new_password') || "Nueva Contraseña"}</label>
+                                <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><FaKey className="text-slate-500" /> {t('edit_profile.new_password')}</label>
                                 <input type="password" name="newPassword" value={formData.newPassword} onChange={handleInputChange} className={`input-nexus w-full ${passwordError ? 'border-danger/50 focus:border-danger' : ''}`} autoComplete="new-password" />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><FaKey className="text-slate-500" /> {t('edit_profile.confirm_new_password') || "Confirmar Contraseña"}</label>
+                                <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><FaKey className="text-slate-500" /> {t('edit_profile.confirm_new_password')}</label>
                                 <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} className={`input-nexus w-full ${passwordError ? 'border-danger/50 focus:border-danger' : ''}`} autoComplete="new-password" />
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaBars } from "react-icons/fa";
@@ -8,15 +8,43 @@ import Logo from './Logo';
 import LanguageSelector from './LanguageSelector';
 import { useAuth } from '../context/AuthContext';
 import i18n from '../i18n';
+import userService from '../services/userService';
 
 const Navbar = () => {
 	const { t } = useTranslation();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const url = useLocation();
 
+	/* User and friends pending requests count */
+	const [pendingCount, setPendingCount] = useState(0);
+
 	/* Hooks to redirect and context */
     const navigate = useNavigate(); 
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
+
+	/* Check pending friend requests on mount and when user or url changes (to update count when we go to friends page) */
+	useEffect(() => {
+        const checkPendingRequests = async () => {
+            if (!user) return;
+            try {
+                // Hacemos la petición silenciosa al backend
+                const data = await userService.getFriends(user.id);
+                
+                // Filtramos solo las que están pendientes y NOSOTROS tenemos que aceptar
+                const pending = data.filter((f: any) => {
+                    const status = f.friendship_status || f.pivot?.status;
+                    const isRequester = f.pivot?.requester_id === Number(user.id);
+                    return status === 'pending' && !isRequester; 
+                });
+                
+                setPendingCount(pending.length);
+            } catch (error) {
+                // Lo mantenemos en silencio para no ensuciar la consola si el endpoint aún no está listo
+            }
+        };
+
+        checkPendingRequests();
+    }, [user, url.pathname]);
 
 	const getDesktopClass = (path: string) =>
 		url.pathname === path ? "nav-link-desktop-active" : "nav-link-desktop";
@@ -55,9 +83,15 @@ const Navbar = () => {
 				<div className="hidden lg:flex items-center gap-8">
 					<Link to="/index" className={getDesktopClass("/index")}>{t('navbar.dashboard')}</Link>
 
+					{/* Friends link with pending requests badge */ }
 					<Link to="/friends" className={getDesktopClass("/friends")}>
-						{t('navbar.friends')}
-					</Link>
+                        {t('navbar.friends')}
+                        {pendingCount > 0 && (
+                            <span className="absolute -top-2 -right-4 bg-danger text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
+                                {pendingCount}
+                            </span>
+                        )}
+                    </Link>
 
 					<Link to="/profile" className={getDesktopClass("/profile")}>
 						{t('navbar.profile')}
@@ -92,10 +126,20 @@ const Navbar = () => {
 			{isMenuOpen && (
 				<div className="lg:hidden absolute top-24 left-0 w-full bg-dark-900 border-b border-white/10 p-4 flex flex-col gap-2 shadow-2xl animate-fade-in-down">
 					<Link to="/index" className={getMobileClass("/index")} onClick={() => setIsMenuOpen(false)}>{t('navbar.dashboard')}</Link>
-					<Link to="/ranking" className={getMobileClass("/ranking")} onClick={() => setIsMenuOpen(false)}>{t('navbar.ranking')}</Link>
-					<Link to="/friends" className={getMobileClass("/friends")} onClick={() => setIsMenuOpen(false)}>{t('navbar.friends')}</Link>
-					<Link to="/chat" className={getMobileClass("/chat")} onClick={() => setIsMenuOpen(false)}>{t('navbar.chat')}</Link>
+
+					<Link to="/friends" className={getMobileClass("/friends")} onClick={() => setIsMenuOpen(false)}>
+                        <span>{t('navbar.friends')}</span>
+                        {pendingCount > 0 && (
+                            <span className="bg-danger text-white text-xs font-black px-2 py-0.5 rounded-full ms-1">
+                                {pendingCount} </span>
+                        )}
+                    </Link>
+
 					<Link to="/profile" className={getMobileClass("/profile")} onClick={() => setIsMenuOpen(false)}>{t('navbar.profile')}</Link>
+
+					<Link to="/ranking" className={getMobileClass("/ranking")} onClick={() => setIsMenuOpen(false)}>{t('navbar.ranking')}</Link>
+
+					<Link to="/chat" className={getMobileClass("/chat")} onClick={() => setIsMenuOpen(false)}>{t('navbar.collection')}</Link>
 
 					<div className="h-px bg-white/10 my-2"></div>
 

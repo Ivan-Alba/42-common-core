@@ -40,7 +40,7 @@ const PlayerBadge = ({ avatar, name, isCurrentUser = false, className = "" }: Pl
                     </span>
                     {isCurrentUser && (
                         <span className="text-[10px] bg-brand-500 text-white px-1.5 rounded font-bold tracking-wider mt-0.5">
-                            {t('ranking.you')}
+                            {t('common.you')}
                         </span>
                     )}
                 </div>

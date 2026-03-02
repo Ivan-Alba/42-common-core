@@ -12,7 +12,8 @@
     "submit": "Enviar",
     "loading": "Carregant...",
 	"accept": "Acceptar",
-	"decline": "Cancel·lar"
+	"decline": "Cancel·lar",
+	"you": "Tu"
   },
   "validation": {
     "required": "Aquest camp és obligatori.",
@@ -116,10 +117,17 @@
 	"find_match": "Trobar partida"
   },
   "friends": {
-    "title": "Llista d'amics",
+    "title": "Amics",
+	"subtitle": "La teva llista d'amics",
     "search_placeholder": "Introdueix el nom d'usuari per afegir",
 	"no_friends": "Encara no tens amics afegits.",
+	"already_friend": "Amic",
+	"pending": "Pendent",
+	"sent": "Enviada",
+	"add_friend": "Afegir amic",
 	"remove_friend": "Eliminar amic",
+	"request_sent": "Vols ser el teu amic",
+	"pending_requests": "Sol·licituds pendents",
 	"remove_alert": "Estàs segur que vols eliminar aquest amic? Aquesta acció no es pot desfer."
   },
   "profile": {
@@ -174,8 +182,6 @@
 	"search_player": "Cerca jugador...",
 	"no_ranking": "No hi ha dades de rànquing disponibles.",
 	"position": "Posició",
-	"name": "Nom d'usuari",
-	"you": "TU",
 	"trend": "Tendència",
 	"points": "Punts"
 	

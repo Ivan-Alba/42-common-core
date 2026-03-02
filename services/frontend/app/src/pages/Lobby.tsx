@@ -82,7 +82,7 @@ const Lobby = () => {
                                 <span className="text-2xl font-bold text-brand-500">{user?.username?.charAt(0).toUpperCase()}</span>
                             )}
                         </div>
-                        <h3 className="text-lg font-bold text-white text-center w-full truncate">{user?.username || 'Player'}</h3>
+                        <h3 className="text-lg font-bold text-white text-center w-full truncate">{user?.username}</h3>
                         <span className="text-xs text-brand-400 font-medium bg-brand-500/10 px-3 py-1 rounded-full mt-2">Ready</span>
                     </div>
 

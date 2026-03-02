@@ -47,7 +47,7 @@ const Error = () => {
                         onClick={() => handleClick()} 
                         className="btn-primary px-10 py-3 rounded-full font-bold shadow-lg shadow-brand-500/20"
                     >
-                        {t('common.home') || "Ir al Inicio"}
+                        {t('common.home')}
                     </button>
                 </div>
 

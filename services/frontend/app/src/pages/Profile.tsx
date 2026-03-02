@@ -19,10 +19,14 @@ const Profile = () => {
     const { user: authUser, isLoading: isAuthLoading } = useAuth();
 
     /* Determine if viewing own profile or another user's */
-    const isOwnProfile = Boolean(!id || (authUser && id === authUser.id.toString()));
+    // Comprobamos si el ID de la URL coincide con nuestro nombre de usuario o si no hay ID en la URL
+	const isOwnProfile = Boolean(!id || (authUser && Number(id) === Number(authUser.id)));
 
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    
+    // Estado para gestionar la relación de amistad en este perfil
+    const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing'>('none');
 
     const getMatchStyles = (result: 'win' | 'loss') => {
         const isWin = result === 'win';
@@ -40,12 +44,16 @@ const Profile = () => {
         const fetchProfileData = async () => {
             setIsLoading(true);
             try {
-                const targetId = id || authUser?.id;
+                // Si estamos en nuestro perfil, cargamos nuestro ID. Si no, cargamos el del amigo por su username (id de la URL)
+                const targetId = isOwnProfile ? authUser?.id : id; 
                 if (!targetId) throw new Error("No user specified");
 
                 const data = await userService.getProfile(targetId);
-				console.log("Datos de perfil obtenidos:", data);
                 setProfileData(data);
+
+                // IMPORTANTE: Cuando el backend esté listo y devuelva el status de la amistad en el profile ajeno, lo seteamos aquí
+                // setRelationStatus(data.friendship_status || 'none');
+
             } catch (error: any) {
                 console.error("Error al obtener los datos de la base de datos:", error);
                 setProfileData(null);
@@ -55,7 +63,24 @@ const Profile = () => {
         };
 
         fetchProfileData();
-    }, [id, authUser, isAuthLoading]);
+    }, [id, authUser, isAuthLoading, isOwnProfile]);
+
+    // Función para manejar el botón "Añadir Amigo" desde el perfil ajeno
+    const handleAddFriend = async (friendId: number | string) => {
+        if (!authUser) return;
+        try {
+            await userService.sendFriendRequest(authUser.id, friendId);
+            console.log(`Solicitud enviada desde el perfil al ID ${friendId}`);
+            
+            // Actualización visual optimista
+            setRelationStatus('outgoing');
+            
+        } catch (error) {
+            console.error("Error enviando solicitud", error);
+            // Mantenemos el error silencioso si da 409 (Conflicto), simulando que ya se envió
+            setRelationStatus('outgoing');
+        }
+    };
 
     if (isLoading) return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
 
@@ -64,9 +89,10 @@ const Profile = () => {
             <div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-20">
                 {profileData ? (
                     <>
-                        {/* HEADER: Le pasamos el avatar tal cual viene de BD, el componente lo procesa */}
+                        {/* HEADER */}
                         <ProfileHeader
                             userData={{
+                                id: profileData.id, // Pasamos el ID para poder enviarle la petición
                                 username: profileData.username,
                                 email: profileData.email || "",
                                 avatar: profileData.avatar,
@@ -74,6 +100,8 @@ const Profile = () => {
                                 experience: profileData.experience
                             }}
                             isOwnProfile={isOwnProfile}
+                            friendshipStatus={relationStatus}
+                            onAddFriend={handleAddFriend}
                         />
 
                         {/* STATS */}

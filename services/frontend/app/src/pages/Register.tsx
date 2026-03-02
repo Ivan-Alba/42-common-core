@@ -70,7 +70,8 @@ const Register = () => {
                 setIsRegistered(true);
                 // Si el backend loguea automáticamente, podrías redirigir a /index directamente
                 // Pero si prefieres mostrar el mensaje de éxito y luego ir al login:
-                setTimeout(() => navigate('/index'), 3000); 
+				// TODO verificar segundos de espera antes de redirigir al index
+                setTimeout(() => navigate('/index'), 5000000); 
                 
             } catch (error: any) {
                 // MANEJO DE ERRORES DEL BACKEND (Ej: Email ya existe)

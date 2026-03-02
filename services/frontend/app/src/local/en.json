@@ -13,7 +13,8 @@
     "loading": "Loading...",
 	"avatar": "Avatar",
 	"accept": "Accept",
-	"decline": "Cancel"
+	"decline": "Cancel",
+	"you": "You"
   },
   "validation": {
     "required": "This field is required.",
@@ -118,11 +119,18 @@
 	"find_match": "Find Match"
   },
   "friends": {
-    "title": "Friends List",
+    "title": "Friends",
+	"subtitle": "Your friends list",
     "search_placeholder": "Enter username to add",
 	"no_friends": "You have no friends added yet.",
+	"already_friend": "Friend",
+	"pending": "Pending",
+	"sent": "Sent",
+	"add_friend": "Add Friend",
 	"remove_friend": "Remove Friend",
-	"remove_alert": "Are you sure you want to remove this friend?. This action cannot be undone."
+	"request_sent": "Wants to be your friend",
+	"pending_requests": "Pending Requests",
+	"remove_alert": "Are you sure you want to remove this friend? This action cannot be undone."
   },
   "profile": {
     "title": "User Profile",
@@ -177,8 +185,6 @@
 	"search_player": "Search player...",
 	"no_ranking": "No ranking data available.",
 	"position": "Position",
-	"name": "Username",
-	"you": "YOU",
 	"trend": "Trend",
 	"points": "Points"
 	

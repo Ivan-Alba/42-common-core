@@ -151,7 +151,7 @@ const ResetPassword = () => {
             if (axios.isAxiosError(error) && error.response?.status === 422) {
                 setServerError("El enlace ha caducado o los datos son inválidos.");
             } else {
-                setServerError(t("errors.unexpected") || "Error inesperado. Inténtalo de nuevo.");
+                setServerError(t("errors.unexpected"));
             }
         } finally {
             setIsLoading(false);
