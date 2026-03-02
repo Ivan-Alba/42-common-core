@@ -39,6 +39,7 @@
 	"no_response": " No es pot connectar amb el servidor. Si us plau, intenta-ho més tard.",
 	"invalid_credentials": "Nom d'usuari o contrasenya incorrectes.",
 	"csrf_error": "La sessió ha expirat. Si us plau, recarrega la pàgina.",
+	"link_invalid": "El enllaç ha caducat o els dades són invàlides.",
 	"unexpected": "Ha hagut un error inesperat. Si us plau, intenta-ho de nou.",
 	"unknown": "Ha hagut un error desconegut. Si us plau, intenta-ho de nou.",
 	"database_error": "Error conectant amb la base de dades (Endpoint no trobat o usuari inexistent)"

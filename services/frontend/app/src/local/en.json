@@ -41,6 +41,7 @@
 	"no_response": "Cannot connect to the server. Please try again later.",
 	"invalid_credentials": "Invalid username or password.",
 	"csrf_error": "Session expired. Please reload the page.",
+	"link_invalid": "The link has expired or the data is invalid.",
 	"unexpected": "An unexpected error occurred. Please try again.",
 	"unknown": "An unknown error occurred. Please try again.",
 	"database_error": "Error connecting to the database (Endpoint not found or user does not exist)"

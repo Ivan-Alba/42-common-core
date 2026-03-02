@@ -39,6 +39,7 @@
 	"no_response": "No se puede conectar con el servidor. Por favor, inténtalo más tarde.",
 	"invalid_credentials": "Nombre de usuario o contraseña incorrectos.",
 	"csrf_error": "La sesión ha expirado. Por favor, recarga la página.",
+	"link_invalid": "El enlace ha caducado o los datos son inválidos.",
 	"unexpected": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
 	"unknown": "Ocurrió un error desconocido. Por favor, inténtalo de nuevo.",
 	"database_error": "Error conectando con la base de datos (Endpoint no encontrado o usuario inexistente)"
