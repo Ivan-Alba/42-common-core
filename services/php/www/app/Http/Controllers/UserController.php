@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\Language;
 use App\Enums\OrderDirection;
+use App\Http\Resources\FriendResource;
 use App\Http\Resources\UserCollection;
 use App\Models\OAuthExchange;
 use App\Models\User;
@@ -88,10 +89,10 @@ class UserController
         ]);
 
         $user->fill([
-            'name' => $data['username'] ?? $user->name,
-            'email' => $data['email'] ?? $user->email,
-            'bio' => $data['bio'] ?? $user->bio,
-            'language' => $data['language'] ?? $user->language,
+            'name' => $request['username'] ?? $user->name,
+            'email' => $request['email'] ?? $user->email,
+            'bio' => $request['bio'] ?? $user->bio,
+            'language' => $request['language'] ?? $user->language,
         ]);
 
         if ($request->hasFile('avatar')) 
@@ -102,5 +103,32 @@ class UserController
         $user->save();
 
         return response()->json(auth()->user()->toResource(), 200);
+    }
+
+    public function getFriends(User $user, Request $request)
+    {
+        if ($user->id != auth()->user()->id)
+        {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'page_size' => ['sometimes', 'integer', 'min:1', 'max:'.config('social.max_page_size')],
+            'page' => ['sometimes', 'integer', 'min:1'],
+            'sort_order' => ['sometimes', Rule::enum(OrderDirection::class)],
+            'name' => ['sometimes', 'string', 'max:255'],
+        ]);
+
+        $pageSize = $request->integer('page_size', config('social.default_page_size'));
+        $page = $request->integer('page', 1);
+        $sortOrder =  $request->enum('sort_order', OrderDirection::class, OrderDirection::DESC);
+        $name = $request->string('name') ?? "";
+        
+        $friends = $user->friendsOfMine()
+            ->orderBy('created_at', $sortOrder->value)
+            ->when(!empty($name), fn ($query) => $query->where('name', 'like', '%' . $name . '%'))
+            ->paginate($pageSize, ['*'], 'page', $page);
+        
+        return FriendResource::collection($friends);
     }
 }

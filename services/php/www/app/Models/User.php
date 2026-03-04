@@ -62,6 +62,20 @@ class User extends Authenticatable
         return $this->hasMany(OAuthIdentity::class);
     }
 
+    public function friendsOfMine()
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'accepted');
+    }
+
+    public function friendOf()
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'friend_id', 'user_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'accepted');
+    }
+
     public function updateAvatar($avatar)
     {
         $path = $avatar->store('media/avatars', 'public');
