@@ -39,7 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // User
         Route::get('/users', [UserController::class, 'getUsers']);
         Route::get('/users/{user}', [UserController::class, 'getUser']);
-        // Route::get('/users/{id}/friends', [UserController::class, 'getUser']);
+        Route::get('/users/{user}/friends', [UserController::class, 'getFriends']);
         // Route::get('/users/{id}/games', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/chats', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/achievements', [UserController::class, 'getUser']);
@@ -61,7 +61,61 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::get('/games', [UserController::class, 'getUser']);
         // Route::get('/games/{id}', [UserController::class, 'getUser']);
         Route::post('/games', [GameController::class, 'createGame']);
-        // Route::put('/games/{id}', [UserController::class, 'getUser']);
+
+        // {
+        // "match_id": "string",
+        // "server_timestamp": 1705932000,
+        // "config": {
+        //     "board_size": 3,
+        //     "hand_size": 5,
+        //     "turn_time_limit": 30,
+        //     "max_deck_cost": 999,
+        //     "rules": ["open", "same", "plus"],
+        //     "random_first_player": false,
+        //     "first_player_id": "string"
+        // },
+        // "local_player": {
+        //     "id": "string", "name": "string", "avatar_url": "url",
+        //     "collection_ids": ["id1", "id2", "..."]
+        // },
+        // "opponent": {
+        //     "id": "string", "name": "string", "avatar_url": "url",
+        //     "is_ai": bool, "collection_ids": ["id10", "..."]
+        // }
+        // }
+        Route::get('/games/{game}', [GameController::class, 'getGame']);
+
+        // REQ: { "player_id": string, "card_ids": string[] }
+        // RESP: { "success": bool, "data": { "confirmed": true } }
+        Route::post('/games/{game}/confirm-deck', [GameController::class, 'confirmDeck']);
+        
+        // REQ: { "player_id": string, "card_id": string, "board_index": int }
+        // RESP: 
+        // {
+        // "player_id": "player_local",
+        // "card_id": "card_005",
+        // "board_index": 4,
+        // "animation_steps": [
+        // {
+        // "rule": "plus",
+        // "card_indices": [3, 5],
+        // "caused_by_index": 4
+        // },
+        // {
+        // "rule": "combo",
+        // "card_indices": [2],
+        // "caused_by_index": 3
+        // },
+        // {
+        // "rule": "normal",
+        // "card_indices": [1],
+        // "caused_by_index": 4
+        // }
+        // ],
+        // "match_over": false
+        // }
+        Route::post('/games/{game}/play-card', [GameController::class, 'playCard']);
+
 
         // Achivements
         // Route::get('/achievements', [UserController::class, 'getUsers']);

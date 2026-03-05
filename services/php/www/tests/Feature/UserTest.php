@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Enums\Language;
+use App\Enums\FriendshipStatus;
+use App\Models\Friendship;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -113,7 +115,7 @@ class UserTest extends TestCase
             'username' => 'Updated Name',
             'email' => 'updated@example.com',
             'bio' => 'Updated bio',
-            'language' => Language::ENGLISH->value
+            'language' => Language::SPANISH->value
         ])
         ->assertOk();
 
@@ -122,7 +124,66 @@ class UserTest extends TestCase
             'name' => 'Updated Name',
             'email' => 'updated@example.com',
             'bio' => 'Updated bio',
-            'language' => Language::ENGLISH->value,
+            'language' => Language::SPANISH->value,
         ]);
+    }
+
+    public function test_get_friends_list()
+    {
+        $user = User::factory()->create();
+        $friends = User::factory()->count(3)->create();
+
+        foreach ($friends as $friend) {
+            Friendship::create([
+                'user_id' => $user->id,
+                'friend_id' => $friend->id,
+                'requester_id' => $user->id,
+                'status' => FriendshipStatus::ACCEPTED->value,
+            ]);
+        }
+
+        $this->actingAs($user);
+
+        $response = $this->getJson("/v1/users/{$user->id}/friends")
+            ->assertOk()
+            ->assertJsonCount(3, 'data')
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => ['id', 'username', 'avatar', 'bio']
+                ],
+                'links',
+                'meta'
+            ]);
+    }
+
+    public function test_cannot_get_others_friends_list()
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $this->getJson("/v1/users/{$otherUser->id}/friends")
+            ->assertForbidden();
+    }
+
+    public function test_get_friends_list_with_name_filter()
+    {
+        $user = User::factory()->create();
+        $friend = User::factory()->create(['name' => 'SpecialFriend']);
+        
+        Friendship::create([
+            'user_id' => $user->id,
+            'friend_id' => $friend->id,
+            'requester_id' => $user->id,
+            'status' => FriendshipStatus::ACCEPTED->value,
+        ]);
+
+        $this->actingAs($user);
+
+        $this->getJson("/v1/users/{$user->id}/friends?name=Special")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.username', 'SpecialFriend');
     }
 }
