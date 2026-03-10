@@ -21,12 +21,11 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
     const { t } = useTranslation();
 
     const getFullAvatarUrl = (avatarPath?: string) => {
-        if (!avatarPath) return undefined;
-        if (avatarPath.startsWith('http') || avatarPath.startsWith('data:') || avatarPath.startsWith('/src/assets/')) {
-            return avatarPath;
-        }
+        if (!avatarPath)
+			return undefined;		
+        
         const cleanPath = avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`;
-        return cleanPath.includes('storage/') ? cleanPath : `/storage${cleanPath}`;
+        return cleanPath;
     };
 
     const finalAvatarUrl = getFullAvatarUrl(userData.avatar);

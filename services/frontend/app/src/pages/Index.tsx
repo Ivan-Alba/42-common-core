@@ -10,105 +10,140 @@ import { useAuth } from '../context/AuthContext';
 import LoadingState from '../components/ui/LoadingState';
 import ProfileHeader from '../components/ui/ProfileHeader';
 import GameModeModal from '../components/ui/GameModeModal';
+import userService from '../services/userService';
 
 const Index = () => {
-    const { t } = useTranslation();
-    const navigate = useNavigate();
-    const { user, isLoading } = useAuth();
+	const { t } = useTranslation();
+	const navigate = useNavigate();
+	const { user: authUser, isLoading: isAuthLoading } = useAuth();
 
-    /* State to save friend list */
-    const [friendsList, setFriendsList] = useState<UserProfile[]>([]);
-    
-    /* State to control the visibility of the mode selector */
-    const [showModeSelector, setShowModeSelector] = useState(false);
+	/* States to save friend list, profile data and mode selector visibility */
+	const [profileData, setProfileData] = useState<UserProfile | null>(null);
+	const [friendsList, setFriendsList] = useState<UserProfile[]>([]);
+	const [showModeSelector, setShowModeSelector] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 
-    /* Fetch fake para obtener amigos */
-    useEffect(() => {
-        const fetchFriends = async () => {
-            const mockDatabaseResponse: UserProfile[] = [
-                { id: 1, username: "Miriam", status: "online", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-                { id: 2, username: "Ivan", status: "playing", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-                { id: 3, username: "Kevin", status: "online", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-                { id: 4, username: "David", status: "offline", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-                { id: 5, username: "Alice_Bot", status: "offline", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } }
-            ];
-            setFriendsList(mockDatabaseResponse);
-        };
-        fetchFriends();
-    }, []);
+	/* Fetch user profile data on mount and when authUser changes */
+	useEffect(() => {
+		const fetchCurrentUserInfo = async () => {
+			if (!authUser?.id) return;
 
-    /* Real fetch cuando tenga la BBDD */
-    // useEffect(() => {
-    //     const fetchFriends = async () => {
-    //         try {
-    //             const response = await fetch('/api/friends');
-    //             const data: UserProfile[] = await response.json();
-    //             setFriendsList(data);
-    //         } catch (error) {
-    //             console.error("Error fetching friends:", error);
-    //         }
-    //     };
-    //     fetchFriends();
-    // }, []);
+			try {
+				// Pedimos los datos frescos a la BBDD (incluyendo el nuevo avatar en /media/)
+				const data = await userService.getProfile(authUser.id);
+				setProfileData(data);
+			} catch (error) {
+				console.error("Error actualizando datos de usuario en Index:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
 
-    if (isLoading) return <LoadingState />;
+		fetchCurrentUserInfo();
+	}, [authUser?.id]);
 
-    if (!user) return null;
+	/* Fetch fake para obtener amigos */
+	// useEffect(() => {
+	// 	const fetchFriends = async () => {
+	// 		const mockDatabaseResponse: UserProfile[] = [
+	// 			{ id: 1, username: "Miriam", status: "online", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
+	// 			{ id: 2, username: "Ivan", status: "playing", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
+	// 			{ id: 3, username: "Kevin", status: "online", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
+	// 			{ id: 4, username: "David", status: "offline", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
+	// 			{ id: 5, username: "Alice_Bot", status: "offline", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } }
+	// 		];
+	// 		setFriendsList(mockDatabaseResponse);
+	// 	};
+	// 	fetchFriends();
+	// }, []);
 
-    return (
-        <DashboardLayout isCentered={false}>
-            <div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-10">
+	/* Real fetch to get friends from database */
+	useEffect(() => {
+		const fetchFriends = async () => {
+			if (!authUser?.id)
+				return;
+			try {
+				const response = await userService.getFriends(authUser.id);
 
-                {/* Header with user info (Se le pasa el user entero, el ProfileHeader ya sabe qué hacer) */}
-                <ProfileHeader userData={user} isOwnProfile={true} />
+				const friendList = response.filter((f: any) =>
+					f.pivot?.status === 'accepted'
+				);
 
-                {/* Contenedor del Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 animate-fade-in-up">
-                    
-                    {/* Play Card (Primary) - Abre el Modal */}
-                    <DashboardCard
-                        title={t('dashboard.play')}
-                        subtitle={t('dashboard.select_mode')}
-                        icon={<GiCardPlay />}
-                        variant="primary"
-                        onClick={() => setShowModeSelector(true)}
-                    />
-                    
-                    {/* Friends Card */}
-                    <DashboardCard
-                        title={t('dashboard.friends') + ` (${friendsList.length})`}
-                        subtitle={`Online: ${friendsList.filter(f => f.status === 'online').length + friendsList.filter(f => f.status === 'playing').length}`}
-                        icon={<FaUserFriends />}
-                        onClick={() => navigate("/friends")}
-                    />
+				setFriendsList(friendList);
+			} catch (error) {
+				console.error("Error fetching friends:", error);
+				setFriendsList([]);
+			}
+		};
+		fetchFriends();
+	}, [authUser?.id]);
 
-                    {/* Ranking Card */}
-                    <DashboardCard
-                        title={t('dashboard.ranking')}
-                        subtitle={t('dashboard.ranking_info')}
-                        icon={<FaTrophy />}
-                        onClick={() => navigate("/ranking")}
-                    />
+	if (isAuthLoading || isLoading)
+		return <LoadingState />;
 
-                    {/* Collection Card */}
-                    <DashboardCard
-                        title={t('dashboard.collection') }
-                        subtitle={t('dashboard.collection_info')}
-                        icon={<FaImages />}
-                        onClick={() => navigate("/collection")}
-                    />
-                </div>
-                
-            </div>
+	if (!authUser || !profileData)
+		return null;
 
-            {/* Modal de Modos de Juego */}
-            <GameModeModal 
-                isOpen={showModeSelector} 
-                onClose={() => setShowModeSelector(false)} 
-            />
-            
-        </DashboardLayout>
-    );
+	return (
+		<DashboardLayout isCentered={false}>
+			<div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-10">
+
+				{/* Header with user info */}
+				<ProfileHeader
+					userData={{
+						...profileData,
+						email: profileData.email || ""
+					}}
+					isOwnProfile={true}
+				/>
+
+				{/* Grid Container */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 animate-fade-in-up">
+
+					{/* Play Card (Primary) - Open Modal */}
+					<DashboardCard
+						title={t('dashboard.play')}
+						subtitle={t('dashboard.select_mode')}
+						icon={<GiCardPlay />}
+						variant="primary"
+						onClick={() => setShowModeSelector(true)}
+					/>
+
+					{/* Friends Card */}
+					<DashboardCard
+						title={t('dashboard.friends') + ` (${friendsList.length})`}
+						subtitle={`Online: ${friendsList.filter(f => f.status === 'online').length + friendsList.filter(f => f.status === 'playing').length}`}
+						icon={<FaUserFriends />}
+						onClick={() => navigate("/friends")}
+					/>
+
+					{/* Ranking Card */}
+					<DashboardCard
+						title={t('dashboard.ranking')}
+						subtitle={t('dashboard.ranking_info')}
+						icon={<FaTrophy />}
+						onClick={() => navigate("/ranking")}
+					/>
+
+					{/* Collection Card */}
+					<DashboardCard
+						title={t('dashboard.collection')}
+						subtitle={t('dashboard.collection_info')}
+						icon={<FaImages />}
+						onClick={() => navigate("/collection")}
+					/>
+				</div>
+
+			</div>
+
+			{/* Game Mode Modal */}
+			<GameModeModal
+				isOpen={showModeSelector}
+				onClose={() => setShowModeSelector(false)}
+			/>
+
+		</DashboardLayout>
+	);
 };
 
 export default Index;
