@@ -18,6 +18,22 @@
     --color-warning: #ffba00; /* amber-400 */
 }
 
+@font-face {
+    font-family: 'Inter';
+    src: url('/fonts/Inter.ttf') format('truetype'); 
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Vecna';
+    src: url('/fonts/Vecna.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 @theme {
     /* 2. CONNECT VARIABLES TO TAILWIND */
     --color-brand-400: var(--color-brand-400);
@@ -36,6 +52,10 @@
     --animate-fade-in-up: fade-in-up 0.6s ease-out forwards;
     --animate-fade-in-down: fade-in-down 0.8s ease-out forwards;
     --animate-wave: wave 2.5s infinite;
+
+	/* Font Families */
+	--font-sans: 'Inter', sans-serif;
+	--font-vecna: 'Vecna', sans-serif;
 
     @keyframes fade-in-up {
         0% { opacity: 0; transform: translateY(20px); }
