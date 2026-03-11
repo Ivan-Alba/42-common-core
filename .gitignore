@@ -2,4 +2,12 @@
 /private/*
 /certs/*
 /secrets/*
+
+# Local environment
 .env
+
+# Visual Studio files
+.vs/
+*.vsidx
+*.suo
+*.user
