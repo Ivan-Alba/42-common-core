@@ -19,32 +19,41 @@ const Navbar = () => {
 	const [pendingCount, setPendingCount] = useState(0);
 
 	/* Hooks to redirect and context */
-    const navigate = useNavigate(); 
-    const { user, logout } = useAuth();
+	const navigate = useNavigate();
+	const { user, logout } = useAuth();
 
 	/* Check pending friend requests on mount and when user or url changes (to update count when we go to friends page) */
 	useEffect(() => {
-        const checkPendingRequests = async () => {
-            if (!user) return;
-            try {
-                // Hacemos la petición silenciosa al backend
-                const data = await userService.getFriends(user.id);
-                
-                // Filtramos solo las que están pendientes y NOSOTROS tenemos que aceptar
-                const pending = data.filter((f: any) => {
-                    const status = f.friendship_status || f.pivot?.status;
-                    const isRequester = f.pivot?.requester_id === Number(user.id);
-                    return status === 'pending' && !isRequester; 
-                });
-                
-                setPendingCount(pending.length);
-            } catch (error) {
-                // Lo mantenemos en silencio para no ensuciar la consola si el endpoint aún no está listo
-            }
-        };
+		const checkPendingRequests = async () => {
+			if (!user)
+				return;
+			try {
+				const data = await userService.getFriends(user.id);
 
-        checkPendingRequests();
-    }, [user, url.pathname]);
+				/* Filter pending requests */
+				const pending = data.filter((f: any) => {
+					const status = f.friendship_status || f.pivot?.status;
+					const requesterId = Number(f.pivot?.requester_id);
+					const myId = Number(user.id);
+
+					return status === 'pending' && requesterId !== myId;
+				});
+
+				setPendingCount(pending.length);
+			} catch (error) {
+				// Silent
+			}
+		};
+
+		checkPendingRequests();
+
+		/* Global event listener to update pending requests count when we accept/decline from friends page */
+		window.addEventListener('updateFriendNotifications', checkPendingRequests);
+		return () => {
+			window.removeEventListener('updateFriendNotifications', checkPendingRequests);
+		};
+
+	}, [user, url.pathname]);
 
 	const getDesktopClass = (path: string) =>
 		url.pathname === path ? "nav-link-desktop-active" : "nav-link-desktop";
@@ -56,15 +65,15 @@ const Navbar = () => {
 		/* Close menu if is mobile */
 		if (closeMenu) setIsMenuOpen(false);
 
-		 /* Clear localStorage (language preference) */
+		/* Clear localStorage (language preference) */
 		localStorage.removeItem('lang');
 		i18n.changeLanguage('en');
-		
+
 		/* Redirect to home (landing page)*/
 		navigate('/');
-		
+
 		/* Wait for response from backend to complete logout cleaning session and changing state  */
-		await logout();		
+		await logout();
 	}
 
 	return (
@@ -83,15 +92,15 @@ const Navbar = () => {
 				<div className="hidden lg:flex items-center gap-8">
 					<Link to="/index" className={getDesktopClass("/index")}>{t('navbar.dashboard')}</Link>
 
-					{/* Friends link with pending requests badge */ }
+					{/* Friends link with pending requests badge */}
 					<Link to="/friends" className={getDesktopClass("/friends")}>
-                        {t('navbar.friends')}
-                        {pendingCount > 0 && (
-                            <span className="absolute -top-2 -right-4 bg-danger text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
-                                {pendingCount}
-                            </span>
-                        )}
-                    </Link>
+						{t('navbar.friends')}
+						{pendingCount > 0 && (
+							<span className="absolute -top-2 -right-4 bg-danger text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
+								{pendingCount}
+							</span>
+						)}
+					</Link>
 
 					<Link to="/profile" className={getDesktopClass("/profile")}>
 						{t('navbar.profile')}
@@ -128,18 +137,18 @@ const Navbar = () => {
 					<Link to="/index" className={getMobileClass("/index")} onClick={() => setIsMenuOpen(false)}>{t('navbar.dashboard')}</Link>
 
 					<Link to="/friends" className={getMobileClass("/friends")} onClick={() => setIsMenuOpen(false)}>
-                        <span>{t('navbar.friends')}</span>
-                        {pendingCount > 0 && (
-                            <span className="bg-danger text-white text-xs font-black px-2 py-0.5 rounded-full ms-1">
-                                {pendingCount} </span>
-                        )}
-                    </Link>
+						<span>{t('navbar.friends')}</span>
+						{pendingCount > 0 && (
+							<span className="bg-danger text-white text-xs font-black px-2 py-0.5 rounded-full ms-1">
+								{pendingCount} </span>
+						)}
+					</Link>
 
 					<Link to="/profile" className={getMobileClass("/profile")} onClick={() => setIsMenuOpen(false)}>{t('navbar.profile')}</Link>
 
 					<Link to="/ranking" className={getMobileClass("/ranking")} onClick={() => setIsMenuOpen(false)}>{t('navbar.ranking')}</Link>
 
-					<Link to="/chat" className={getMobileClass("/chat")} onClick={() => setIsMenuOpen(false)}>{t('navbar.collection')}</Link>
+					<Link to="/collection" className={getMobileClass("/collection")} onClick={() => setIsMenuOpen(false)}>{t('navbar.collection')}</Link>
 
 					<div className="h-px bg-white/10 my-2"></div>
 

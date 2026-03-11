@@ -1,6 +1,7 @@
 import { FaUser, FaEdit, FaUserPlus, FaCheck, FaHourglassHalf } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import userService from "../../services/userService";
 
 interface ProfileHeaderProps {
     userData: {
@@ -12,7 +13,6 @@ interface ProfileHeaderProps {
         experience?: number;
     };
     isOwnProfile: boolean;
-    // Nuevas props opcionales para gestionar la amistad desde el perfil
     friendshipStatus?: 'none' | 'pending' | 'accepted' | 'outgoing';
     onAddFriend?: (id: number | string) => void;
 }
@@ -20,15 +20,8 @@ interface ProfileHeaderProps {
 const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAddFriend }: ProfileHeaderProps) => {
     const { t } = useTranslation();
 
-    const getFullAvatarUrl = (avatarPath?: string) => {
-        if (!avatarPath)
-			return undefined;		
-        
-        const cleanPath = avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`;
-        return cleanPath;
-    };
 
-    const finalAvatarUrl = getFullAvatarUrl(userData.avatar);
+    const avatarUrl = userService.getFullAvatarUrl(userData.avatar);
 
     return (
         <div className="glass-panel p-6 md:p-8 mb-8 relative overflow-hidden">
@@ -37,8 +30,8 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 relative z-10">
                 <div className="relative shrink-0">
                     <div className="w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-dark-800 shadow-2xl overflow-hidden bg-dark-900 flex items-center justify-center">
-                        {finalAvatarUrl ? (
-                            <img src={finalAvatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             <FaUser className="text-slate-600 w-1/2 h-1/2" />
                         )}

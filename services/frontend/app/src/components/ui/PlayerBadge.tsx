@@ -1,5 +1,6 @@
 import { t } from "i18next";
 import { FaUser } from "react-icons/fa";
+import userService from "../../services/userService";
 
 interface PlayerBadgeProps {
     avatar?: string;
@@ -9,6 +10,7 @@ interface PlayerBadgeProps {
 }
 
 const PlayerBadge = ({ avatar, name, isCurrentUser = false, className = "" }: PlayerBadgeProps) => {
+	const avatarUrl = userService.getFullAvatarUrl(avatar);
     return (
         /* Main Container centered */
         <div className={`flex items-center justify-center ${className}`}>
@@ -17,8 +19,8 @@ const PlayerBadge = ({ avatar, name, isCurrentUser = false, className = "" }: Pl
             {/* Fixed width of 120px and content aligned to the end (right) */}
             <div className="w-30 flex justify-end items-center pr-4">
                 <div className="w-10 h-10 shrink-0 rounded-full border border-white/10 bg-dark-800 overflow-hidden flex items-center justify-center">
-                    {avatar ? (
-                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                    {avatarUrl ? (
+                        <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
                     ) : (
                         <FaUser className="text-slate-600 text-xs" />
                     )}

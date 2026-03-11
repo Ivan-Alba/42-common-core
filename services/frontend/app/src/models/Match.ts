@@ -4,7 +4,7 @@ export interface MatchHistory {
     id: number;
 	/* Opponent podría ser cambiado de string a object si necesitara más detalles, A TENER EN CUENTA */
     opponent: string;
-    result: 'win' | 'loss';
+    result: 'win' | 'loss' | 'draw';
     score: string;
     date: string;
 }

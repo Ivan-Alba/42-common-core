@@ -15,11 +15,20 @@ class FriendResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        // return [
+        //     'id' => $this->id,
+        //     'username' => $this->name,
+        //     'avatar' => $this->avatar,
+        //     'bio' => $this->bio,
+        // ];
+		return [
             'id' => $this->id,
-            'username' => $this->name,
+            'username' => $this->name ?? $this->username, 
+            'email' => $this->email,
             'avatar' => $this->avatar,
             'bio' => $this->bio,
+            'experience' => $this->experience,
+            'pivot' => $this->pivot ?? null,
         ];
     }
 }
