@@ -99,4 +99,11 @@ class User extends Authenticatable
 
         $this->avatar = $path;
     }
+
+
+    //TODO AÑADIDO IVAN
+    public function stats()
+    {
+        return $this->hasOne(PlayerStat::class, 'user_id');
+    }
 }
