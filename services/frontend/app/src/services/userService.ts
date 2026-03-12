@@ -88,17 +88,20 @@ const userService = {
 	},
 
 	/* Get ALL cards (Catalog) */
-    getAllCards: async (): Promise<any[]> => {
-        const response = await api.get(`/v1/cards`);
+    getAllCards: async (lang: string = 'es'): Promise<any[]> => {
+        const response = await api.get(`/v1/cards`, {
+            headers: { 'Accept-Language': lang }
+        });
         return response.data.data || response.data;
     },
-	
-	/* Get user cards */
-	getCards: async (): Promise<GameCard[]> => {
-		// Laravel Resources envuelven los datos en una propiedad 'data'
-		const response = await api.get<{ data: GameCard[] }>(`/v1/user/cards`);
-		return response.data.data;
-	},
+
+    /* Get User cards */
+    getCards: async (lang: string = 'es'): Promise<any[]> => {
+        const response = await api.get(`/v1/user/cards`, {
+            headers: { 'Accept-Language': lang }
+        });
+        return response.data.data || response.data;
+    },
 
 	/* Get Ranking */
 	getRanking: async (): Promise<(RankingUser & { stats: PlayerStats })[]> => {
