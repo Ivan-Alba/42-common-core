@@ -40,6 +40,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users', [UserController::class, 'getUsers']);
         Route::get('/users/{user}', [UserController::class, 'getUser']);
         Route::get('/users/{user}/friends', [UserController::class, 'getFriends']);
+
+        // PlayerStats
+        Route::get('/user/{user}/stats', [PlayerStatsController::class, 'getUserStats']);
+
+        // Cards
+        Route::get('/user/cards', [CardUserController::class, 'getMyCards']);
+
         // Route::get('/users/{id}/games', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/chats', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/achievements', [UserController::class, 'getUser']);

@@ -22,6 +22,9 @@ class UserResource extends JsonResource
             'avatar' => $this->avatar,
             'bio' => $this->bio,
             'language' => $this->language->value ?? Language::SPANISH->value,
+
+            // Only if ->load('stats')
+            'stats' => new PlayerStatResource($this->whenLoaded('stats')),
         ];
     }
 }

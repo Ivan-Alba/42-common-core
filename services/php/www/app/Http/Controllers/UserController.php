@@ -22,6 +22,9 @@ class UserController
 {
 	public function getUser(Request $request, User $user)
 	{
+        // Add PlayerStatsResource to UserResource
+        $user->load('stats');
+
 		return response()->json($user->toResource(), 200);
 	}
 
@@ -52,8 +55,12 @@ class UserController
 
 	public function getOwnUser(Request $request)
 	{
-		return response()->json(auth()->user()->toResource(), 200);
-	}
+        $user = auth()->user();
+        // Add PlayerStatsResource to UserResource
+        $user->load('stats');
+
+        return response()->json($user->toResource(), 200);
+    }
 
 	public function updateOwnPassword(Request $request)
 	{

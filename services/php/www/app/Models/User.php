@@ -101,9 +101,14 @@ class User extends Authenticatable
     }
 
 
-    //TODO AÑADIDO IVAN
+    // IVAN
     public function stats()
     {
         return $this->hasOne(PlayerStat::class, 'user_id');
+    }
+
+    public function cards(): BelongsToMany
+    {
+        return $this->belongsToMany(Card::class, 'card_user', 'user_id', 'card_id');
     }
 }
