@@ -121,7 +121,7 @@
 	"friends": {
 		"title": "Amics",
 		"subtitle": "La teva llista d'amics",
-		"search_placeholder": "Introdueix el nom d'usuari per afegir",
+		"search_placeholder": "Introdueix el nom d'usuari",
 		"no_friends": "Encara no tens amics afegits.",
 		"already_friend": "Amic",
 		"pending": "Pendent",

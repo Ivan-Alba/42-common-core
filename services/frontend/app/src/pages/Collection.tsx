@@ -41,7 +41,7 @@ const Collection = () => {
     const [activeFilter, setActiveFilter] = useState<CategoryFilter>('all');
 
     // MOCK: Simulamos que el usuario tiene desbloqueadas 
-    const unlockedCardIds = [1, 2, 3, 4, 5, 6,  13, 14, 15, 16, 17, 20, 21, 22, 23, 24];
+    const unlockedCardIds = [1, 2, 3, 4, 5, 6, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24];
 
     const filteredCards = CARDS_DATABASE.filter(card => 
         activeFilter === 'all' ? true : card.category === activeFilter
