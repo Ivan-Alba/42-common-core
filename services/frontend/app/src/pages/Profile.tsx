@@ -28,7 +28,7 @@ const Profile = () => {
     // Estado para gestionar la relación de amistad en este perfil
     const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing'>('none');
 
-    const getMatchStyles = (result: 'win' | 'loss') => {
+    const getMatchStyles = (result: 'win' | 'loss' | 'draw') => {
         const isWin = result === 'win';
         return {
             border: isWin ? 'bg-success' : 'bg-danger',

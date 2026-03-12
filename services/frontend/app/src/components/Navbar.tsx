@@ -93,7 +93,7 @@ const Navbar = () => {
 					<Link to="/index" className={getDesktopClass("/index")}>{t('navbar.dashboard')}</Link>
 
 					{/* Friends link with pending requests badge */}
-					<Link to="/friends" className={getDesktopClass("/friends")}>
+					<Link to="/friends" className={`relative ${getDesktopClass("/friends")}`}>
 						{t('navbar.friends')}
 						{pendingCount > 0 && (
 							<span className="absolute -top-2 -right-4 bg-danger text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">

@@ -121,7 +121,7 @@
 	"friends": {
 		"title": "Amigos",
 		"subtitle": "Tu lista de amigos",
-		"search_placeholder": "Introduce el nombre de usuario para agregar",
+		"search_placeholder": "Introduce el nombre de usuario",
 		"no_friends": "Aún no tienes amigos agregados.",
 		"already_friend": "Amigo",
 		"pending": "Pendiente",
