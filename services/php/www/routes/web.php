@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user/{user}/stats', [PlayerStatsController::class, 'getUserStats']);
 
         // Cards
-        Route::get('cards', [CardController::class, 'index']);
+        Route::get('/cards', [CardController::class, 'index']);
         Route::get('/user/cards', [CardUserController::class, 'getMyCards']);
 
         // Ranking
