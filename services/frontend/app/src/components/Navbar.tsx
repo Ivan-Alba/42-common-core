@@ -66,7 +66,6 @@ const Navbar = () => {
 		if (closeMenu) setIsMenuOpen(false);
 
 		/* Clear localStorage (language preference) */
-		localStorage.removeItem('lang');
 		i18n.changeLanguage('en');
 
 		/* Redirect to home (landing page)*/

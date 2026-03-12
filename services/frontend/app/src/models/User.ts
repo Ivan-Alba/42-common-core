@@ -19,7 +19,7 @@ export interface UserProfile {
 	status?: 'online' | 'offline' | 'playing';
 	stats: UserStats;
 	bio?: string;
-    language?: 'EN' | 'ES' | 'CAT';
+    language?: 'en' | 'es' | 'ca';
 	experience?: number;
 	
 	history?: MatchHistory[];

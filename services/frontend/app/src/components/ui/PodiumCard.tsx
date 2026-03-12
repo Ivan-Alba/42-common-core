@@ -1,10 +1,15 @@
-import { FaUser, FaCrown } from "react-icons/fa";
-// import type { UserProfile } from '../../models/User';
-// import type { RankingUser } from '../../models/RankingUser';
+import { FaUser, FaCrown, FaMinus } from "react-icons/fa";
+import { HiTrendingUp, HiTrendingDown } from "react-icons/hi";
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import type { PodiumCardProps } from "../../models/RankingUser";
-// import type { PlayerStats } from "../../models/RankingUser";
 
 const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCardProps) => {
+    const { t } = useTranslation();
+    const { user: authUser } = useAuth();
+
+    // Comprobamos si este jugador es el usuario logueado
+    const isCurrentUser = authUser?.id ? Number(authUser.id) === Number(player.id) : false;
     
     const borderColor = isWinner ? "border-brand-500" : place === 2 ? "border-slate-400" : "border-orange-700";
     
@@ -18,6 +23,19 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
 
     /* Unified avatar size: Always large */
     const avatarSizeClass = "w-28 h-28 md:w-32 md:h-32";
+
+    // Función rápida para renderizar la tendencia
+    const renderTrend = () => {
+        if (player.stats.last_rank_pos == null) return null;
+        
+        if (player.stats.last_rank_pos > place) {
+            return <HiTrendingUp className="text-success text-lg" title="Subió de puesto" />;
+        } else if (player.stats.last_rank_pos < place) {
+            return <HiTrendingDown className="text-danger text-lg" title="Bajó de puesto" />;
+        } else {
+            return <FaMinus className="text-slate-500 text-sm" title="Mantuvo el puesto" />;
+        }
+    };
 
     return (
         <div 
@@ -68,16 +86,31 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
             <div className={`
                 w-full md:h-[70%] glass-panel rounded-xl md:rounded-t-2xl md:rounded-b-xl md:border-t-0 
                 flex flex-col justify-end items-center 
-                pb-4 pt-10 md:pt-16
+                pb-4 pt-10 md:pt-16 relative overflow-hidden
                 bg-linear-to-b from-white/5 to-transparent
                 ${isWinner ? 'border-brand-500/30' : 'border-white/5'}
+                ${isCurrentUser ? 'bg-brand-500/5 border-brand-500/50' : ''}
             `}>
-                <h3 className={`font-bold ${isWinner ? 'text-2xl text-white' : 'text-xl text-slate-200'} mb-1`}>
+                <h3 className={`font-bold ${isWinner ? 'text-2xl text-white' : 'text-xl text-slate-200'} mb-1 flex items-center gap-2`}>
                     {player.username}
+                    {/* Badge de "TÚ" si es el usuario logueado */}
+                    {isCurrentUser && (
+                        <span className="text-[10px] bg-brand-500 text-white px-1.5 py-0.5 rounded font-black tracking-wider uppercase">
+                            {t('common.you')}
+                        </span>
+                    )}
                 </h3>
-                <p className="text-brand-400 font-mono font-bold text-lg mb-2">
-                    {player.stats.ranked_points} <span className="text-xs text-slate-500 font-sans">PTS</span>
-                </p>
+                
+                {/* Contenedor de Puntos + Tendencia */}
+                <div className="flex items-center gap-2 mb-2">
+                    <p className="text-brand-400 font-mono font-bold text-lg">
+                        {player.stats.ranked_points} <span className="text-xs text-slate-500 font-sans">PTS</span>
+                    </p>
+                    <div className="bg-black/30 rounded px-1.5 py-0.5 flex items-center justify-center">
+                        {renderTrend()}
+                    </div>
+                </div>
+
                 <div className="flex gap-4 text-xs text-slate-400 bg-black/20 px-3 py-1 rounded-full">
                     <span>W: <span className="text-success">{player.stats.wins}</span></span>
                     <span>L: <span className="text-danger">{player.stats.losses}</span></span>
@@ -87,6 +120,11 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
             {/* Glow effect */}
             {isWinner && (
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-20 bg-brand-500/20 blur-[50px] -z-10"></div>
+            )}
+            
+            {/* Opcional: Glow extra si eres tú el que está en el podio */}
+            {isCurrentUser && !isWinner && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-10 bg-brand-500/10 blur-[30px] -z-10"></div>
             )}
         </div>
     );

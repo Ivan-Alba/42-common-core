@@ -51,6 +51,12 @@ const userService = {
 		return avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`;
 	},
 
+	/* Update language preference */
+	updateLanguage: async (language: 'en' | 'es' | 'ca'): Promise<UserProfile> => {
+		const response = await api.patch('/v1/user/update', { language });
+		return response.data;
+	},
+
 	/* Search users  */
 	searchUsers: async (query: string): Promise<UserProfile[]> => {
 		const response = await api.get(`/v1/users?search=${query}`);
