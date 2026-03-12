@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Card extends Model
 {
     protected $fillable = [
-        'name', 'back_image', 'front_image', 
+        'name', 'description', 'back_image', 'front_image', 
         'top', 'bottom', 'left', 'right', 'rarity'
     ];
 

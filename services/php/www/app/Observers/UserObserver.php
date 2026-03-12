@@ -12,17 +12,20 @@ class UserObserver
 
     public function created(User $user): void
     {
-    $user->stats()->create([
-        // All these are handled by the database defaults:
-        // 'level'         => 1,
-        // 'experience'    => 0,
-        // 'ranked_points' => 0,
-        // 'last_rank_pos' => null,
-        // 'wins'          => 0,
-        // 'losses'        => 0,
-        // 'draws'         => 0,
-        // 'campaign'      => 1,
-    ]);
+
+        $user->stats()->create([
+            // All these are handled by the database defaults:
+            // 'level'         => 1,
+            // 'experience'    => 0,
+            // 'ranked_points' => 0,
+            // 'last_rank_pos' => null,
+            // 'wins'          => 0,
+            // 'losses'        => 0,
+            // 'draws'         => 0,
+            // 'campaign'      => 1,
+        ]);
+    
+    $user->cards()->attach([1, 2, 7, 8, 9]);
 }
 
     /**
