@@ -6,8 +6,11 @@ use App\Enums\Language;
 use App\Enums\OrderDirection;
 use App\Http\Resources\FriendResource;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\OAuthExchange;
 use App\Models\User;
+use App\Models\UserMatch;
+use App\Models\PlayerStat;
 use App\OAuth\Contracts\OAuthServer;
 use App\OAuth\Factories\OAuthServerFactory;
 use Illuminate\Http\Request;
@@ -22,6 +25,19 @@ class UserController
 {
 	public function getUser(Request $request, User $user)
 	{
+        // Add PlayerStatsResource to UserResource
+        $user->load('stats');
+
+        // Add match history
+        $history = UserMatch::where('player_1_id', $user->id)
+        ->orWhere('player_2_id', $user->id)
+        ->with(['player1', 'player2']) 
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+
+        $user->setRelation('match_history', $history);
+
 		return response()->json($user->toResource(), 200);
 	}
 
@@ -52,8 +68,23 @@ class UserController
 
 	public function getOwnUser(Request $request)
 	{
-		return response()->json(auth()->user()->toResource(), 200);
-	}
+        $user = auth()->user();
+
+        // Add PlayerStatsResource to UserResource
+        $user->load('stats');
+
+        // Add match history
+        $history = UserMatch::where('player_1_id', $user->id)
+        ->orWhere('player_2_id', $user->id)
+        ->with(['player1', 'player2']) 
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+
+        $user->setRelation('match_history', $history);
+
+        return response()->json($user->toResource(), 200);
+    }
 
 	public function updateOwnPassword(Request $request)
 	{
@@ -169,5 +200,18 @@ class UserController
         });
 
         return FriendResource::collection($friends);
+    }
+
+    // Get UserResource + PlayerStatsResource to show ranking
+    public function getRanking()
+    {
+        $topPlayers = User::join('player_stats', 'users.id', '=', 'player_stats.user_id')
+            ->orderBy('player_stats.ranked_points', 'desc')
+            ->select('users.*')
+            ->with('stats')
+            ->take(100)
+            ->get();
+
+        return UserResource::collection($topPlayers);
     }
 }

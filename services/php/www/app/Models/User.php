@@ -6,12 +6,17 @@ namespace App\Models;
 use App\Enums\Language;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\PlayerStat;
+use App\Models\Card;
+
+
 
 class User extends Authenticatable
 {
@@ -29,7 +34,7 @@ class User extends Authenticatable
         'password',
         'avatar',
         'bio',
-        'experience',
+        //'experience',
         'language'
     ];
 
@@ -101,9 +106,14 @@ class User extends Authenticatable
     }
 
 
-    //TODO AÑADIDO IVAN
+    // IVAN
     public function stats()
     {
         return $this->hasOne(PlayerStat::class, 'user_id');
+    }
+
+    public function cards(): BelongsToMany
+    {
+        return $this->belongsToMany(Card::class, 'card_user', 'user_id', 'card_id');
     }
 }

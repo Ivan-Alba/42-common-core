@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use App\Enums\Language;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\PlayerStatResource;
+use App\Http\Resources\UserMatchResource;
 
 class UserResource extends JsonResource
 {
@@ -22,6 +24,12 @@ class UserResource extends JsonResource
             'avatar' => $this->avatar,
             'bio' => $this->bio,
             'language' => $this->language->value ?? Language::SPANISH->value,
+
+            // Only if ->load('stats')
+            'stats' => new PlayerStatResource($this->whenLoaded('stats')),
+
+            // Only if injected
+            'match_history' => UserMatchResource::collection($this->whenLoaded('match_history')),
         ];
     }
 }
