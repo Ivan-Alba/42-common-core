@@ -6,6 +6,7 @@ use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\CardUserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
