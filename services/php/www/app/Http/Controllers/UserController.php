@@ -198,4 +198,17 @@ class UserController
 
         return FriendResource::collection($friends);
     }
+
+    // Get UserResource + PlayerStatsResource to show ranking
+    public function getRanking()
+    {
+        $topPlayers = User::join('player_stats', 'users.id', '=', 'player_stats.user_id')
+            ->orderBy('player_stats.ranked_points', 'desc')
+            ->select('users.*')
+            ->with('stats')
+            ->take(100)
+            ->get();
+
+        return UserResource::collection($topPlayers);
+    }
 }

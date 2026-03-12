@@ -47,6 +47,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Cards
         Route::get('/user/cards', [CardUserController::class, 'getMyCards']);
 
+        // Ranking
+        Route::get('/ranking', [UserController::class, 'getRanking']);
+
         // Route::get('/users/{id}/games', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/chats', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/achievements', [UserController::class, 'getUser']);
