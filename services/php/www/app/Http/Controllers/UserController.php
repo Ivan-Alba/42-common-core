@@ -25,6 +25,16 @@ class UserController
         // Add PlayerStatsResource to UserResource
         $user->load('stats');
 
+        // Add match history
+        $history = UserMatch::where('player_1_id', $user->id)
+        ->orWhere('player_2_id', $user->id)
+        ->with(['player1', 'player2']) 
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+
+        $user->setRelation('match_history', $history);
+
 		return response()->json($user->toResource(), 200);
 	}
 
@@ -56,8 +66,19 @@ class UserController
 	public function getOwnUser(Request $request)
 	{
         $user = auth()->user();
+
         // Add PlayerStatsResource to UserResource
         $user->load('stats');
+
+        // Add match history
+        $history = UserMatch::where('player_1_id', $user->id)
+        ->orWhere('player_2_id', $user->id)
+        ->with(['player1', 'player2']) 
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+
+        $user->setRelation('match_history', $history);
 
         return response()->json($user->toResource(), 200);
     }

@@ -25,6 +25,9 @@ class UserResource extends JsonResource
 
             // Only if ->load('stats')
             'stats' => new PlayerStatResource($this->whenLoaded('stats')),
+
+            // Only if injected
+            'match_history' => UserMatchResource::collection($this->whenLoaded('match_history')),
         ];
     }
 }
