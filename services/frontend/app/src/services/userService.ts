@@ -87,6 +87,12 @@ const userService = {
 		return response.data;
 	},
 
+	/* Get ALL cards (Catalog) */
+    getAllCards: async (): Promise<any[]> => {
+        const response = await api.get(`/v1/cards`);
+        return response.data.data || response.data;
+    },
+	
 	/* Get user cards */
 	getCards: async (): Promise<GameCard[]> => {
 		// Laravel Resources envuelven los datos en una propiedad 'data'
