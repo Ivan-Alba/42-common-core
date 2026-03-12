@@ -1,5 +1,7 @@
 import api from './api';
 import type { UserProfile } from '../models/User';
+import type { GameCard } from '../models/GameCard';
+import type { PlayerStats, RankingUser } from '../models/RankingUser';
 
 /* This service will handle operations related to the user, such as getting their profile, updating it, etc. */
 export interface UpdateProfilePayload {
@@ -73,10 +75,23 @@ const userService = {
 		return response.data;
 	},
 
-	/* Eliminar amigo */
+	/* Delete friend */
 	removeFriend: async (userId: string | number, friendId: string | number): Promise<any> => {
 		const response = await api.delete(`/v1/users/${userId}/friends/${friendId}`);
 		return response.data;
+	},
+
+	/* Get user cards */
+	getCards: async (): Promise<GameCard[]> => {
+		// Laravel Resources envuelven los datos en una propiedad 'data'
+		const response = await api.get<{ data: GameCard[] }>(`/v1/user/cards`);
+		return response.data.data;
+	},
+
+	/* Get Ranking */
+	getRanking: async (): Promise<(RankingUser & { stats: PlayerStats })[]> => {
+		const response = await api.get<{ data: (RankingUser & { stats: PlayerStats })[] }>(`/v1/ranking`);
+		return response.data.data;
 	},
 
 	consoleLog: () => {

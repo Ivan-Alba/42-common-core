@@ -1,12 +1,8 @@
 import { FaUser, FaCrown } from "react-icons/fa";
-import type { UserProfile } from '../../models/User';
-
-export interface PodiumCardProps {
-    player: UserProfile & { points: number, stats: { wins: number, losses: number } };
-    place: number;
-    isWinner?: boolean;
-    delay?: string;
-}
+// import type { UserProfile } from '../../models/User';
+// import type { RankingUser } from '../../models/RankingUser';
+import type { PodiumCardProps } from "../../models/RankingUser";
+// import type { PlayerStats } from "../../models/RankingUser";
 
 const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCardProps) => {
     
@@ -47,7 +43,7 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
                         ${avatarSizeClass}
                     `}>
                         {player.avatar ? (
-                            <img src={player.avatar} alt={player.name} className="w-full h-full object-cover" />
+                            <img src={player.avatar} alt={player.username} className="w-full h-full object-cover" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-slate-600">
                                 {/* Unified fallback icon size */}
@@ -77,10 +73,10 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
                 ${isWinner ? 'border-brand-500/30' : 'border-white/5'}
             `}>
                 <h3 className={`font-bold ${isWinner ? 'text-2xl text-white' : 'text-xl text-slate-200'} mb-1`}>
-                    {player.name}
+                    {player.username}
                 </h3>
                 <p className="text-brand-400 font-mono font-bold text-lg mb-2">
-                    {player.points} <span className="text-xs text-slate-500 font-sans">PTS</span>
+                    {player.stats.ranked_points} <span className="text-xs text-slate-500 font-sans">PTS</span>
                 </p>
                 <div className="flex gap-4 text-xs text-slate-400 bg-black/20 px-3 py-1 rounded-full">
                     <span>W: <span className="text-success">{player.stats.wins}</span></span>
