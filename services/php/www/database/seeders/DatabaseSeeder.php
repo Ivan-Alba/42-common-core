@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             CardSeeder::class,
+            CardTranslationSeeder::class,
         ]);
 
         // User::factory(10)->create();

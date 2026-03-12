@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum Language: string
 {
-    case SPANISH = "ES";
-    case ENGLISH = "EN";
-    case CATALAN = "CA";
+    case SPANISH = "es";
+    case ENGLISH = "en";
+    case CATALAN = "ca";
 }

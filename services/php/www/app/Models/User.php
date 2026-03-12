@@ -34,7 +34,7 @@ class User extends Authenticatable
         'password',
         'avatar',
         'bio',
-        'experience',
+        //'experience',
         'language'
     ];
 

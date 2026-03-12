@@ -12,12 +12,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::create('card_translations', function (Blueprint $table) {
+            $table->id();
+            
+            $table->foreignId('card_id')->constrained()->onDelete('cascade');
+
             $table->enum('language', [
                 Language::SPANISH->value, 
                 Language::ENGLISH->value, 
                 Language::CATALAN->value
-            ])->default(Language::SPANISH->value);
+            ])->default(Language::ENGLISH->value);
+
+            $table->string('name');
+            $table->text('description');
+            
+            $table->timestamps();
+
+            $table->unique(['card_id', 'language']);
         });
     }
 
@@ -26,8 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('language');
-        });
+        Schema::dropIfExists('card_translations');
     }
 };
