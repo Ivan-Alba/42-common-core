@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User; // Importante importar el modelo
+use App\Models\User;
 use App\Http\Resources\PlayerStatResource;
 use Illuminate\Http\Request;
 

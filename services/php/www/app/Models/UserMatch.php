@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\GameMode;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 class UserMatch extends Model
 {

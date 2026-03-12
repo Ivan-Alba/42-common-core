@@ -13,6 +13,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\PlayerStat;
+use App\Models\Card;
+
 
 
 class User extends Authenticatable

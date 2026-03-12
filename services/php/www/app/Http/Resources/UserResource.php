@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use App\Enums\Language;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\PlayerStatResource;
+use App\Http\Resources\UserMatchResource;
 
 class UserResource extends JsonResource
 {
