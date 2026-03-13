@@ -1,24 +1,15 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+// IMPORTAMOS LA INTERFAZ CENTRALIZADA
+import type { CardData } from '../../models/CardData';
 
-export interface CardData {
-    id: number;
-    category: string;
-    rarity: 'common' | 'rare' | 'epic' | 'legendary';
-    top: number | 'A';
-    right: number | 'A';
-    bottom: number | 'A';
-    left: number | 'A';
-    description?: string;
-}
-
+// Ya no necesitamos definir CardData aquí. Solo los Props del componente.
 interface GameCardProps {
     card: CardData;
-    name: string;
     isUnlocked?: boolean;
 }
 
-const GameCard = ({ card, name, isUnlocked = false }: GameCardProps) => {
+const GameCard = ({ card, isUnlocked = false }: GameCardProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSpinning, setIsSpinning] = useState(false);
 
@@ -34,27 +25,25 @@ const GameCard = ({ card, name, isUnlocked = false }: GameCardProps) => {
         setIsModalOpen(true);
         setIsSpinning(true);
         
-        // Animación de 1.2 segundos
         setTimeout(() => setIsSpinning(false), 1200);
     };
 
-    // TU DISEÑO INTACTO
     const CardFace = (
         <div className={`absolute inset-0 bg-dark-800 rounded-4xs border-2 overflow-hidden ${rarityGlow[card.rarity]} transition-all duration-300`}>
-            <img src={`/assets/cards/art/${card.id}.png`} alt={name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <img src={`/assets/cards/art/${card.id}.png`} alt={card.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             <img src={`/assets/cards/frames/frame_${card.rarity}.png`} alt={`Marco ${card.rarity}`} className="absolute inset-0 w-full h-full z-10 pointer-events-none" />
             
             <div className="absolute inset-0 z-20 pointer-events-none">
                 <div className="absolute top-[9%] left-[11%] w-[20%] aspect-square grid grid-cols-3 grid-rows-3 items-center justify-items-center font-vecna-bold text-white drop-shadow-[0_4px_4px_rgb(0,0,0)] text-[13.5cqi]">
-                    <span className="col-start-2 row-start-1 leading-none -translate-y-[22%]">{card.top}</span>
-                    <span className="col-start-1 row-start-2 leading-none -translate-x-[22%]">{card.left}</span>
-                    <span className="col-start-3 row-start-2 leading-none translate-x-[22%]">{card.right}</span>
-                    <span className="col-start-2 row-start-3 leading-none translate-y-[22%]">{card.bottom}</span>
+                    <span className="col-start-2 row-start-1 leading-none -translate-y-[22%]">{card.stats.top}</span>
+                    <span className="col-start-1 row-start-2 leading-none -translate-x-[22%]">{card.stats.left}</span>
+                    <span className="col-start-3 row-start-2 leading-none translate-x-[22%]">{card.stats.right}</span>
+                    <span className="col-start-2 row-start-3 leading-none translate-y-[22%]">{card.stats.bottom}</span>
                 </div>
                 
                 <div className="absolute bottom-[4%] right-[7%] w-[70%] flex justify-center items-center h-[12%] px-2">
                     <h3 className="text-white font-vecna text-[7.5cqi] leading-[0.90] pt-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] text-center text-balance line-clamp-2">
-                        {name}
+                        {card.name}
                     </h3>
                 </div>
             </div>
@@ -62,7 +51,6 @@ const GameCard = ({ card, name, isUnlocked = false }: GameCardProps) => {
     );
 
     return (
-        /* Quitamos el Fragment vacío (<>) y el tag <style> */
         <div onClick={handleCardClick} className="relative group w-full aspect-2/3 rounded-sm cursor-pointer transition-transform duration-300 hover:-translate-y-2 [container-type:inline-size]">
             
             {!isUnlocked ? (
@@ -76,7 +64,6 @@ const GameCard = ({ card, name, isUnlocked = false }: GameCardProps) => {
                 CardFace
             )}
 
-            {/* MODAL GIGANTE */}
             {isModalOpen && createPortal(
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 sm:p-10 animate-fade-in" onClick={(e) => { e.stopPropagation(); setIsModalOpen(false); }}>
                     
@@ -86,31 +73,14 @@ const GameCard = ({ card, name, isUnlocked = false }: GameCardProps) => {
 
                     <div className="max-w-6xl w-full flex flex-col md:flex-row gap-8 lg:gap-16 items-center justify-center" onClick={(e) => e.stopPropagation()}>
                         
-                        {/* 1. MOTOR DE VUELO Y CÁMARA (opacity y scale) */}
-                        <div 
-                            className={`relative w-[280px] sm:w-[350px] md:w-[450px] aspect-2/3 shrink-0 [container-type:inline-size] ${isSpinning ? 'animate-fly' : ''}`} 
-                            style={{ perspective: '1500px' }}
-                        >
-                            
-                            {/* 2. MOTOR DE ROTACIÓN 3D (solo rotateY) */}
-                            <div 
-                                className={`relative w-full h-full ${isSpinning ? 'animate-spin-3d' : ''}`} 
-                                style={{ transformStyle: 'preserve-3d' }}
-                            >
+                        <div className={`relative w-[280px] sm:w-[350px] md:w-[450px] aspect-2/3 shrink-0 [container-type:inline-size] ${isSpinning ? 'animate-fly' : ''}`} style={{ perspective: '1500px' }}>
+                            <div className={`relative w-full h-full ${isSpinning ? 'animate-spin-3d' : ''}`} style={{ transformStyle: 'preserve-3d' }}>
                                 
-                                {/* 3A. FRENTE DE LA CARTA */}
-                                <div 
-                                    className="absolute inset-0" 
-                                    style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}
-                                >
+                                <div className="absolute inset-0" style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}>
                                     {CardFace}
                                 </div>
 
-                                {/* 3B. DORSO DE LA CARTA */}
-                                <div 
-                                    className="absolute inset-0" 
-                                    style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-                                >
+                                <div className="absolute inset-0" style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
                                     <div className="absolute inset-0 bg-dark-900 rounded-sm overflow-hidden border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.8)]">
                                         <img src="/assets/cards/cardback.png" alt="Reverso" className="w-full h-full object-cover opacity-80" />
                                     </div>
@@ -119,7 +89,6 @@ const GameCard = ({ card, name, isUnlocked = false }: GameCardProps) => {
                             </div>
                         </div>
 
-                        {/* MITAD DERECHA: El Lore */}
                         <div className="flex-1 text-left bg-dark-800/60 p-6 md:p-10 rounded-2xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] animate-fade-in-up delay-700">
                             
                             <div className="flex items-center gap-3 mb-4">
@@ -137,7 +106,7 @@ const GameCard = ({ card, name, isUnlocked = false }: GameCardProps) => {
                             </div>
 
                             <h2 className="font-vecna text-4xl md:text-5xl lg:text-6xl text-white mb-6 drop-shadow-md">
-                                {name}
+                                {card.name}
                             </h2>
 
                             <div className="h-px w-full bg-gradient-to-r from-brand-500/50 to-transparent mb-6"></div>

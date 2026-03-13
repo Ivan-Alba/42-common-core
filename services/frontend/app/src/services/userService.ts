@@ -1,6 +1,5 @@
 import api from './api';
 import type { UserProfile } from '../models/User';
-import type { GameCard } from '../models/GameCard';
 import type { PlayerStats, RankingUser } from '../models/RankingUser';
 
 /* This service will handle operations related to the user, such as getting their profile, updating it, etc. */
@@ -87,17 +86,23 @@ const userService = {
 		return response.data;
 	},
 
-	/* Get ALL cards (Catalog) */
+	/* Get ALL cards */
+	/* Save language preference in the header and force to refresh to avoid cache errors */
     getAllCards: async (lang: string = 'es'): Promise<any[]> => {
-        const response = await api.get(`/v1/cards`, {
+        const noCache = new Date().getTime();
+        
+        const response = await api.get(`/v1/cards?lang=${lang}&_t=${noCache}`, {
             headers: { 'Accept-Language': lang }
         });
         return response.data.data || response.data;
     },
 
     /* Get User cards */
+	/* Save language preference in the header and force to refresh to avoid cache errors */
     getCards: async (lang: string = 'es'): Promise<any[]> => {
-        const response = await api.get(`/v1/user/cards`, {
+        const noCache = new Date().getTime();
+		
+        const response = await api.get(`/v1/user/cards?lang=${lang}&_t=${noCache}`, {
             headers: { 'Accept-Language': lang }
         });
         return response.data.data || response.data;
