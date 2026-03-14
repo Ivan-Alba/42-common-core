@@ -24,6 +24,8 @@ class ChatTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $seed = true;
+
     public function test_only_members_can_read_private_chat()
     {
         $chat = Chat::create([

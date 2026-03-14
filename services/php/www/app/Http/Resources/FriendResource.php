@@ -23,7 +23,7 @@ class FriendResource extends JsonResource
         // ];
 		return [
             'id' => $this->id,
-            'username' => $this->name ?? $this->username, 
+            'username' => $this->name ?? "", 
             'email' => $this->email,
             'avatar' => $this->avatar,
             'bio' => $this->bio,

@@ -18,6 +18,8 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $seed = true;
+
     // It's not even worth to test: Page size, page, sort order. It's all trivially correct.
     public function test_get_users_page_size()
     {

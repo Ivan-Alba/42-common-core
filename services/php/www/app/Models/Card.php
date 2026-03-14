@@ -11,7 +11,7 @@ use App\Models\CardTranslation;
 class Card extends Model
 {
     protected $fillable = [
-        'name', 'description', 'back_image', 'front_image', 
+        'id', 'name', 'description', 'front_image', 
         'top', 'bottom', 'left', 'right', 'rarity'
     ];
 

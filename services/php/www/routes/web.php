@@ -153,3 +153,5 @@ Route::get(config('oauth.uri_generation'), [OAuthController::class, 'getRedirect
 Route::post(config('oauth.redirected').'/{provider}', [OAuthController::class, 'handleOAuthResponse']);
 
 Route::get('/media/{path}', [MediaController::class, 'getMedia'])->where('path', '.*');
+
+Route::fallback(fn () => redirect('/error'));

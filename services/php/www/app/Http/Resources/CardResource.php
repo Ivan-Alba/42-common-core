@@ -31,7 +31,6 @@ class CardResource extends JsonResource
             'id' => $this->id,
             'name' => $translation ? $translation->name : $this->name,
             'description' => $translation ? $translation->description : $this->description,
-            'back_image' => $this->back_image,
             'front_image' => $this->front_image,
             'rarity' => $this->rarity,
             'stats' => [

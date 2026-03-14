@@ -24,6 +24,8 @@ class FriendChatTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $seed = true;
+
     public function test_create_friendship_creates_chat()
     {
         $user1 = User::factory()->create();

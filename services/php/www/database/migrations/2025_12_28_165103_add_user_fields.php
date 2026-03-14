@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('avatar')->nullable();
             $table->string('bio')->nullable();
-            //$table->unsignedInteger('experience')->default(0);
+            $table->unsignedInteger('experience')->default(0);
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('avatar');
             $table->dropColumn('bio');
-            //$table->dropColumn('experience');
+            $table->dropColumn('experience');
         });
     }
 };

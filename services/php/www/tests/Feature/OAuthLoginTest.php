@@ -53,6 +53,8 @@ class OAuthLoginTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $seed = true;
+
     public function fortytwo_test_new_user_is_created_and_logged()
     {
         $exchange = OAuthExchange::create([
