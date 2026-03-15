@@ -14,7 +14,9 @@
 		"accept": "Acceptar",
 		"decline": "Cancel·lar",
 		"you": "Tu",
-		"all": "Totes"
+		"all": "Totes",
+		"player": "Jugador",
+		"opponent": "Oponent"
 	},
 	"validation": {
 		"required": "Aquest camp és obligatori.",
@@ -301,6 +303,9 @@
 		"rare": "Rara",
 		"epic": "Èpica",
 		"legendary": "Llegendària"
+	},
+	"collection": {
+		"cards_unlocked": "Cartes desbloquejades"
 	},
 	"cards": {
 		"1": {

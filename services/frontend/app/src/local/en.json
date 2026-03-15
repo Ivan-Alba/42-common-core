@@ -15,7 +15,9 @@
 		"accept": "Accept",
 		"decline": "Cancel",
 		"you": "You",
-		"all": "All"
+		"all": "All",
+		"player": "Player",
+		"opponent": "Opponent"
 	},
 	"validation": {
 		"required": "This field is required.",
@@ -304,6 +306,9 @@
 		"rare": "Rare",
 		"epic": "Epic",
 		"legendary": "Legendary"
+	},
+	"collection": {
+		"cards_unlocked": "Cards Unlocked"
 	},
 	"cards": {
 		"1": {
