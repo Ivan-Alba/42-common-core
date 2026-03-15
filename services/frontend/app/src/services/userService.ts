@@ -1,5 +1,6 @@
 import api from './api';
 import type { UserProfile } from '../models/User';
+import type { PlayerStats, RankingUser } from '../models/RankingUser';
 
 /* This service will handle operations related to the user, such as getting their profile, updating it, etc. */
 export interface UpdateProfilePayload {
@@ -49,6 +50,12 @@ const userService = {
 		return avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`;
 	},
 
+	/* Update language preference */
+	updateLanguage: async (language: 'en' | 'es' | 'ca'): Promise<UserProfile> => {
+		const response = await api.patch('/v1/user/update', { language });
+		return response.data;
+	},
+
 	/* Search users  */
 	searchUsers: async (query: string): Promise<UserProfile[]> => {
 		const response = await api.get(`/v1/users?search=${query}`);
@@ -73,10 +80,38 @@ const userService = {
 		return response.data;
 	},
 
-	/* Eliminar amigo */
+	/* Delete friend */
 	removeFriend: async (userId: string | number, friendId: string | number): Promise<any> => {
 		const response = await api.delete(`/v1/users/${userId}/friends/${friendId}`);
 		return response.data;
+	},
+
+	/* Get ALL cards */
+	/* Save language preference in the header and force to refresh to avoid cache errors */
+    getAllCards: async (lang: string = 'es'): Promise<any[]> => {
+        const noCache = new Date().getTime();
+        
+        const response = await api.get(`/v1/cards?lang=${lang}&_t=${noCache}`, {
+            headers: { 'Accept-Language': lang }
+        });
+        return response.data.data || response.data;
+    },
+
+    /* Get User cards */
+	/* Save language preference in the header and force to refresh to avoid cache errors */
+    getCards: async (lang: string = 'es'): Promise<any[]> => {
+        const noCache = new Date().getTime();
+		
+        const response = await api.get(`/v1/user/cards?lang=${lang}&_t=${noCache}`, {
+            headers: { 'Accept-Language': lang }
+        });
+        return response.data.data || response.data;
+    },
+
+	/* Get Ranking */
+	getRanking: async (): Promise<(RankingUser & { stats: PlayerStats })[]> => {
+		const response = await api.get<{ data: (RankingUser & { stats: PlayerStats })[] }>(`/v1/ranking`);
+		return response.data.data;
 	},
 
 	consoleLog: () => {

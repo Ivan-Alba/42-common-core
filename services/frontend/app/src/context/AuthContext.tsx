@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import type { User, AuthContextType } from './Auth';
 import authService from '../services/authService';
 import type { LoginCredentials, RegisterCredentials } from './Auth';
-import { langMapper } from '../utils/langMapper';
 import i18n from '../i18n';
 
 /* Creamos el contexto de autenticación con un valor inicial undefined, lo que nos ayudará a detectar si el hook se usa fuera del provider. */
@@ -17,9 +16,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	// Función para sincronizar el idioma del usuario con i18n
 	const syncLanguage = (dbLanguage?: string) => {
         if (dbLanguage) {
-            const targetLang = langMapper[dbLanguage] || 'en';
-            i18n.changeLanguage(targetLang);
-            localStorage.setItem('lang', targetLang);
+            i18n.changeLanguage(dbLanguage);
         }
     };
 
@@ -54,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkSession();
     }, []);
 
-    // Login REAL
+    /* Login REAL */
     const login = async (credentials: LoginCredentials) => { 
         try {
             setIsLoading(true);
@@ -68,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             setUser(userResponse);
         } catch (error) {
-            console.error("Error login", error);
+            console.error("Error: ", error);
             throw error;
         } finally {
             setIsLoading(false);
@@ -88,7 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             setUser(userResponse);
         } catch (error) {
-            console.error("Error register", error);
+            console.error("Error: ", error);
             throw error;
         } finally {
             setIsLoading(false);
@@ -100,12 +97,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             await authService.logout();
         } catch (error) {
-            console.error("Error logout", error);
+            console.error("Error: ", error);
         } finally {
             setUser(null);
             localStorage.removeItem('is_logged_in');
-            // Opcional: resetear idioma a inglés al salir
-            i18n.changeLanguage('en');
         }
     };
 

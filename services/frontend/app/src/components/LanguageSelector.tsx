@@ -1,6 +1,8 @@
 // src/components/LanguageSelector.tsx
 // import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
+import userService from '../services/userService';
 
 interface LanguageSelectorProps {
     className?: string; // Use props to put style from out of the component
@@ -8,12 +10,19 @@ interface LanguageSelectorProps {
 
 const LanguageSelector = ({ className = "" }: LanguageSelectorProps) => {
     const { i18n } = useTranslation();
+	const { user } = useAuth();
 
-    const changeLanguage = (lng: string) => {
+    const changeLanguage = async (lng: string) => {
         i18n.changeLanguage(lng);
-        /* Save language to LocalStorage */
-		// Guardar en BBDD cuando la tenga
-        localStorage.setItem('lang', lng);
+        /* Update user's language preference in the backend */
+        if (user) {
+			try {
+				await userService.updateLanguage(lng as 'en' | 'es' | 'ca');
+			}
+			catch (error) {
+				// Silent
+			}
+        }
     };
 
     // Conditional auxiliar function to language selected style

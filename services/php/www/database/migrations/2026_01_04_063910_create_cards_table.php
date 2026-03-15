@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\CardCategory;
 
 return new class extends Migration
 {
@@ -16,6 +17,8 @@ return new class extends Migration
             $table->timestamps();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->enum('category', array_column(CardCategory::cases(), 'value'))
+                ->default(CardCategory::HUMAN->value);
             $table->string('front_image')->nullable();
             $table->string('back_image')->nullable();
             $table->integer('top');

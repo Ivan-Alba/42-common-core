@@ -11,7 +11,6 @@ import type { UserProfile } from '../models/User';
 import { validatePassword } from '../utils/validators';
 import userService from '../services/userService';
 import { useAuth } from '../context/AuthContext';
-import { langMapper } from '../utils/langMapper';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../utils/cropImage';
 import dragonAvatar from '../../public/assets/avatars/dragon.png';
@@ -80,9 +79,9 @@ const EditProfile = () => {
     const [showCropModal, setShowCropModal] = useState(false);
 
     const languageOptions = [
-        { code: 'EN', label: t('edit_profile.english') },
-        { code: 'ES', label: t('edit_profile.spanish') },
-        { code: 'CAT', label: t('edit_profile.catalan') }
+        { code: 'en', label: t('edit_profile.english') },
+        { code: 'es', label: t('edit_profile.spanish') },
+        { code: 'ca', label: t('edit_profile.catalan') }
     ];
 
     const iconSize = 20;
@@ -98,27 +97,23 @@ const EditProfile = () => {
             setIsLoading(true);
             try {
                 const userData = await userService.getProfile(authUser.id);
-                const dbToI18n: Record<string, string> = { 'EN': 'en', 'ES': 'es', 'CAT': 'ca' };
-                const dbLang = userData.language as 'EN' | 'ES' | 'CAT';
-                const currentLangCode = dbToI18n[dbLang] || localStorage.getItem('lang') || 'en';
+                const dbLang = userData.language as 'en' | 'es' | 'ca';
 
                 setFormData({
                     username: userData.username || "",
                     email: userData.email || "",
-                    // Parseamos la URL para previsualizar lo que ya había en BD
                     avatar: getPreviewUrl(userData.avatar) || "", 
                     bio: userData.bio || "",
-                    language: dbLang || 'EN',
+                    language: dbLang,
                     newPassword: "",
                     confirmPassword: ""
                 });
 
-                if (i18n.language !== currentLangCode) {
-                    i18n.changeLanguage(currentLangCode);
-                    localStorage.setItem('lang', currentLangCode);
+                if (i18n.language !== dbLang) {
+                    i18n.changeLanguage(dbLang);
                 }
             } catch (error) {
-                console.error("Error al obtener los datos:", error);
+                console.error("Error:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -236,14 +231,11 @@ const EditProfile = () => {
 
             if (formData.newPassword) await userService.updatePassword(formData.newPassword);
 
-            const targetLang = langMapper[formData.language || 'EN'];
-            i18n.changeLanguage(targetLang);
-            localStorage.setItem('lang', targetLang);
-
+            i18n.changeLanguage(formData.language || 'en');
             setShowSuccessModal(true);
 
         } catch (error: any) {
-            console.error("Error devuelto por la API:", error.response?.data);
+            console.error("Error:", error.response?.data);
             const errorMessage = error.response?.data?.message || "Error";
             setProfileError(errorMessage); 
         } finally {
@@ -263,12 +255,9 @@ const EditProfile = () => {
     };
 
     const handleLanguageSelect = (langCode: string) => {
-        setFormData(prev => prev ? { ...prev, language: langCode as 'EN' | 'ES' | 'CAT' } : null);
+        setFormData(prev => prev ? { ...prev, language: langCode as 'en' | 'es' | 'ca' } : null);
         setIsLanguageOpen(false);
-
-        const targetLang = langMapper[langCode];
-        i18n.changeLanguage(targetLang);
-        localStorage.setItem('lang', targetLang);
+        i18n.changeLanguage(langCode);
     };
 
     if (isLoading) return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;

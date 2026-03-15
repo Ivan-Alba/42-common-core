@@ -20,6 +20,8 @@ class UserMatchResource extends JsonResource
             'player_2_id' => $this->player_2_id,
             'player_1_name' => $this->player1?->name,
             'player_2_name' => $this->player2?->name,
+            'player_1_avatar' => $this->player1?->avatar,
+            'player_2_avatar' => $this->player2?->avatar,
             'winner_id' => $this->winner_id,
             'game_mode' => $this->game_mode,
             'is_vs_ai' => $this->is_vs_ai,

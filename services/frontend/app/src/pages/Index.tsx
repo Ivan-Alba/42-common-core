@@ -42,21 +42,6 @@ const Index = () => {
 		fetchCurrentUserInfo();
 	}, [authUser?.id]);
 
-	/* Fetch fake para obtener amigos */
-	// useEffect(() => {
-	// 	const fetchFriends = async () => {
-	// 		const mockDatabaseResponse: UserProfile[] = [
-	// 			{ id: 1, username: "Miriam", status: "online", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-	// 			{ id: 2, username: "Ivan", status: "playing", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-	// 			{ id: 3, username: "Kevin", status: "online", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-	// 			{ id: 4, username: "David", status: "offline", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } },
-	// 			{ id: 5, username: "Alice_Bot", status: "offline", stats: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0 } }
-	// 		];
-	// 		setFriendsList(mockDatabaseResponse);
-	// 	};
-	// 	fetchFriends();
-	// }, []);
-
 	/* Real fetch to get friends from database */
 	useEffect(() => {
 		const fetchFriends = async () => {

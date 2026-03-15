@@ -4,23 +4,30 @@
 :root {
     /* Brand Palette (Nexus Blue) */
     --color-brand-400: #60a5fa;
-    --color-brand-500: #3b82f6; /* Main color */
+    --color-brand-500: #3b82f6;
+    /* Main color */
     --color-brand-600: #2563eb;
 
     /* Backgrounds (Dark Mode) */
-    --bg-main: #0f172a;    /* dark-900 */
-    --bg-surface: #1e293b; /* dark-800 */
-    --bg-footer: #0d1424; /* footer */
-    
+    --bg-main: #0f172a;
+    /* dark-900 */
+    --bg-surface: #1e293b;
+    /* dark-800 */
+    --bg-footer: #0d1424;
+    /* footer */
+
     /* Semantic States */
-    --color-success: #22c55e; /* green-500 */
-    --color-danger: #ef4444;  /* red-500 */
-    --color-warning: #ffba00; /* amber-400 */
+    --color-success: #22c55e;
+    /* green-500 */
+    --color-danger: #ef4444;
+    /* red-500 */
+    --color-warning: #ffba00;
+    /* amber-400 */
 }
 
 @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter.ttf') format('truetype'); 
+    src: url('/fonts/Inter.ttf') format('truetype');
     font-weight: 100 900;
     font-style: normal;
     font-display: swap;
@@ -29,6 +36,14 @@
 @font-face {
     font-family: 'Vecna';
     src: url('/fonts/Vecna.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Vecna Bold';
+    src: url('/fonts/Vecna-Bold.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -43,28 +58,35 @@
     --color-dark-900: var(--bg-main);
     --color-dark-800: var(--bg-surface);
     --color-darker: var(--bg-footer);
-    
+
     --color-success: var(--color-success);
     --color-danger: var(--color-danger);
     --color-warning: var(--color-warning);
 
-    /* Custom Animations */
+    /* Font Families */
+    --font-sans: 'Inter', sans-serif;
+    --font-vecna: 'Vecna', sans-serif;
+    --font-vecna-bold: 'Vecna Bold', sans-serif;
+
+    /* --- Custom Animations --- */
     --animate-fade-in-up: fade-in-up 0.6s ease-out forwards;
     --animate-fade-in-down: fade-in-down 0.8s ease-out forwards;
     --animate-wave: wave 2.5s infinite;
-
-	/* Font Families */
-	--font-sans: 'Inter', sans-serif;
-	--font-vecna: 'Vecna', sans-serif;
+    
+    /* ¡AQUÍ ESTÁ LA MAGIA! Declaramos las nuevas animaciones */
+    --animate-fly: flyIn 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    --animate-spin-3d: spin3D 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 
     @keyframes fade-in-up {
         0% { opacity: 0; transform: translateY(20px); }
         100% { opacity: 1; transform: translateY(0); }
     }
+
     @keyframes fade-in-down {
         0% { opacity: 0; transform: translateY(-20px); }
         100% { opacity: 1; transform: translateY(0); }
     }
+
     @keyframes wave {
         0% { transform: rotate(0.0deg) }
         10% { transform: rotate(14.0deg) }
@@ -75,17 +97,32 @@
         60% { transform: rotate(0.0deg) }
         100% { transform: rotate(0.0deg) }
     }
+
+    /* Keyframes de la carta */
+    @keyframes flyIn {
+        0% { transform: scale(0.2) translateY(200px); opacity: 0; }
+        20% { opacity: 1; }
+        100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    @keyframes spin3D {
+        0% { transform: rotateY(180deg); }
+        40% { transform: rotateY(180deg); }
+        100% { transform: rotateY(360deg); }
+    }
 }
 
 /* 3. REUSABLE COMPONENTS */
 @layer components {
-    
+
     /* --- PANELS --- */
-    .glass-panel, .glass-panel-hover {
+    .glass-panel,
+    .glass-panel-hover {
         @apply bg-dark-800/40 backdrop-blur-md border border-white/5 rounded-xl transition-all duration-300;
     }
 
     .glass-panel-hover {
+        /* ¡SIN ESPACIOS en el rgba! */
         @apply hover:bg-dark-800/80 hover:border-brand-500/30 hover:shadow-[0_0_15px_rgba(59,130,246,0.15)];
     }
 
@@ -104,8 +141,9 @@
         @apply p-3 rounded-lg transition-all duration-200 flex items-center justify-center;
     }
 
-    /*  Group base styles to avoid @apply errors */
-    .btn-primary, .btn-primary-full {
+    /* Group base styles to avoid @apply errors */
+    .btn-primary,
+    .btn-primary-full {
         @apply bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20 hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all duration-200;
     }
 
@@ -129,9 +167,10 @@
     /* --- NAVIGATION --- */
     /* Desktop Link */
     .nav-link-desktop {
+        /* ¡SIN ESPACIOS en el rgba! */
         @apply text-slate-300 hover:text-white transition-colors hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)];
     }
-    
+
     .nav-link-desktop-active {
         @apply text-white font-semibold relative py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-brand-500 after:shadow-[0_0_10px_#3b82f6];
     }
@@ -144,13 +183,13 @@
     .nav-item-mobile-active {
         @apply p-3 rounded-lg bg-brand-500 text-white font-medium text-center shadow-lg shadow-brand-500/20 block w-full;
     }
-    
+
     /* linear Text Helper */
     .text-linear-nexus {
         @apply text-transparent bg-clip-text bg-linear-to-r from-white to-slate-400;
     }
 
-	/* --- MODALS --- */
+    /* --- MODALS --- */
     /* Dark background full screen and centered */
     .modal-backdrop {
         @apply fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto;
@@ -162,7 +201,7 @@
     }
 
     /* --- CARDS --- */
-    /* Interactive Card on game mode selection (REMOVED 'group' from here) */
+    /* Interactive Card on game mode selection */
     .card-interactive {
         @apply bg-dark-800/50 border border-white/10 rounded-2xl p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:border-brand-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)];
     }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import { FaRobot, FaUserSecret, FaTimes, FaCircleNotch, FaTrophy, FaUsers } from 'react-icons/fa';
+import gameService, { type MatchData } from '../services/gameService';
 
 const Lobby = () => {
     const { t } = useTranslation();
@@ -15,43 +16,64 @@ const Lobby = () => {
     const submode = searchParams.get('submode');
 
     const [isMatchFound, setIsMatchFound] = useState(false);
+    const [opponent, setOpponent] = useState<MatchData['opponent'] | null>(null);
+    //const [matchId, setMatchId] = useState<number | null>(null);
 
-    // Determinar el título y el icono según el modo seleccionado
     const getModeDetails = () => {
         if (mode === 'campaign') return { title: 'Campaign PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
-        if (mode === 'ranked') return { title: 'Ranked Match (4 pts Limit)', icon: <FaTrophy className="text-warning text-4xl mb-2" /> };
-        if (mode === 'casual') return { 
-            title: `Casual Match (${submode === 'limited' ? 'Limited 4 pts' : 'Unlimited'})`, 
-            icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> 
-        };
+        if (mode === 'ranked') return { title: 'Ranked Match', icon: <FaTrophy className="text-warning text-4xl mb-2" /> };
+        if (mode === 'casual') return { title: `Casual Match`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
         return { title: 'Unknown Mode', icon: null };
     };
 
     const { title, icon } = getModeDetails();
     const isPvE = mode === 'campaign';
 
-    // Simulación de Matchmaking o Carga de Unity
+    // LÓGICA DE MATCHMAKING REAL
     useEffect(() => {
-        // Aqui debo conectarme al WebSocket del backend para buscar partida.
-        // Mientras no lo puedo implementar hago simulacion de que encuentro partida o juego contra la IA con un delay de 4 segundos.
-        const timer = setTimeout(() => {
-            setIsMatchFound(true);
-            
-            // Tras la espera redirijo a la vista donde Unity debe ser ejecutado
-            setTimeout(() => {
-				// Comentado hasta que no esté integrado Unity en el proyecto
-                // navigate('/game');
+		let pollingInterval: ReturnType<typeof setInterval>;
 
-                console.log("Redirigiendo a Unity...");
-            }, 2000);
+        const startMatchmaking = async () => {
+            try {
+                // 1. Avisamos al backend de que entramos en cola
+                await gameService.joinQueue(mode, submode);
 
-        }, 4000);
+                // 2. Empezamos a preguntar cada 2 segundos si hay partida
+                pollingInterval = setInterval(async () => {
+                    const matchData = await gameService.checkQueueStatus();
+                    
+                    if (matchData && matchData.is_ready) {
+                        // ¡PARTIDA ENCONTRADA!
+                        clearInterval(pollingInterval);
+                        setIsMatchFound(true);
+                        setOpponent(matchData.opponent);
+                        //setMatchId(matchData.match_id);
 
-        return () => clearTimeout(timer);
-    }, [mode, navigate]);
+                        // Redirigimos a Unity después de mostrar el rival 2.5 segundos
+                        setTimeout(() => {
+                            navigate(`/game/${matchData.match_id}`);
+                        }, 2500);
+                    }
+                }, 2000);
 
-    const handleCancel = () => {
-        // Aquí avisaríamos al backend de que cancelamos la búsqueda antes de salir
+            } catch (error) {
+                console.error("Error al buscar partida:", error);
+                // Si falla, volvemos al index para no quedarnos atrapados
+                navigate('/index');
+            }
+        };
+
+        startMatchmaking();
+
+        // Limpieza: Si el usuario cierra la pestaña o sale de la vista, cancelamos la búsqueda
+        return () => {
+            if (pollingInterval) clearInterval(pollingInterval);
+            gameService.leaveQueue().catch(console.error);
+        };
+    }, [mode, submode, navigate]);
+
+    const handleCancel = async () => {
+        await gameService.leaveQueue();
         navigate('/index');
     };
 
@@ -59,7 +81,7 @@ const Lobby = () => {
         <DashboardLayout isCentered={true}>
             <div className="max-w-3xl w-full mx-auto animate-fade-in-up">
                 
-                {/* Lobby Header */}
+                {/* Cabecera */}
                 <div className="text-center mb-10">
                     <div className="flex justify-center">{icon}</div>
                     <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">{title}</h1>
@@ -70,10 +92,10 @@ const Lobby = () => {
                     </p>
                 </div>
 
-                {/* Versus zone (VS) */}
+                {/* Zona VS */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12 relative">
                     
-                    {/* Player (You) */}
+                    {/* Jugador (Tú) */}
                     <div className="glass-panel p-6 flex flex-col items-center w-48 relative z-10 border-brand-500/30 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                         <div className="w-20 h-20 rounded-full bg-brand-500/20 flex items-center justify-center border-2 border-brand-500 mb-4 overflow-hidden">
                             {user?.avatar ? (
@@ -86,10 +108,9 @@ const Lobby = () => {
                         <span className="text-xs text-brand-400 font-medium bg-brand-500/10 px-3 py-1 rounded-full mt-2">Ready</span>
                     </div>
 
-                    {/* VS Animation */}
+                    {/* Animación VS */}
                     <div className="flex flex-col items-center justify-center z-10">
                         <div className="w-16 h-16 rounded-full bg-dark-900 border border-white/10 flex items-center justify-center shadow-lg relative">
-                            {/* Rings while searching game */}
                             {!isMatchFound && (
                                 <>
                                     <div className="absolute inset-0 rounded-full border border-brand-500/50 animate-ping opacity-75"></div>
@@ -100,25 +121,26 @@ const Lobby = () => {
                         </div>
                     </div>
 
-                    {/* Opponent */}
+                    {/* Oponente */}
                     <div className={`glass-panel p-6 flex flex-col items-center w-48 relative z-10 transition-all duration-500 ${isMatchFound ? 'border-danger/30 shadow-[0_0_20px_rgba(239,68,68,0.1)]' : 'border-white/5 opacity-70'}`}>
                         <div className={`w-20 h-20 rounded-full flex items-center justify-center border-2 mb-4 overflow-hidden transition-all duration-500
                             ${isMatchFound 
                                 ? 'bg-danger/20 border-danger text-danger' 
                                 : 'bg-dark-900 border-white/10 text-slate-600'}`}
                         >
-                            {isMatchFound && isPvE ? (
+                            {/* Si hay rival y tiene avatar lo mostramos, si no, iconos por defecto */}
+                            {isMatchFound && opponent?.avatar ? (
+                                <img src={opponent.avatar} alt={opponent.username} className="w-full h-full object-cover" />
+                            ) : isMatchFound && isPvE ? (
                                 <FaRobot size={32} />
                             ) : isMatchFound && !isPvE ? (
-                                <FaUserSecret size={32} /> // Aquí iría el avatar del rival real
+                                <FaUserSecret size={32} /> 
                             ) : (
                                 <FaCircleNotch className="animate-spin" size={28} />
                             )}
                         </div>
                         <h3 className="text-lg font-bold text-white text-center w-full truncate">
-                            {isMatchFound && isPvE ? 'Nexus AI' 
-                            : isMatchFound && !isPvE ? 'Rival Encontrado' 
-                            : 'Searching...'}
+                            {isMatchFound && opponent ? opponent.username : 'Searching...'}
                         </h3>
                         <span className={`text-xs font-medium px-3 py-1 rounded-full mt-2 transition-colors duration-500
                             ${isMatchFound ? 'bg-danger/10 text-danger' : 'bg-white/5 text-slate-500'}`}>
@@ -127,7 +149,7 @@ const Lobby = () => {
                     </div>
                 </div>
 
-                {/* Action Button */}
+                {/* Botón Acción */}
                 <div className="flex justify-center">
                     <button 
                         onClick={handleCancel}
@@ -147,7 +169,6 @@ const Lobby = () => {
                         )}
                     </button>
                 </div>
-
             </div>
         </DashboardLayout>
     );

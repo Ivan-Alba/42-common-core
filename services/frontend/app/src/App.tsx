@@ -15,6 +15,7 @@ import Ranking from './pages/Ranking';
 import Error from './pages/Error';
 import Lobby from './pages/Lobby';
 import Collection from './pages/Collection';
+import Game from './pages/Game';
 
 function App() {
 	return (
@@ -58,10 +59,10 @@ function App() {
 						<Route path="/edit_profile" element={<EditProfile />} />
 						<Route path="/ranking" element={<Ranking />} />
 						<Route path="/collection" element={<Collection />} />
-                        {/* Aquí irán /game, /chat, etc. */}
-
 						{/* Route to Lobby with query parameters for mode and submode (ej: /lobby?mode=casual&submode=limited) */}
 						<Route path="/lobby" element={<Lobby />} />
+						{/* Route to Game with matchId parameter (ej: /game/123) */}
+						<Route path="/game/:matchId" element={<Game />} />
 
 						{/* <Route path="/collection" element={<Collection />} /> */}
                     </Route>
