@@ -7,12 +7,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
 use App\Models\CardTranslation;
+use App\Enums\CardCategory;
 
 class Card extends Model
 {
     protected $fillable = [
-        'name', 'description', 'back_image', 'front_image', 
+        'name', 'description', 'category', 'back_image', 'front_image', 
         'top', 'bottom', 'left', 'right', 'rarity'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'category' => CardCategory::class,
     ];
 
     public function users(): BelongsToMany

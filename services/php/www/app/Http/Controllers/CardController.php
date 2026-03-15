@@ -10,8 +10,7 @@ class CardController extends Controller
 {
     public function index()
     {
-        $cards = Card::all();
-
+        $cards = Card::with('translations')->get();
         return CardResource::collection($cards);
     }
 }
