@@ -25,7 +25,7 @@ const Navbar = () => {
 	/* Check pending friend requests on mount and when user or url changes (to update count when we go to friends page) */
 	useEffect(() => {
 		const checkPendingRequests = async () => {
-			if (!user)
+			if (!user || !localStorage.getItem('is_logged_in'))
 				return;
 			try {
 				const data = await userService.getFriends(user.id);
@@ -65,14 +65,16 @@ const Navbar = () => {
 		/* Close menu if is mobile */
 		if (closeMenu) setIsMenuOpen(false);
 
-		/* Clear localStorage (language preference) */
-		i18n.changeLanguage('en');
+		/* Remove localStorage flag to avoid 401 error in console when backend invalidates session and frontend tries to check session again */
+		localStorage.removeItem('is_logged_in');
+
+		/* Wait for response from backend to complete logout cleaning session and changing state  */
+		await logout();
 
 		/* Redirect to home (landing page)*/
 		navigate('/');
 
-		/* Wait for response from backend to complete logout cleaning session and changing state  */
-		await logout();
+		
 	}
 
 	return (

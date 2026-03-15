@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -66,6 +66,14 @@ function App() {
 
 						{/* <Route path="/collection" element={<Collection />} /> */}
                     </Route>
+
+					{/* Avoid Laravel routes */}
+                    <Route path="/login" element={<Navigate to="/signin" replace />} />
+					<Route path="/register" element={<Navigate to="/signup" replace />} />
+					<Route path="/password/reset" element={<Navigate to="/reset_password" replace />} />
+					<Route path="/password/email" element={<Navigate to="/reset_password" replace />} />
+					<Route path="/password/update" element={<Navigate to="/reset_password" replace />} />
+					<Route path="/password/reset/:token" element={<Navigate to="/reset_password" replace />} />
 
 					{/* Catch-all route for undefined paths */}
 		            <Route path="*" element={<Error />} />
