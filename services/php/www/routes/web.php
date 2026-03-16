@@ -6,6 +6,7 @@ use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\PlayerStatsController;
 use App\Http\Controllers\CardUserController;
 use App\Http\Controllers\CardController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Ranking
         Route::get('/ranking', [UserController::class, 'getRanking']);
+
 
         // Route::get('/users/{id}/games', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/chats', [UserController::class, 'getUser']);

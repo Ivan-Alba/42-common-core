@@ -1,8 +1,10 @@
 <?php
-
-use Illuminate\Http\Request;
+use App\Http\Controllers\MatchController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
+
+// TODO DEBUG ROUTE WITHOUT MIDDLEWARE
+Route::get('/matches/{matchId}', [MatchController::class, 'getMatchData']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
  
