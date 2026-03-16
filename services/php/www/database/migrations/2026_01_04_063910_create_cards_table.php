@@ -19,8 +19,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->enum('category', array_column(CardCategory::cases(), 'value'))
                 ->default(CardCategory::HUMAN->value);
-            $table->string('front_image')->nullable();
-            $table->string('back_image')->nullable();
+            $table->string('blue_artwork')->nullable();
+            $table->string('red_artwork')->nullable();
             $table->integer('top');
             $table->integer('bottom');
             $table->integer('left');

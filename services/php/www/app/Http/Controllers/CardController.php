@@ -11,6 +11,10 @@ class CardController extends Controller
     public function index()
     {
         $cards = Card::with('translations')->get();
-        return CardResource::collection($cards);
+    
+        return response()->json([
+            'success' => true,
+            'data' => CardResource::collection($cards)
+        ]);
     }
 }

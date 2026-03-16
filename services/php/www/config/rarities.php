@@ -7,6 +7,6 @@ return [
         CardRarity::COMMON->value => 0,
         CardRarity::RARE->value => 1,
         CardRarity::EPIC->value => 2,
-        CardRarity::GOLDEN->value => 3,
+        CardRarity::LEGENDARY->value => 3,
     ],
 ];

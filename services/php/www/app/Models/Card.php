@@ -12,7 +12,7 @@ use App\Enums\CardCategory;
 class Card extends Model
 {
     protected $fillable = [
-        'name', 'description', 'category', 'back_image', 'front_image', 
+        'name', 'description', 'category', 'blue_artwork', 'red_artwork', 
         'top', 'bottom', 'left', 'right', 'rarity'
     ];
 

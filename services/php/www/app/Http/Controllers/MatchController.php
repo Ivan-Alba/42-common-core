@@ -63,15 +63,15 @@ class MatchController extends Controller
                     'name' => 'Unity Developer',
                     'avatar_url' => 'https://avatarfiles.alphacoders.com/103/thumb-1920-103373.png',
                     'is_ai' => false,
-                    'collection_ids' => [ "card_000", "card_001", "card_002", "card_003", "card_004", "card_005", "card_006", "card_007", "card_008","card_009",
-            "card_010", "card_011", "card_012", "card_013", "card_014", "card_015", "card_016", "card_017", "card_018", "card_019", "card_020", "card_021", "card_022", "card_023"]
+                    'collection_ids' => [ "1", "2", "3", "4", "5", "6", "7", "8", "9","10",
+                        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"]
                 ],
                 'opponent' => [
                     'id' => 'ai_bot_01',
                     'name' => 'Backend Bot',
                     'avatar_url' => 'https://pbs.twimg.com/profile_images/1202938752387170304/Z0TlRM6d_400x400.jpg',
                     'is_ai' => true,
-                    'collection_ids' => ["card_000", "card_001", "card_002", "card_003", "card_004", "card_005", "card_006", "card_007", "card_008", "card_009"]
+                    'collection_ids' => ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
                 ]
             ]
         ]);
