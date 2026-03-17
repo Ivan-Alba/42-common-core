@@ -19,6 +19,8 @@ class FriendshipTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $seed = true;
+
     public function test_send_friend_request()
     {
         $user = User::factory()->create();

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\CardRarity;
 
 return new class extends Migration
 {
@@ -12,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('cards', function (Blueprint $table) {
-            $table->enum('rarity', ['COMMON', 'RARE', 'EPIC', 'GOLDEN'])->default('common');
+            $table->enum('rarity', array_column(CardRarity::cases(), 'value'))->default(CardRarity::COMMON->value);
         });
     }
 

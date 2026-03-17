@@ -33,6 +33,8 @@ class GameCreationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $seed = true;
+
     public static function validationErrors(): array
     {
         return [

@@ -14,7 +14,9 @@
 		"accept": "Aceptar",
 		"decline": "Cancelar",
 		"you": "Tú",
-		"all": "Todas"
+		"all": "Todas",
+		"player": "Jugador",
+		"opponent": "Oponente"
 	},
 	"validation": {
 		"required": "Este campo es obligatorio.",
@@ -302,6 +304,9 @@
 		"rare": "Rara",
 		"epic": "Épica",
 		"legendary": "Legendaria"
+	},
+	"collection": {
+		"cards_unlocked": "Cartas desbloqueadas"
 	},
 	"cards": {
 		"1": {

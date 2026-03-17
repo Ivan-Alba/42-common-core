@@ -1,4 +1,4 @@
-import { type ReactNode, } from 'react';
+import { type ReactNode } from 'react';
 import Footer from '../Footer';
 import Navbar from '../Navbar';
 
@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children, isCentered = false }: DashboardLayoutProps) => {
     return (
         <div className={`
-            min-h-screen w-full bg-dark-900 text-white font-sans overflow-hidden flex flex-col relative
+            min-h-screen w-full bg-dark-900 text-white font-sans flex flex-col relative
             pt-30            
             ${isCentered ? 'md:pt-0' : 'md:pt-30'}
         `}>
@@ -19,7 +19,7 @@ const DashboardLayout = ({ children, isCentered = false }: DashboardLayoutProps)
 
             {/* Main Content */}
             <main className={`flex-1 px-6 sm:px-6 relative z-10 flex flex-col 
-                ${isCentered ? 'min-h-screen' : 'min-h-[calc(100vh-112px)]'}
+                ${isCentered ? 'min-h-screen' : 'min-h-[calc(100vh-96px)]'}
                 
                 ${isCentered 
                     /* Mobile: Up / Desktop: Center */

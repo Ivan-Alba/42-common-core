@@ -15,6 +15,8 @@ class CardResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $baseUrl = asset('storage/cards/');
+
         $userLanguage = $request->query('lang') 
             ?? $request->user()?->language->value 
             ?? Language::ENGLISH->value;
@@ -34,8 +36,10 @@ class CardResource extends JsonResource
             'name' => $translation ? $translation->name : $this->name,
             'description' => $translation ? $translation->description : $this->description,
             'category' => $this->category,
-            'back_image' => $this->back_image,
-            'front_image' => $this->front_image,
+            'blue_artwork' => $this->blue_artwork,
+            'red_artwork' => $this->red_artwork,
+            'blue_url' => "{$baseUrl}/{$this->blue_artwork}.png",
+            'red_url' => "{$baseUrl}/{$this->red_artwork}.png",
             'rarity' => $this->rarity,
             'stats' => [
                 'top'    => $this->top,
