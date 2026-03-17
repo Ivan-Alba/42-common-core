@@ -16,7 +16,8 @@
 		"you": "Tu",
 		"all": "Totes",
 		"player": "Jugador",
-		"opponent": "Oponent"
+		"opponent": "Oponent",
+		"exit": "Sortir"
 	},
 	"validation": {
 		"required": "Aquest camp és obligatori.",

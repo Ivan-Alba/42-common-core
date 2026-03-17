@@ -17,7 +17,8 @@
 		"you": "You",
 		"all": "All",
 		"player": "Player",
-		"opponent": "Opponent"
+		"opponent": "Opponent",
+		"exit": "Exit"
 	},
 	"validation": {
 		"required": "This field is required.",

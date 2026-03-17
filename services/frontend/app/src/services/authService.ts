@@ -14,18 +14,15 @@ const authService = {
 		/* Send credentials to backend, Sanctum will create the session if everithing is ok */
         const response = await api.post('/login', creds);
 
+		/* Capture Unity token if it exists and store it in sessionStorage for later use */
         if (response.data && response.data.unity_token) {
             const token = response.data.unity_token;
         
-            // Option A: Save in a volatile variable for Unity (recommended for security)
-            window.userAuthToken = token; 
-
-            // Option B: Save in sessionStorage if you need it to persist on page refresh
+            // Save in sessionStorage if you need it to persist on page refresh
             sessionStorage.setItem('unity_auth_token', token);
 
-            console.log("[Auth] Unity Token captured and stored.");
+            console.log("[Auth] Unity Token captured and stored.", token);
         }
-
 
 		/* If login is successful, get the current user to update the authentication state in the frontend */
         return authService.getUser();

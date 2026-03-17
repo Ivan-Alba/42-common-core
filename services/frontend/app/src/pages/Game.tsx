@@ -1,30 +1,49 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import UnityGame from '../components/ui/UnityGame'; // Asumiendo que el componente de Unity de arriba lo guardaste aquí
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
+import UnityGame from '../components/ui/UnityGame';
+import { useTranslation } from 'react-i18next';
+import { FaArrowLeft } from 'react-icons/fa';
+import { MdScreenRotation } from "react-icons/md";
 
 const Game = () => {
     const { matchId } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
+    
+    const token = sessionStorage.getItem('unity_auth_token');
 
-    // Cuando Unity lance el evento "OnGameOver", esta función atrapará los datos
-    const handleGameOver = (matchResult: any) => {
-        console.log("Datos de la partida terminada:", matchResult);
-        
-        // Aquí podrías redirigir a una pantalla de "Resultados" pasándole los datos
-        // o mostrar un modal de victoria/derrota. Por ahora, al Index.
-        navigate('/index');
-    };
-
-    if (!matchId) {
-        return <div className="text-white text-center mt-20">Error: Match ID no encontrado</div>;
+    if (!token || !matchId) {
+        return <Navigate to="/index" />;
     }
 
     return (
-        <div className="w-screen h-screen overflow-hidden bg-black">
-            {/* El componente UnityGame cargará el canvas y enviará el MatchID a C# */}
-            <UnityGame 
-                matchId={matchId} 
-                onGameOver={handleGameOver} 
-            />
+        <div className="w-screen h-screen bg-black overflow-hidden relative flex items-center justify-center">
+            
+            {/* Mobile definition*/}
+            {/* Force horizontal on phones*/}
+            <div className="portrait:flex landscape:hidden fixed inset-0 z-9999 bg-dark-900 flex-col items-center justify-center text-center p-6">
+                <MdScreenRotation size={80} className="text-brand-500 mb-6 animate-pulse" />
+                <h2 className="text-3xl font-bold text-white mb-3">
+                    {t('game.rotate_device', 'Gira tu dispositivo')}
+                </h2>
+                <p className="text-slate-400 max-w-xs">
+                    {t('game.landscape_required', 'Nexus Nine está diseñado para jugarse en modo horizontal.')}
+                </p>
+            </div>
+
+            {/* Exit Button to index */}
+            <button 
+                onClick={() => navigate('/index')}
+                className="absolute top-6 right-6 z-50 bg-dark-900/50 hover:bg-danger text-white px-4 py-2 sm:px-5 sm:py-3 rounded-xl backdrop-blur-md border border-white/10 transition-all shadow-lg flex items-center gap-3 group"
+            >
+                <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" /> 
+                <span className="font-bold text-sm uppercase tracking-wider hidden sm:block">
+                    {t('common.exit')}
+                </span>
+            </button>
+
+            {/* Game Component */}
+            <UnityGame token={token} matchId={matchId} />
+            
         </div>
     );
 };

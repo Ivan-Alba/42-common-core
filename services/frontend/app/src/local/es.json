@@ -16,7 +16,8 @@
 		"you": "Tú",
 		"all": "Todas",
 		"player": "Jugador",
-		"opponent": "Oponente"
+		"opponent": "Oponente",
+		"exit": "Salir"
 	},
 	"validation": {
 		"required": "Este campo es obligatorio.",
