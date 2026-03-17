@@ -56,7 +56,7 @@ const Index = () => {
 
 				setFriendsList(friendList);
 			} catch (error) {
-				console.error("Error fetching friends:", error);
+				console.error("Error:", error);
 				setFriendsList([]);
 			}
 		};
@@ -81,6 +81,16 @@ const Index = () => {
 					}}
 					isOwnProfile={true}
 				/>
+
+				<div className="mb-8 w-full">
+                    <button 
+                        onClick={() => navigate('/game/debug')}
+                        className="w-full bg-linear-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 text-white font-black text-xl py-6 rounded-2xl shadow-[0_0_20px_rgba(239,68,68,0.5)] transform hover:scale-[1.02] transition-all flex justify-center items-center gap-3 uppercase tracking-widest"
+                    >
+                        <GiCardPlay size={32} />
+                        FORZAR ENTRADA AL JUEGO (UNITY TEST)
+                    </button>
+                </div>
 
 				{/* Grid Container */}
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 animate-fade-in-up">

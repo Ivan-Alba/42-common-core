@@ -30,7 +30,11 @@ class AccountService
             if ($user)
             {
                 Auth::guard('web')->login($user);
-                return response()->json(['redirect' => '/home'], 200);
+
+                $token = $user->createToken('unity-token')->plainTextToken;
+                return response()->json([
+                    'redirect' => '/home',
+                    'token' => $token], 200);
             }
         
             $existingUser = User::where('email', $email)->first();
@@ -62,7 +66,11 @@ class AccountService
 
             Auth::guard('web')->login($user);
 
-            return response()->json(['redirect' => '/home'], 201);
+            $token = $user->createToken('unity-token')->plainTextToken;
+
+            return response()->json([
+                'redirect' => '/home',
+                'token' => $token], 201);
         });
     }
 

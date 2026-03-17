@@ -2,6 +2,7 @@
 /private/*
 /certs/*
 /secrets/*
+/node_modules/
 
 # Local environment
 .env
