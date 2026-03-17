@@ -67,15 +67,13 @@ class FortifyServiceProvider extends ServiceProvider
                     
                     // Generate a new Sanctum token for the Unity client
                     // You could optionally revoke old tokens here: $user->tokens()->delete();
-                    $token = $user->createToken('unity-token')->plainTextToken;
+                    $token = $user->createToken('unity_token')->plainTextToken;
 
                     // If the request expects JSON (XHR/Fetch with Accept: application/json)
                     if ($request->wantsJson()) {
                         return new JsonResponse([
                             'two_factor' => false,
-                            'token' => $token,
-                            // 'user' => $user, // Uncomment if you need user data in the frontend
-                            'redirect' => config('fortify.home'),
+                            'unity_token' => $token
                         ], 200);
                     }
 

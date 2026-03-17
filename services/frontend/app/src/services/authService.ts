@@ -12,7 +12,21 @@ const authService = {
 		/* Security handshake to get the cookie CSRF */
         await authService.getCsrfToken();
 		/* Send credentials to backend, Sanctum will create the session if everithing is ok */
-        await api.post('/login', creds);
+        const response = await api.post('/login', creds);
+
+        if (response.data && response.data.unity_token) {
+            const token = response.data.unity_token;
+        
+            // Option A: Save in a volatile variable for Unity (recommended for security)
+            window.userAuthToken = token; 
+
+            // Option B: Save in sessionStorage if you need it to persist on page refresh
+            sessionStorage.setItem('unity_auth_token', token);
+
+            console.log("[Auth] Unity Token captured and stored.");
+        }
+
+
 		/* If login is successful, get the current user to update the authentication state in the frontend */
         return authService.getUser();
     },
