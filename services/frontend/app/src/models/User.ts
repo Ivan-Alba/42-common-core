@@ -3,12 +3,13 @@ import type { MatchHistory } from "./Match";
 
 /* Definition of User-related interfaces */
 export interface UserStats {
-	gamesPlayed: number;
-	wins: number;
-	losses: number;
-	// Winrate sera un porcentaje? será number o string?
-	winRate: number; 
-	// otros estadísticos según sea necesario
+	level?: number;
+    experience?: number;
+    gamesPlayed?: number;
+    wins?: number;
+    losses?: number;
+	draws?: number;
+    winRate?: number;
 }
 
 export interface UserProfile {
@@ -21,7 +22,6 @@ export interface UserProfile {
 	bio?: string;
     language?: 'en' | 'es' | 'ca';
 	experience?: number;
-	
-	history?: MatchHistory[];
+	match_history?: MatchHistory[]; 
 	// campos adicionales según sea necesario
 }

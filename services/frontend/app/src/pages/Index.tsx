@@ -68,7 +68,7 @@ const Index = () => {
 
 	if (!authUser || !profileData)
 		return null;
-
+	
 	return (
 		<DashboardLayout isCentered={false}>
 			<div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-10">
@@ -77,7 +77,9 @@ const Index = () => {
 				<ProfileHeader
 					userData={{
 						...profileData,
-						email: profileData.email || ""
+						email: profileData.email || "",
+						experience: profileData.stats?.experience || 0,
+                        level: profileData.stats?.level || 1,
 					}}
 					isOwnProfile={true}
 				/>

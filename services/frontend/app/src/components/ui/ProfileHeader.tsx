@@ -11,6 +11,7 @@ interface ProfileHeaderProps {
         avatar?: string;
         bio?: string | null;
         experience?: number;
+        level?: number;
     };
     isOwnProfile: boolean;
     friendshipStatus?: 'none' | 'pending' | 'accepted' | 'outgoing';
@@ -19,10 +20,14 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAddFriend }: ProfileHeaderProps) => {
     const { t } = useTranslation();
-
-
     const avatarUrl = userService.getFullAvatarUrl(userData.avatar);
 
+	/* Level calculation based on experience points */
+	const totalXp = userData.experience || 0;
+    const currentLevel = userData.level || Math.floor(totalXp / 100) + 1;
+    const xpInCurrentLevel = totalXp % 100;
+	console.log("Datos que llegan de Laravel:", userData);
+	
     return (
         <div className="glass-panel p-6 md:p-8 mb-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4"></div>
@@ -56,15 +61,18 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
                     <div className="flex flex-col items-center lg:items-end justify-center gap-6">
                         <div className="bg-dark-900/60 p-4 rounded-xl border border-white/5 w-full md:w-64 backdrop-blur-sm">
                             <div className="flex justify-between items-baseline mb-2">
-                                <span className="text-brand-500 font-black text-xl tracking-tighter">LVL. 1</span>
+                                {/* Usamos la variable dinámica del nivel */}
+                                <span className="text-brand-500 font-black text-xl tracking-tighter">LVL. {currentLevel}</span>
                                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-                                    {userData.experience || 0} / 100 XP
+                                    {/* Usamos la variable del progreso de XP */}
+                                    {xpInCurrentLevel} / 100 XP
                                 </span>
                             </div>
                             <div className="h-1.5 w-full bg-dark-800 rounded-full overflow-hidden border border-white/5">
                                 <div 
-                                    className="h-full bg-brand-500 shadow-[0_0_8px_rgba(var(--color-brand-500),0.4)]" 
-                                    style={{ width: `${(userData.experience || 5) % 100}%` }}
+                                    className="h-full bg-brand-500 shadow-[0_0_8px_rgba(var(--color-brand-500),0.4)] transition-all duration-500" 
+                                    
+                                    style={{ width: `${xpInCurrentLevel}%` }}
                                 ></div>
                             </div>
                         </div>

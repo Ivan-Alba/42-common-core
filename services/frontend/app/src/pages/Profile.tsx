@@ -10,145 +10,182 @@ import type { UserProfile } from '../models/User';
 import { useAuth } from '../context/AuthContext';
 import userService from '../services/userService';
 import ProfileHeader from '../components/ui/ProfileHeader';
+import StatBox from '../components/ui/StatsBox';
 
 const Profile = () => {
-    const { t } = useTranslation();
-    const { id } = useParams<{ id: string }>();
+	const { t } = useTranslation();
+	const { id } = useParams<{ id: string }>();
 
-    /* Get authenticated user from context */
-    const { user: authUser, isLoading: isAuthLoading } = useAuth();
+	/* Get authenticated user from context */
+	const { user: authUser, isLoading: isAuthLoading } = useAuth();
 
-    /* Determine if viewing own profile or another user's */
-    // Comprobamos si el ID de la URL coincide con nuestro nombre de usuario o si no hay ID en la URL
+	/* Determine if viewing own profile or another user's */
+	// Comprobamos si el ID de la URL coincide con nuestro nombre de usuario o si no hay ID en la URL
 	const isOwnProfile = Boolean(!id || (authUser && Number(id) === Number(authUser.id)));
 
-    const [profileData, setProfileData] = useState<UserProfile | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    
-    // Estado para gestionar la relación de amistad en este perfil
-    const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing'>('none');
+	const [profileData, setProfileData] = useState<UserProfile | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
-    const getMatchStyles = (result: 'win' | 'loss' | 'draw') => {
-        const isWin = result === 'win';
+	// Estado para gestionar la relación de amistad en este perfil
+	const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing'>('none');
+
+	const getMatchStyles = (result: 'win' | 'loss' | 'draw') => {
+		const isWin = result === 'win';
+		return {
+			border: isWin ? 'bg-success' : 'bg-danger',
+			badge: isWin
+				? 'bg-success/10 text-success border border-success/20'
+				: 'bg-danger/10 text-danger border border-danger/20'
+		};
+	};
+
+	useEffect(() => {
+		if (isAuthLoading) return;
+
+		const fetchProfileData = async () => {
+			setIsLoading(true);
+			try {
+				// Si estamos en nuestro perfil, cargamos nuestro ID. Si no, cargamos el del amigo por su username (id de la URL)
+				const targetId = isOwnProfile ? authUser?.id : id;
+				if (!targetId) throw new Error("No user specified");
+
+				const data = await userService.getProfile(targetId);
+				setProfileData(data);
+
+				// IMPORTANTE: Cuando el backend esté listo y devuelva el status de la amistad en el profile ajeno, lo seteamos aquí
+				// setRelationStatus(data.friendship_status || 'none');
+
+			} catch (error: any) {
+				console.error("Error al obtener los datos de la base de datos:", error);
+				setProfileData(null);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchProfileData();
+	}, [id, authUser, isAuthLoading, isOwnProfile]);
+
+	// Función para manejar el botón "Añadir Amigo" desde el perfil ajeno
+	const handleAddFriend = async (friendId: number | string) => {
+		if (!authUser) return;
+		try {
+			await userService.sendFriendRequest(authUser.id, friendId);
+			console.log(`Solicitud enviada desde el perfil al ID ${friendId}`);
+
+			// Actualización visual optimista
+			setRelationStatus('outgoing');
+
+		} catch (error) {
+			console.error("Error enviando solicitud", error);
+			// Mantenemos el error silencioso si da 409 (Conflicto), simulando que ya se envió
+			setRelationStatus('outgoing');
+		}
+	};
+
+	if (isLoading)
+		return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
+
+	/* Format match history data */
+	const formattedHistory = profileData?.match_history?.map(match => {
+        const isPlayer1 = match.player_1_id === profileData?.id;
+        const isWin = match.winner_id === profileData?.id;
+        const resultString = isWin ? 'win' : 'loss';
+        const opponentName = isPlayer1 ? match.player_2_name : match.player_1_name;
+        const rawAvatar = isPlayer1 ? match.player_2_avatar : match.player_1_avatar;
+        const opponentAvatar = rawAvatar === null ? undefined : rawAvatar;
+        const scoreFormatted = isPlayer1 ? `${match.p1_score} - ${match.p2_score}` : `${match.p2_score} - ${match.p1_score}`;
+        const dateFormatted = match.played_at ? match.played_at.split(' ')[0] : 'N/A';
+        const styles = getMatchStyles(resultString as 'win' | 'loss' | 'draw');
+
+        /* Complete object with formatted data */
         return {
-            border: isWin ? 'bg-success' : 'bg-danger',
-            badge: isWin
-                ? 'bg-success/10 text-success border border-success/20'
-                : 'bg-danger/10 text-danger border border-danger/20'
+            ...match,
+            resultString,
+            opponentName,
+            opponentAvatar,
+            scoreFormatted,
+            dateFormatted,
+            styles
         };
-    };
+    }) || [];
 
-    useEffect(() => {
-        if (isAuthLoading) return;
+	return (
+		<DashboardLayout isCentered={false}>
+			<div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-20">
+				{profileData ? (
+					<>
+						{/* HEADER */}
+						<ProfileHeader
+							userData={{
+								...profileData,
+								email: profileData.email || "",
+								experience: profileData.stats?.experience || 0,
+								level: profileData.stats?.level || 1,
+							}}
+							isOwnProfile={true}
+							friendshipStatus={relationStatus}
+							onAddFriend={handleAddFriend}
+						/>
 
-        const fetchProfileData = async () => {
-            setIsLoading(true);
-            try {
-                // Si estamos en nuestro perfil, cargamos nuestro ID. Si no, cargamos el del amigo por su username (id de la URL)
-                const targetId = isOwnProfile ? authUser?.id : id; 
-                if (!targetId) throw new Error("No user specified");
+						{/* STATS */}
+						<h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><FaTrophy className="text-warning" /> {t('profile.stats')}</h3>
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+							{(() => {
+								const wins = profileData.stats?.wins || 0;
+								const losses = profileData.stats?.losses || 0;
+								const draws = profileData.stats?.draws || 0;
 
-                const data = await userService.getProfile(targetId);
-                setProfileData(data);
+								// Calculamos las jugadas sumando todo
+								const gamesPlayed = profileData.stats?.gamesPlayed || (wins + losses + draws);
 
-                // IMPORTANTE: Cuando el backend esté listo y devuelva el status de la amistad en el profile ajeno, lo seteamos aquí
-                // setRelationStatus(data.friendship_status || 'none');
+								// Calculamos el porcentaje (evitando dividir por 0)
+								const winRate = profileData.stats?.winRate || (gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0);
 
-            } catch (error: any) {
-                console.error("Error al obtener los datos de la base de datos:", error);
-                setProfileData(null);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+								return (
+									<>
+										<StatBox label={t('profile.games_played')} value={gamesPlayed} />
+										<StatBox label={t('profile.wins')} value={wins} color="text-success" />
+										<StatBox label={t('profile.losses')} value={losses} color="text-danger" />
+										<StatBox label={t('profile.win_rate')} value={`${winRate}%`} color="text-brand-400" />
+									</>
+								);
+							})()}
+						</div>
 
-        fetchProfileData();
-    }, [id, authUser, isAuthLoading, isOwnProfile]);
+						{/* HISTORY */}
+						<h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><MdHistory className="text-brand-400" /> {t('profile.history')}</h3>
 
-    // Función para manejar el botón "Añadir Amigo" desde el perfil ajeno
-    const handleAddFriend = async (friendId: number | string) => {
-        if (!authUser) return;
-        try {
-            await userService.sendFriendRequest(authUser.id, friendId);
-            console.log(`Solicitud enviada desde el perfil al ID ${friendId}`);
-            
-            // Actualización visual optimista
-            setRelationStatus('outgoing');
-            
-        } catch (error) {
-            console.error("Error enviando solicitud", error);
-            // Mantenemos el error silencioso si da 409 (Conflicto), simulando que ya se envió
-            setRelationStatus('outgoing');
-        }
-    };
-
-    if (isLoading) return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
-
-    return (
-        <DashboardLayout isCentered={false}>
-            <div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-20">
-                {profileData ? (
-                    <>
-                        {/* HEADER */}
-                        <ProfileHeader
-                            userData={{
-                                id: profileData.id, // Pasamos el ID para poder enviarle la petición
-                                username: profileData.username,
-                                email: profileData.email || "",
-                                avatar: profileData.avatar,
-                                bio: profileData.bio,
-                                experience: profileData.experience
-                            }}
-                            isOwnProfile={isOwnProfile}
-                            friendshipStatus={relationStatus}
-                            onAddFriend={handleAddFriend}
-                        />
-
-                        {/* STATS */}
-                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><FaTrophy className="text-warning" /> {t('profile.stats')}</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                            <StatBox label={t('profile.games_played')} value={profileData.stats?.gamesPlayed || 0} />
-                            <StatBox label={t('profile.wins')} value={profileData.stats?.wins || 0} color="text-success" />
-                            <StatBox label={t('profile.losses')} value={profileData.stats?.losses || 0} color="text-danger" />
-                            <StatBox label={t('profile.win_rate')} value={`${profileData.stats?.winRate || 0}%`} color="text-brand-400" />
-                        </div>
-
-                        {/* HISTORY */}
-                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><MdHistory className="text-brand-400" /> {t('profile.history')}</h3>
-
-                        {profileData.history && profileData.history.length > 0 ? (
+                        {formattedHistory.length > 0 ? (
                             <>
                                 {/* --- MOBILE VIEW --- */}
                                 <div className="grid gap-4 lg:hidden">
-                                    {profileData.history.map((match) => {
-                                        const styles = getMatchStyles(match.result);
-                                        return (
-                                            <div key={match.id} className="glass-panel p-4 relative overflow-hidden">
-                                                <div className={`absolute left-0 top-0 bottom-0 w-1 ${styles.border}`}></div>
-                                                <div className="flex justify-between items-center w-full pl-3 mb-3">
-                                                    <div className="flex-1">
-                                                        <PlayerBadge
-                                                            avatar={undefined}
-                                                            name={match.opponent}
-                                                            className="justify-start! [&>div:first-child]:w-auto [&>div:first-child]:pr-3 [&>div:last-child]:w-auto [&>div:last-child]:pl-3"
-                                                        />
-                                                    </div>
-                                                    <div className="flex items-center gap-1 text-xs text-slate-500 bg-black/20 px-2 py-1 rounded-md shrink-0 ml-2">
-                                                        {match.date}
-                                                    </div>
+                                    {formattedHistory.map((match) => (
+                                        <div key={match.id} className="glass-panel p-4 relative overflow-hidden">
+                                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${match.styles.border}`}></div>
+                                            <div className="flex justify-between items-center w-full pl-3 mb-3">
+                                                <div className="flex-1">
+                                                    <PlayerBadge
+                                                        avatar={match.opponentAvatar}
+                                                        name={match.opponentName}
+                                                        className="justify-start! [&>div:first-child]:w-auto [&>div:first-child]:pr-3 [&>div:last-child]:w-auto [&>div:last-child]:pl-3"
+                                                    />
                                                 </div>
-                                                <div className="h-px bg-white/5 w-full mb-3 ml-3"></div>
-                                                <div className="flex justify-between items-center pl-3">
-                                                    <span className={`px-3 py-1 rounded text-xs font-black uppercase tracking-widest ${styles.badge}`}>
-                                                        {match.result}
-                                                    </span>
-                                                    <span className="text-2xl font-mono font-bold text-white tracking-widest">
-                                                        {match.score}
-                                                    </span>
+                                                <div className="flex items-center gap-1 text-xs text-slate-500 bg-black/20 px-2 py-1 rounded-md shrink-0 ml-2">
+                                                    {match.dateFormatted}
                                                 </div>
                                             </div>
-                                        );
-                                    })}
+                                            <div className="h-px bg-white/5 w-full mb-3 ml-3"></div>
+                                            <div className="flex justify-between items-center pl-3">
+                                                <span className={`px-3 py-1 rounded text-xs font-black uppercase tracking-widest ${match.styles.badge}`}>
+                                                    {match.resultString}
+                                                </span>
+                                                <span className="text-2xl font-mono font-bold text-white tracking-widest">
+                                                    {match.scoreFormatted}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
 
                                 {/* DESKTOP TABLE */}
@@ -164,24 +201,23 @@ const Profile = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-white/5">
-                                            {profileData.history.map((match) => {
-                                                const styles = getMatchStyles(match.result);
-                                                return (
-                                                    <tr key={match.id} className="hover:bg-white/5 transition-colors text-center relative group">
-                                                        <td className={`absolute left-0 top-0 bottom-0 w-1 transition-all group-hover:w-1.5 ${styles.border}`}></td>
-                                                        <td className="px-6 py-4">
-                                                            <span className={`px-2 py-1 rounded text-xs font-bold ${styles.badge}`}>{match.result.toUpperCase()}</span>
-                                                        </td>
-                                                        <td className="px-6 py-4">
-                                                            <div className="flex justify-center">
-                                                                <PlayerBadge avatar={undefined} name={match.opponent} />
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-6 py-4 font-mono text-white font-bold tracking-widest">{match.score}</td>
-                                                        <td className="px-6 py-4">{match.date}</td>
-                                                    </tr>
-                                                );
-                                            })}
+                                            {formattedHistory.map((match) => (
+                                                <tr key={match.id} className="hover:bg-white/5 transition-colors text-center relative group">
+                                                    <td className={`absolute left-0 top-0 bottom-0 w-1 transition-all group-hover:w-1.5 ${match.styles.border}`}></td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={`px-2 py-1 rounded text-xs font-bold ${match.styles.badge}`}>
+                                                            {match.resultString.toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex justify-center">
+                                                            <PlayerBadge avatar={match.opponentAvatar} name={match.opponentName} />
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 font-mono text-white font-bold tracking-widest">{match.scoreFormatted}</td>
+                                                    <td className="px-6 py-4">{match.dateFormatted}</td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>
@@ -192,33 +228,19 @@ const Profile = () => {
                                 <span className="text-slate-400 font-bold">{t('profile.no_history')}</span>
                             </div>
                         )}
-                    </>
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-                        <div className="w-16 h-16 bg-danger-500/10 rounded-full flex items-center justify-center mb-4 border border-danger-500/20"><FaExclamationTriangle className="text-3xl text-danger-500" /></div>
-                        <h3 className="text-xl font-bold text-white mb-2">{t('profile.error_loading')}</h3>
-                        <p className="text-slate-400 max-w-md mb-6">{t('errors.database_error')}</p>
-                        <button onClick={() => window.location.reload()} className="btn-secondary px-6 py-2 rounded-lg text-sm font-bold hover:bg-white/10 transition-colors">{t('profile.try_again')}</button>
-                    </div>
-                )}
-            </div>
-        </DashboardLayout>
-    );
+					</>
+				) : (
+					<div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+						<div className="w-16 h-16 bg-danger-500/10 rounded-full flex items-center justify-center mb-4 border border-danger-500/20"><FaExclamationTriangle className="text-3xl text-danger-500" /></div>
+						<h3 className="text-xl font-bold text-white mb-2">{t('profile.error_loading')}</h3>
+						<p className="text-slate-400 max-w-md mb-6">{t('errors.database_error')}</p>
+						<button onClick={() => window.location.reload()} className="btn-secondary px-6 py-2 rounded-lg text-sm font-bold hover:bg-white/10 transition-colors">{t('profile.try_again')}</button>
+					</div>
+				)}
+			</div>
+		</DashboardLayout>
+	);
 };
 
-/* --- StatBox Component --- */
-interface StatBoxProps {
-    label: string;
-    value: string | number;
-    icon?: React.ReactNode;
-    color?: string;
-}
-
-const StatBox = ({ label, value, icon, color = "text-white" }: StatBoxProps) => (
-    <div className="glass-panel p-4 flex flex-col items-center justify-center text-center hover:bg-white/5 transition-colors">
-        <span className={`flex text-3xl font-black mb-1 ${color}`}>{value}</span>
-        <span className="text-xs text-slate-400 uppercase tracking-wider font-bold flex items-center gap-2">{icon} {label}</span>
-    </div>
-);
 
 export default Profile;

@@ -14,10 +14,10 @@ export interface UpdateProfilePayload {
 const userService = {
 	/* Get user profile by id */
 	getProfile: async (id?: string | number): Promise<UserProfile> => {
-		const url = id ? `/v1/users/${id}` : `/v1/user`;
-		const response = await api.get(url);
-		return response.data;
-	},
+        const url = id ? `/v1/users/${id}` : `/v1/user`;
+        const response = await api.get(url);
+        return response.data;
+    },
 
 	/* Update user profile */
 	updateProfile: async (formData: FormData): Promise<UserProfile> => {
