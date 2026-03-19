@@ -13,6 +13,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
+use App\Enums\UserStatus;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Logout;
 
 // IMPORTANT: We must use the Contract (Interface) for the singleton to work correctly
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
@@ -69,6 +72,8 @@ class FortifyServiceProvider extends ServiceProvider
                     // You could optionally revoke old tokens here: $user->tokens()->delete();
                     $token = $user->createToken('unity_token')->plainTextToken;
 
+                    $user->update(['status' => UserStatus::ONLINE]);
+
                     // If the request expects JSON (XHR/Fetch with Accept: application/json)
                     if ($request->wantsJson()) {
                         return new JsonResponse([
@@ -81,6 +86,15 @@ class FortifyServiceProvider extends ServiceProvider
                     return redirect()->intended(config('fortify.home'));
                 }
             };
+        });
+
+        Event::listen(Logout::class, function ($event) {
+            if ($event->user) {
+
+                $event->user->update(['status' => UserStatus::OFFLINE]);
+                $event->user->tokens()->delete();
+                \Illuminate\Support\Facades\Log::info("User {$event->user->email} is now OFFLINE (Event based).");
+            }
         });
     }
 }

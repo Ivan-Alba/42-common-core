@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\Language;
+use App\Enums\UserStatus;
 
 return new class extends Migration
 {
@@ -17,6 +19,23 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('avatar')->nullable();
+            $table->string('bio')->nullable();
+
+            $table->enum('language', [
+                Language::SPANISH->value, 
+                Language::ENGLISH->value, 
+                Language::CATALAN->value
+            ])->default(Language::ENGLISH->value);
+
+            $table->enum('status', [
+                UserStatus::OFFLINE->value,
+                UserStatus::ONLINE->value,
+                UserStatus::PLAYING->value,
+            ])->default(UserStatus::OFFLINE->value);
+
+            $table->boolean('is_bot')->default(false);
+
             $table->rememberToken();
             $table->timestamps();
         });

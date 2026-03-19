@@ -24,6 +24,8 @@ class UserResource extends JsonResource
             'avatar' => $this->avatar,
             'bio' => $this->bio,
             'language' => $this->language->value ?? Language::SPANISH->value,
+            'is_bot' => $this->is_bot,
+            'status' => $this->status,
 
             // Only if ->load('stats')
             'stats' => new PlayerStatResource($this->whenLoaded('stats')),

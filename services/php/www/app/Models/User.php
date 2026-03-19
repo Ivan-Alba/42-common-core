@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\Language;
+use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -35,7 +36,9 @@ class User extends Authenticatable
         'avatar',
         'bio',
         'experience',
-        'language'
+        'language',
+        'status',
+        'is_bot'
     ];
 
     /**
@@ -58,7 +61,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'language' => Language::class
+            'language' => Language::class,
+            'status' => UserStatus::class,
+            'is_bot' => 'boolean'
         ];
     }
 

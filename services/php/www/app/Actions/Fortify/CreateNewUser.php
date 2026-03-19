@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use App\Enums\UserStatus;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -35,6 +36,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['username'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
+            'status' => UserStatus::ONLINE,
         ]);
     }
 }

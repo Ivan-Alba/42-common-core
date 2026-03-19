@@ -5,13 +5,11 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\ActiveMatch;
 use App\Enums\GameMode;
+use App\Enums\UserStatus;
 use App\Http\Controllers\ActiveMatchController;
 
 class MatchmakingService
 {
-    // Keeping it simple: The master bot is always ID 1
-    private const BOT_USER_ID = 1;
-
     /**
      * Finds or creates a match. For PVE, it forces a match with the bot.
      */
@@ -21,7 +19,12 @@ class MatchmakingService
         if ($this->isPveMode($mode)) {
             // We use the ActiveMatchController's logic to maintain consistency
             $controller = new ActiveMatchController();
-            return $controller->createMatch($user->id, self::BOT_USER_ID, $mode);
+            $bot = User::where('is_bot', true)->firstOrFail();
+
+            // Change user status to PLAYING
+            $user->update(['status' => UserStatus::PLAYING]);
+
+            return $controller->createMatch($user->id, $bot->id, $mode);
         }
 
         // Placeholder for future PVP logic
