@@ -41,22 +41,32 @@ class UserController
 		return response()->json($user->toResource(), 200);
 	}
 
-	public function getUsers(Request $request)
-	{
-		$validated = $request->validate([
-			'page_size' => ['sometimes', 'integer', 'min:1', 'max:' . config('social.max_page_size')],
-			'page' => ['sometimes', 'integer', 'min:1'],
-			'sort_order' => ['sometimes', Rule::enum(OrderDirection::class)],
-		]);
+    public function getUsers(Request $request)
+    {   
+        $validated = $request->validate([
+            'search' => ['sometimes', 'string', 'max:255'],
+            'page_size' => ['sometimes', 'integer', 'min:1', 'max:' . config('social.max_page_size')],
+            'page' => ['sometimes', 'integer', 'min:1'],
+            'sort_order' => ['sometimes', Rule::enum(OrderDirection::class)],
+        ]);
 
-		$pageSize = $request->integer('page_size', config('social.default_page_size'));
-		$page = $request->integer('page', 1);
-		$sortOrder =  $request->enum('sort_order', OrderDirection::class, OrderDirection::DESC);
+        $pageSize = $request->integer('page_size', config('social.default_page_size'));
+        $page = $request->integer('page', 1);
+        $sortOrder = $request->enum('sort_order', OrderDirection::class, OrderDirection::DESC);
+        $searchQuery = $request->string('search')->trim();
 
-		$users = User::orderBy('created_at', $sortOrder->value)->paginate($pageSize, ['*'], 'page', $page);
+        $query = User::query()
+            ->where('is_bot', false);
 
-		return $users->toResourceCollection();
-	}
+        if ($searchQuery->isNotEmpty()) {
+            $query->where('name', 'LIKE', $searchQuery . '%');
+        }
+
+        $users = $query->orderBy('created_at', $sortOrder->value)
+            ->paginate($pageSize, ['*'], 'page', $page);
+
+        return $users->toResourceCollection();
+    }
 
 	public function logout(Request $request)
 	{
@@ -206,6 +216,7 @@ class UserController
     public function getRanking()
     {
         $topPlayers = User::join('player_stats', 'users.id', '=', 'player_stats.user_id')
+            ->where('users.is_bot', false)
             ->orderBy('player_stats.ranked_points', 'desc')
             ->select('users.*')
             ->with('stats')
