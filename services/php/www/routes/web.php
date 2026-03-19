@@ -9,6 +9,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PlayerStatsController;
 use App\Http\Controllers\CardUserController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\MatchmakingController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -54,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Ranking
         Route::get('/ranking', [UserController::class, 'getRanking']);
 
+        Route::post('/matchmaking/join', [MatchmakingController::class, 'join']);
 
         // Route::get('/users/{id}/games', [UserController::class, 'getUser']);
         // Route::get('/users/{id}/chats', [UserController::class, 'getUser']);

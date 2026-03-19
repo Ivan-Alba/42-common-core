@@ -33,7 +33,7 @@ class UserController
         ->orWhere('player_2_id', $user->id)
         ->with(['player1', 'player2']) 
         ->orderBy('created_at', 'desc')
-        ->take(10)
+        ->take(15)
         ->get();
 
         $user->setRelation('match_history', $history);

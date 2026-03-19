@@ -3,77 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Matches;
-use App\Http\Resources\MatchInitialResource;
+use App\Models\ActiveMatch;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class MatchController extends Controller
 {
-    public function getMatchData(Request $request, $matchId): JsonResponse
+    /**
+     * Finalizes an active match and moves its data to the historical record.
+     * This is an internal logic called when the MatchEngine detects the game is over.
+     */
+    public function finalize(string $matchUuid, array $results): Matches
     {
-        // --- DEBUG MODE BYPASS ---
-        if ($matchId === 'debug') {
-            return $this->getDebugMatchResponse();
-        }
-        // -------------------------
+        return DB::transaction(function () use ($matchUuid, $results) {
+            // 1. Get the session state before deleting it
+            $active = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
 
-        $match = Matches::with([
-            'player1.cards', 
-            'player2.cards'
-        ])->findOrFail($matchId);
+            // 2. Create the permanent record in 'matches' table
+            $matchHistory = Matches::create([
+                'player_1_id'      => $active->player_1_id,
+                'player_2_id'      => $active->player_2_id,
+                'winner_id'        => $results['winner_id'],
+                'game_mode'        => $active->game_mode,
+                'is_vs_ai'         => $results['is_vs_ai'],
+                'p1_score'         => $results['p1_score'],
+                'p2_score'         => $results['p2_score'],
+                'p1_points_earned' => $results['p1_points'] ?? 0,
+                'p2_points_earned' => $results['p2_points'] ?? 0,
+            ]);
 
-        // This will fail if no token is sent, so debug mode is vital here
-        $authUserId = $request->user()->id; 
+            // 3. Cleanup the operational table
+            $active->delete();
 
-        if ($authUserId != $match->player_1_id && $authUserId != $match->player_2_id) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Unauthorized: You are not a participant in this match.'
-            ], 403);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => new MatchInitialResource($match, $authUserId) 
-        ]);
+            return $matchHistory;
+        });
     }
 
     /**
-     * Returns a hardcoded JSON response for development purposes.
+     * Optional: Endpoint to force-close a match if needed from an admin panel or debug tool.
      */
-    private function getDebugMatchResponse(): JsonResponse
+    public function forceClose(Request $request, string $matchUuid): JsonResponse
     {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'match_id' => 'debug_001',
-                'server_timestamp' => now()->timestamp,
-                'language' => 'es',
-                'config' => [
-                    'board_size' => 3,
-                    'hand_size' => 5,
-                    'turn_time_limit' => 30,
-                    'selection_time_limit' => 45,
-                    'max_deck_cost' => 6,
-                    'rules' => ['open', 'same', 'plus', 'combo'],
-                    'first_player_id' => 'player_local',
-                ],
-                'local_player' => [
-                    'id' => 'player_local',
-                    'name' => 'Unity Developer',
-                    'avatar_url' => 'https://avatarfiles.alphacoders.com/103/thumb-1920-103373.png',
-                    'is_ai' => false,
-                    'collection_ids' => [ "1", "2", "3", "4", "5", "6", "7", "8", "9","10",
-                        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"]
-                ],
-                'opponent' => [
-                    'id' => 'ai_bot_01',
-                    'name' => 'Backend Bot',
-                    'avatar_url' => 'https://pbs.twimg.com/profile_images/1202938752387170304/Z0TlRM6d_400x400.jpg',
-                    'is_ai' => true,
-                    'collection_ids' => ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-                ]
-            ]
-        ]);
+        // Internal logic to handle manual closures
+        return response()->json(['message' => 'Match closed manually.']);
     }
 }

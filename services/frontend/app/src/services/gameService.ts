@@ -11,9 +11,18 @@ export interface MatchData {
 }
 
 const gameService = {
-    // 1. Entrar a la cola
+    // 1. Entrar a la cola (Original version commented)
+    /*
     joinQueue: async (mode: string, submode?: string | null) => {
         const response = await api.post('/v1/matchmaking/join', { mode, submode });
+        return response.data;
+    },
+    */
+
+    // New version receiving game_mode (as requested for PVE tests)
+    joinQueue: async (game_mode: string) => {
+        // Enviamos game_mode tal como espera tu MatchmakingController en Laravel
+        const response = await api.post('/v1/matchmaking/join', { game_mode });
         return response.data;
     },
 

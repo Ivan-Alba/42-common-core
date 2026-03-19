@@ -7,7 +7,6 @@ interface UnityGameProps {
 }
 
 const UnityGame: React.FC<UnityGameProps> = ({ token, matchId }) => {
-    console.log("[UnityGame] Props received:", { token, matchId });
     /* Motor Unity starting */
     const { unityProvider, sendMessage, addEventListener, removeEventListener, isLoaded, loadingProgression } = useUnityContext({
 		loaderUrl: "/game/Build/NexusNineBuild.loader.js",
