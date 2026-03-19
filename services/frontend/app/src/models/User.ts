@@ -21,7 +21,6 @@ export interface UserProfile {
 	stats: UserStats;
 	bio?: string;
     language?: 'en' | 'es' | 'ca';
-	experience?: number;
 	match_history?: MatchHistory[]; 
 	// campos adicionales según sea necesario
 }

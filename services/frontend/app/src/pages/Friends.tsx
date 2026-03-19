@@ -119,7 +119,7 @@ const Friends = () => {
 
 					setSearchResults(filteredResults);
 				} catch (error) {
-					console.error("Error buscando usuarios:", error);
+					console.error("Error:", error);
 					setSearchResults([]);
 				} finally {
 					setIsSearching(false);

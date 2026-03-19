@@ -23,9 +23,10 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
     const avatarUrl = userService.getFullAvatarUrl(userData.avatar);
 
 	/* Level calculation based on experience points */
+	/*XP necesaria=100×(Nivel Actual)1.5*/
 	const totalXp = userData.experience || 0;
-    const currentLevel = userData.level || Math.floor(totalXp / 100) + 1;
-    const xpInCurrentLevel = totalXp % 100;
+	const nextLevelXp = Math.floor(100 * Math.pow((userData.level || 1), 1.5));
+    const currentLevel = userData.level || 0;
 	console.log("Datos que llegan de Laravel:", userData);
 	
     return (
@@ -65,14 +66,14 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
                                 <span className="text-brand-500 font-black text-xl tracking-tighter">LVL. {currentLevel}</span>
                                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
                                     {/* Usamos la variable del progreso de XP */}
-                                    {xpInCurrentLevel} / 100 XP
+                                    {totalXp} / {nextLevelXp} XP
                                 </span>
                             </div>
                             <div className="h-1.5 w-full bg-dark-800 rounded-full overflow-hidden border border-white/5">
                                 <div 
                                     className="h-full bg-brand-500 shadow-[0_0_8px_rgba(var(--color-brand-500),0.4)] transition-all duration-500" 
                                     
-                                    style={{ width: `${xpInCurrentLevel}%` }}
+                                    style={{ width: `${(totalXp % nextLevelXp) / nextLevelXp * 100}%` }}
                                 ></div>
                             </div>
                         </div>

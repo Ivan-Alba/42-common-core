@@ -13,16 +13,16 @@ const GameLauncher: React.FC = () => {
             // Llamamos al servicio pasando "PVE" como modo
             const data = await gameService.joinQueue("PVE");
 
-            // Según tu controlador, el servidor devuelve match_uuid directamente en PVE
+            // SegÃºn tu controlador, el servidor devuelve match_uuid directamente en PVE
             if (data && data.match_uuid) {
                 navigate(`/game/${data.match_uuid}`);
             } else {
-                // Si por alguna razón el servidor no devuelve el UUID inmediatamente
-                console.warn("Matchmaking iniciado, pero no se recibió UUID inmediato.");
+                // Si por alguna razÃ³n el servidor no devuelve el UUID inmediatamente
+                console.warn("Matchmaking iniciado, pero no se recibiÃ³ UUID inmediato.");
             }
         } catch (error) {
             console.error("Error al iniciar matchmaking:", error);
-            alert("Error crítico: No se pudo conectar con el servicio de matchmaking.");
+            alert("Error crÃ­tico: No se pudo conectar con el servicio de matchmaking.");
         } finally {
             setIsLoading(false);
         }
@@ -38,7 +38,7 @@ const GameLauncher: React.FC = () => {
                 }`}
             >
                 <GiCardPlay size={32} />
-                {isLoading ? 'CREANDO SESIÓN...' : 'FORZAR ENTRADA AL JUEGO (UNITY TEST)'}
+                {isLoading ? 'CREANDO SESIÃ“N...' : 'FORZAR ENTRADA AL JUEGO (UNITY TEST)'}
             </button>
         </div>
     );

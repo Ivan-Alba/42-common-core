@@ -183,7 +183,7 @@ const Ranking = () => {
                             })}
                         </tbody>
                     </table>
-                    {restOfPlayers.length === 0 && <div className="p-8 text-center text-slate-500">{t('ranking.no_results')}</div>}
+                    {restOfPlayers.length === 0 && <div className="p-8 text-center text-slate-500">{t('ranking.no_ranking')}</div>}
                 </div>
             </div>
         </DashboardLayout>
