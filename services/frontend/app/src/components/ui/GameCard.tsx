@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { CardData } from '../../models/CardData';
 
@@ -68,7 +68,7 @@ const GameCard = ({ card, isUnlocked = false, team = 'blue' }: GameCardProps) =>
 			)}
 
 			{isModalOpen && createPortal(
-				<div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 sm:p-10 animate-fade-in" onClick={(e) => { e.stopPropagation(); setIsModalOpen(false); }}>
+				<div className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 sm:p-10 animate-fade-in" onClick={(e) => { e.stopPropagation(); setIsModalOpen(false); }}>
 
 					<button className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors text-4xl font-bold z-50">
 						&times;
@@ -76,7 +76,7 @@ const GameCard = ({ card, isUnlocked = false, team = 'blue' }: GameCardProps) =>
 
 					<div className="max-w-6xl w-full flex flex-col md:flex-row gap-8 lg:gap-16 items-center justify-center" onClick={(e) => e.stopPropagation()}>
 
-						<div className={`relative w-[280px] sm:w-[350px] md:w-[450px] aspect-2/3 shrink-0 [container-type:inline-size] ${isSpinning ? 'animate-fly' : ''}`} style={{ perspective: '1500px' }}>
+						<div className={`relative w-70 sm:w-87.5 md:w-112.5 aspect-2/3 shrink-0 [container-type:inline-size] ${isSpinning ? 'animate-fly' : ''}`} style={{ perspective: '1500px' }}>
 							<div className={`relative w-full h-full ${isSpinning ? 'animate-spin-3d' : ''}`} style={{ transformStyle: 'preserve-3d' }}>
 
 								<div className="absolute inset-0" style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden', transform: 'rotateY(0deg)' }}>
@@ -111,7 +111,7 @@ const GameCard = ({ card, isUnlocked = false, team = 'blue' }: GameCardProps) =>
 								{card.name}
 							</h2>
 
-							<div className="h-px w-full bg-gradient-to-r from-brand-500/50 to-transparent mb-6"></div>
+							<div className="h-px w-full bg-linear-to-r from-brand-500/50 to-transparent mb-6"></div>
 
 							<p className="text-slate-300 text-lg md:text-xl leading-relaxed font-sans italic">
 								"{card.description}"

@@ -89,8 +89,6 @@ const ResetPassword = () => {
             await api.post('/forgot-password', { 
                 email: formData.email.trim().toLowerCase() 
             });
-            // Aunque el email no exista, Laravel por seguridad suele devolver 200 OK
-            // para no revelar qué correos están registrados a posibles atacantes. CONSULTAR CON KEVIN
             setIsEmailed(true);
         } catch (error) {
             console.error("Error pidiendo email:", error);

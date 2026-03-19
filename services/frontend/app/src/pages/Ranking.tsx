@@ -8,13 +8,12 @@ import PodiumCard from "../components/ui/PodiumCard";
 import PlayerBadge from "../components/ui/PlayerBadge";
 import userService from '../services/userService';
 import type { PlayerStats, RankingUser } from '../models/RankingUser';
-// 1. Importamos el contexto de autenticación
 import { useAuth } from '../context/AuthContext';
 
 
 const Ranking = () => {
     const { t } = useTranslation();
-    const { user: authUser } = useAuth(); // Recuperamos el usuario logueado
+    const { user: authUser } = useAuth();
     
     const [isLoading, setIsLoading] = useState(true);
     const [rankingData, setRankingData] = useState<(RankingUser & { stats: PlayerStats })[]>([]);
@@ -26,7 +25,7 @@ const Ranking = () => {
             
             try {
                 const data = await userService.getRanking();
-                // Forzamos el tipado aquí porque sabemos que el endpoint del ranking SI trae stats
+				/* Force typing here because we know the ranking endpoint DOES include stats */
                 setRankingData(data as (RankingUser & { stats: PlayerStats })[]);
             } catch (error) {
                 console.error("Error fetching ranking:", error);
@@ -46,7 +45,6 @@ const Ranking = () => {
 
     return (
         <DashboardLayout isCentered={false}>
-            {/* 3. CAMBIO: Aumentado el pb-2 a pb-24 para que no pise el footer */}
             <div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-24">
 
                 {/* HEADER */}
@@ -90,16 +88,16 @@ const Ranking = () => {
                     />
                 </div>
 
-                {/* --- MOBILE VIEW (CARDS 2 LÍNEAS) --- */}
+                {/* --- MOBILE VIEW (2 LINES) --- */}
                 <div className="grid gap-3 lg:hidden">
                     {restOfPlayers.map((player, index) => {
-                        // Comparamos el ID del jugador con el ID del usuario logueado
+						/* Compare player ID with logged-in user ID to determine if this card is the current user */
 						const isCurrentUser = authUser?.id ? Number(authUser.id) === Number(player.id) : false;
                         
                         return (
                             <div key={player.id} className={`glass-panel p-4 relative overflow-hidden ${isCurrentUser ? "border-brand-500/50 bg-brand-500/5" : ""}`}>
 
-                                {/* LÍNEA 1: Posición + Usuario */}
+                                {/* LINE 1: Position + User */}
                                 <div className="flex items-center gap-3 mb-3">
                                     <div className="font-mono text-xl font-bold text-slate-500 w-8 text-center shrink-0">
                                         #{index + 4}
@@ -114,10 +112,10 @@ const Ranking = () => {
                                     </div>
                                 </div>
 
-                                {/* Separador */}
+                                {/* Separator */}
                                 <div className="h-px bg-white/5 w-full mb-3"></div>
 
-                                {/* LÍNEA 2: Datos */}
+                                {/* Line 2: Data */}
                                 <div className="flex justify-between items-center px-2">
                                     <div className="flex items-center gap-2 text-xs text-slate-400">
                                         <span>{t('profile.wins')}: <span className="text-white font-bold">{player.stats.wins}</span></span>
@@ -155,7 +153,7 @@ const Ranking = () => {
                         </thead>
                         <tbody className="divide-y divide-white/5">
                             {restOfPlayers.map((player, index) => {
-                                // Comparamos el ID del jugador con el ID del usuario logueado
+								/* Compare player ID with logged-in user ID to determine if this row is the current user */
                                 const isCurrentUser = authUser?.id ? Number(authUser.id) === Number(player.id) : false;
                                 return (
                                     <tr key={player.id} className={`hover:bg-white/5 transition-colors group ${isCurrentUser ? "bg-brand-500/10" : ""}`}>
@@ -168,7 +166,7 @@ const Ranking = () => {
                                                 className="justify-center!"
                                             />
                                         </td>
-                                        {/* 2. CAMBIO: Añadido Flexbox para centrar perfectamente los iconos de tendencia */}
+                        
                                         <td className="px-6 py-4 text-center">
                                             <div className="flex justify-center items-center">
                                                 {player.stats.last_rank_pos != null && player.stats.last_rank_pos > index + 4 && <HiTrendingUp className="text-success text-xl" />}

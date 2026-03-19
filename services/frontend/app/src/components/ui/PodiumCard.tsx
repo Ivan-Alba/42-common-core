@@ -8,7 +8,7 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
     const { t } = useTranslation();
     const { user: authUser } = useAuth();
 
-    // Comprobamos si este jugador es el usuario logueado
+    // Check if this player is the logged-in user
     const isCurrentUser = authUser?.id ? Number(authUser.id) === Number(player.id) : false;
     
     const borderColor = isWinner ? "border-brand-500" : place === 2 ? "border-slate-400" : "border-orange-700";
@@ -24,7 +24,7 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
     /* Unified avatar size: Always large */
     const avatarSizeClass = "w-28 h-28 md:w-32 md:h-32";
 
-    // Función rápida para renderizar la tendencia
+    // Trend Function for rendering the trend icon based on last rank position
     const renderTrend = () => {
         if (player.stats.last_rank_pos == null) return null;
         
@@ -93,7 +93,7 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
             `}>
                 <h3 className={`font-bold ${isWinner ? 'text-2xl text-white' : 'text-xl text-slate-200'} mb-1 flex items-center gap-2`}>
                     {player.username}
-                    {/* Badge de "TÚ" si es el usuario logueado */}
+                    {/* Badge of "YOU" if this is the logged-in user */}
                     {isCurrentUser && (
                         <span className="text-[10px] bg-brand-500 text-white px-1.5 py-0.5 rounded font-black tracking-wider uppercase">
                             {t('common.you')}
@@ -101,7 +101,7 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
                     )}
                 </h3>
                 
-                {/* Contenedor de Puntos + Tendencia */}
+                {/* Points + Trend Container */}
                 <div className="flex items-center gap-2 mb-2">
                     <p className="text-brand-400 font-mono font-bold text-lg">
                         {player.stats.ranked_points} <span className="text-xs text-slate-500 font-sans">PTS</span>
@@ -122,7 +122,7 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-20 bg-brand-500/20 blur-[50px] -z-10"></div>
             )}
             
-            {/* Opcional: Glow extra si eres tú el que está en el podio */}
+            {/* Optional: Extra Glow if you are the one in the podiom */}
             {isCurrentUser && !isWinner && (
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-10 bg-brand-500/10 blur-[30px] -z-10"></div>
             )}

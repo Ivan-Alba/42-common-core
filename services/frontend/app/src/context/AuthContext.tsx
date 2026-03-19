@@ -51,16 +51,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkSession();
     }, []);
 
-    /* Login REAL */
+    /* Real Login */
     const login = async (credentials: LoginCredentials) => { 
         try {
             setIsLoading(true);
             const userResponse = await authService.login(credentials);
             
-            // userResponse es directamente el objeto User que devuelve Kevin
             localStorage.setItem('is_logged_in', 'true');
             
-            // Sincronizamos el idioma inmediatamente tras el login
+            /* Syncronize language after login */
             syncLanguage(userResponse.language);
             
             setUser(userResponse);
@@ -77,10 +76,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             setIsLoading(true);
             const userResponse = await authService.register(credentials);
-			// Fortify auto-loguea tras el registro, así que activamos el flag para saber que el usuario ya está logueado y evitar errores en consola al recargar la página después de registrarse. Este flag no es seguro, pero ayuda a reducir las peticiones al backend y evita errores en consola.
+		
             localStorage.setItem('is_logged_in', 'true');
             
-            // Los registros nuevos suelen venir sin idioma o en inglés (EN)
             syncLanguage(userResponse.language);
             
             setUser(userResponse);
@@ -92,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Logout REAL
+    // Real Logout
     const logout = async () => {
         try {
             await authService.logout();
@@ -104,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-	/* El provider pasa el estado y las funciones de login/logout a los componentes hijos a través del contexto. */
+	/* Context Provider send state and functions to children */
     return (
         <AuthContext.Provider value={{ 
             user, 
@@ -119,7 +117,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-/* Este hook personalizado nos permite acceder al contexto de autenticación desde cualquier componente que lo necesite. */
+/* This hook provides a convenient way to access the authentication context from any component. */
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) throw new Error('useAuth should be used within an AuthProvider');

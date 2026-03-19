@@ -36,7 +36,7 @@ const Lobby = () => {
         const startMatchmaking = async () => {
             try {
                 // 1. Avisamos al backend de que entramos en cola
-                await gameService.joinQueue(mode, submode);
+                await gameService.joinQueue(mode);
 
                 // 2. Empezamos a preguntar cada 2 segundos si hay partida
                 pollingInterval = setInterval(async () => {

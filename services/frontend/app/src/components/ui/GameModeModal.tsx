@@ -28,8 +28,8 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
     return createPortal(
         <div className="modal-backdrop animate-fade-in-up">
             <div className="modal-content max-w-5xl">
-                
-                {/* Cabecera del Modal */}
+            
+                {/* Modal Header */}
                 <div className="flex justify-between items-center p-6 border-b border-white/10 sticky top-0 bg-dark-900/80 backdrop-blur-md z-10">
                     <div>
                         <h2 className="text-2xl font-bold text-white flex items-center gap-3">
@@ -48,10 +48,10 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                     </button>
                 </div>
 
-                {/* Cuerpo del Modal - Grid de Modos */}
+                {/* Modal Body - Grid of Game Modes */}
                 <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                     
-                    {/* 1. CAMPAIGN MODE (PvE) - Añadido 'group' al HTML */}
+                    {/* 1. CAMPAIGN MODE (PvE) */}
                     <div className="card-interactive group">
                         <div className="w-14 h-14 bg-brand-500/20 text-brand-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                             <FaRobot size={28} />
@@ -74,7 +74,7 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         </button>
                     </div>
 
-                    {/* 2. CASUAL MODE (PvP) - Aplicada clase y añadido 'group' */}
+                    {/* 2. CASUAL MODE (PvP) */}
                     <div className="card-interactive group">
                         <div className="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                             <FaUsers size={28} />
@@ -102,7 +102,7 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         </div>
                     </div>
 
-                    {/* 3. RANKED MODE (PvP) - Se queda con clases inline porque necesita sobreescribir colores (warning/disabled) */}
+                    {/* 3. RANKED MODE (PvP) */}
                     <div className={`bg-dark-800/50 border rounded-2xl p-6 flex flex-col transition-all duration-300 group relative overflow-hidden
                         ${isRankedUnlocked ? 'border-warning/50 hover:-translate-y-1 hover:border-warning hover:shadow-[0_0_15px_rgba(255,186,0,0.1)]' : 'border-white/5 opacity-70 cursor-not-allowed'}`}
                     >

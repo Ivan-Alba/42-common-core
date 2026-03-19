@@ -1,4 +1,5 @@
 /* This component uses React Portal to render the modal outside the main DOM hierarchy z-9999 */
+import { t } from 'i18next';
 import { createPortal } from 'react-dom';
 
 interface ConfirmModalProps {
@@ -17,9 +18,9 @@ const ConfirmModal = ({
     title, 
     message, 
     onConfirm, 
-    onCancel, 
-    confirmText = "Confirmar", 
-    cancelText = "Cancelar",
+    onCancel,
+	confirmText = t('common.accept'),
+    cancelText = t('common.decline'),
     isDanger = false
 }: ConfirmModalProps) => {
     

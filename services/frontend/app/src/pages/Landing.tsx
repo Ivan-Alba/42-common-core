@@ -32,12 +32,12 @@ const Landing = () => {
                         </h2>
                     </div>
 
-                    {/* Subtítulo */}
+                    {/* Subtitle */}
                     <p className="text-slate-400 text-base md:text-xl max-w-sm md:max-w-2xl mb-8 leading-relaxed text-center px-2">
                         {t('landing.subtitle')}
                     </p>
 
-                    {/* Botón CTA */}
+                    {/* CTA Button */}
                     <Link to="/signin" className="group relative inline-block">
                         <div className="absolute -inset-1 bg-brand-500 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-200"></div>
                         <button className="relative w-full md:w-auto px-10 py-3.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-lg rounded-full transition-all transform hover:scale-105 shadow-xl">

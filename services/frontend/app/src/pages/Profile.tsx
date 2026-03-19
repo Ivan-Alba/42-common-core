@@ -20,13 +20,13 @@ const Profile = () => {
 	const { user: authUser, isLoading: isAuthLoading } = useAuth();
 
 	/* Determine if viewing own profile or another user's */
-	// Comprobamos si el ID de la URL coincide con nuestro nombre de usuario o si no hay ID en la URL
+	/* Check if URL ID matches authenticated user or if no ID is provided */
 	const isOwnProfile = Boolean(!id || (authUser && Number(id) === Number(authUser.id)));
 
 	const [profileData, setProfileData] = useState<UserProfile | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
-	// Estado para gestionar la relación de amistad en este perfil
+	/* Handle to manage friendship status */
 	const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing'>('none');
 
 	const getMatchStyles = (result: 'win' | 'loss' | 'draw') => {
@@ -45,7 +45,7 @@ const Profile = () => {
 		const fetchProfileData = async () => {
 			setIsLoading(true);
 			try {
-				// Si estamos en nuestro perfil, cargamos nuestro ID. Si no, cargamos el del amigo por su username (id de la URL)
+				/* If viewing own profile, use authenticated user's ID; otherwise, use the ID from the URL */
 				const targetId = isOwnProfile ? authUser?.id : id;
 				if (!targetId) throw new Error("No user specified");
 
@@ -66,19 +66,17 @@ const Profile = () => {
 		fetchProfileData();
 	}, [id, authUser, isAuthLoading, isOwnProfile]);
 
-	// Función para manejar el botón "Añadir Amigo" desde el perfil ajeno
+		/* Handle to manage adding friend */
 	const handleAddFriend = async (friendId: number | string) => {
 		if (!authUser) return;
 		try {
 			await userService.sendFriendRequest(authUser.id, friendId);
 			console.log(`Solicitud enviada desde el perfil al ID ${friendId}`);
 
-			// Actualización visual optimista
 			setRelationStatus('outgoing');
 
 		} catch (error) {
 			console.error("Error enviando solicitud", error);
-			// Mantenemos el error silencioso si da 409 (Conflicto), simulando que ya se envió
 			setRelationStatus('outgoing');
 		}
 	};
@@ -136,10 +134,10 @@ const Profile = () => {
 								const losses = profileData.stats?.losses || 0;
 								const draws = profileData.stats?.draws || 0;
 
-								// Calculamos las jugadas sumando todo
+								/* Calculate total games played */
 								const gamesPlayed = profileData.stats?.gamesPlayed || (wins + losses + draws);
 
-								// Calculamos el porcentaje (evitando dividir por 0)
+								/* Calculate win rate percentage (avoid division by zero) */
 								const winRate = profileData.stats?.winRate || (gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0);
 
 								return (

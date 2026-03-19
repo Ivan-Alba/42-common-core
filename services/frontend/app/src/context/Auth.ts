@@ -21,7 +21,7 @@ export interface User {
 	experience: number;
 	bio?: string;
 	language?: 'EN' | 'ES' | 'CAT';
-    // Añadir mas campos cuando sepamos los que necesitamos
+    
 }
 
 /* Auth context type provided to consuming components  */

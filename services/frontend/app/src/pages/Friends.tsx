@@ -26,13 +26,13 @@ const Friends = () => {
 	const navigate = useNavigate();
 	const { user: authUser } = useAuth();
 
-	/* Listas de estado */
+	/* States list */
 	const [friendsList, setFriendsList] = useState<FriendProfile[]>([]);
 	const [pendingRequests, setPendingRequests] = useState<FriendProfile[]>([]);
-	const [outgoingRequests, setOutgoingRequests] = useState<FriendProfile[]>([]); // NUEVO ESTADO
+	const [outgoingRequests, setOutgoingRequests] = useState<FriendProfile[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
-	/* Estados del buscador */
+	/* Search states */
 	const [searchQuery, setSearchQuery] = useState("");
 	const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
 	const [isSearching, setIsSearching] = useState(false);
@@ -42,7 +42,7 @@ const Friends = () => {
 	/* Modal control */
 	const [friendToDelete, setFriendToDelete] = useState<number | null>(null);
 
-	// Cerrar el dropdown si se hace clic fuera
+	/* Close dropdown if clicked outside */
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -53,7 +53,7 @@ const Friends = () => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
-	// Cargar amigos reales de la BBDD
+	/* Fetch friends from database */
 	useEffect(() => {
 		fetchFriendsData();
 	}, [authUser]);
@@ -64,26 +64,25 @@ const Friends = () => {
 		try {
 			const data = await userService.getFriends(authUser.id);
 
-			// ¡ESTO ES CLAVE! Mira la consola del navegador tras guardar.
 			console.log("DATOS DEL BACKEND /friends:", data);
 
 			const myId = Number(authUser.id);
 
-			// Funciones "todoterreno" por si el backend no usa el envoltorio 'pivot'
+			/* Auxiliar functions, is used to handle different response formats from the backend */
 			const getStatus = (f: any) => f.friendship_status || f.pivot?.status || f.status;
 			const getRequester = (f: any) => Number(f.pivot?.requester_id || f.requester_id);
 
-			// 1. Amigos aceptados
+			/* Friends accepted */
 			const accepted = data.filter((f: any) => getStatus(f) === 'accepted');
 
-			// 2. Peticiones recibidas (El requester NO soy yo)
+			/* Request received */
 			const incoming = data.filter((f: any) => {
 				const status = getStatus(f);
 				const isRequester = getRequester(f) === myId;
 				return status === 'pending' && !isRequester;
 			});
 
-			// 3. Peticiones enviadas (El requester SÍ soy yo)
+			/* Request sent */
 			const outgoing = data.filter((f: any) => {
 				const status = getStatus(f);
 				const isRequester = getRequester(f) === myId;
@@ -143,6 +142,7 @@ const Friends = () => {
 
 			const friendData = searchResults.find(u => Number(u.id) === friendId);
 			if (friendData) {
+				
 				// Añadimos el objeto de amigo simulando la respuesta del backend
 				const optimisticFriend = {
 					...friendData,
@@ -190,7 +190,7 @@ const Friends = () => {
 			window.dispatchEvent(new Event('updateFriendNotifications'));
 
 		} catch (error) {
-			console.error(`Error al ${action} solicitud:`, error);
+			console.error(`Error ${action}: `, error);
 		}
 	};
 
@@ -204,7 +204,7 @@ const Friends = () => {
 			console.log(`Amigo eliminado ID: ${friendToDelete}`);
 			setFriendsList(prev => prev.filter(friend => Number(friend.id) !== friendToDelete));
 		} catch (error) {
-			console.error("Error eliminando amigo:", error);
+			console.error("Error: ", error);
 		} finally {
 			setFriendToDelete(null);
 		}
@@ -213,7 +213,7 @@ const Friends = () => {
 	/* Navigation */
 	const handleInvite = (username?: string) => {
 		if (!username) return;
-		console.log(`Invitando a ${username}...`);
+		console.log(`Sending invitation to ${username}...`);
 		navigate(`/game/`);
 	};
 
@@ -234,7 +234,7 @@ const Friends = () => {
 						</h1>
 					</div>
 
-					{/* Contenedor del Buscador con Dropdown */}
+					{/* Search container with dropdown */}
 					<div className="relative w-full md:w-96" ref={dropdownRef}>
 						<div className="relative group">
 							<FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-brand-500 transition-colors z-10" />
@@ -248,7 +248,7 @@ const Friends = () => {
 							{isSearching && <FaSpinner className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-500 animate-spin z-10" />}
 						</div>
 
-						{/* Dropdown de Resultados */}
+						{/* Dropdown results */}
 						{showDropdown && (
 							<div className="absolute top-full left-0 right-0 mt-2 bg-dark-800 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
 								{searchResults.length > 0 ? (
@@ -272,7 +272,7 @@ const Friends = () => {
 											return (
 												<li key={resultId} className="flex items-center justify-between p-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
 
-													{/* Hacemos clicable el Avatar y el Nombre para ir al Perfil */}
+													{/* Avatar and Name for Profile clickable */}
 													<button
 														className="flex items-center gap-3 text-left focus:outline-none"
 														onClick={() => handleShowProfile(resultId)}
@@ -291,7 +291,7 @@ const Friends = () => {
 														<span className="text-white font-bold text-sm hover:text-brand-400 transition-colors">{userResult.username}</span>
 													</button>
 
-													{/* El botón de acción se mantiene a la derecha */}
+													{/* Action Button - The action button is kept on the right */}
 													<div className="flex items-center gap-2">
 														{isSelf ? (
 															<span className="text-xs text-slate-500 font-bold px-2">{t('common.you')}</span>
@@ -300,12 +300,12 @@ const Friends = () => {
 																<FaCheck /> {t('friends.already_friend')}
 															</span>
 														) : isOutgoing ? (
-															/* Yo se la envié a él */
+															/* I sent the request -> Show Sent status */
 															<span className="text-xs text-slate-500 font-bold px-2 border border-slate-500/30 rounded-full py-1">
 																{t('friends.sent')}
 															</span>
 														) : isPending ? (
-															/* Él me la envió a mí -> Mostrar botones de Aceptar/Rechazar */
+															/* He sent it to me -> Show Accept/Reject buttons */
 															<div className="flex gap-1">
 																<button
 																	onClick={() => handleRespondRequest(resultId, 'accept')}
@@ -323,7 +323,7 @@ const Friends = () => {
 																</button>
 															</div>
 														) : (
-															/* No hay relación -> Mostrar botón Añadir */
+															/* No friendship -> Show Add Friend button */
 															<button
 																onClick={() => handleSendRequest(resultId)}
 																className="text-xs bg-brand-500 hover:bg-brand-400 text-white px-3 py-1.5 rounded-lg font-bold flex items-center gap-2 transition-colors"
@@ -351,7 +351,7 @@ const Friends = () => {
 				) : (
 					<div className="space-y-12">
 
-						{/* SECCIÓN 1: SOLICITUDES PENDIENTES */}
+						{/* Pending Requests Section */}
 						{pendingRequests.length > 0 && (
 							<section className="animate-fade-in">
 								<h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
@@ -388,7 +388,7 @@ const Friends = () => {
 							</section>
 						)}
 
-						{/* SECCIÓN 2: LISTA DE AMIGOS */}
+						{/* Friend List Section */}
 						<section>
 							<h2 className="text-xl font-bold text-slate-300 mb-4">{t('friends.subtitle')}</h2>
 							<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
@@ -416,7 +416,7 @@ const Friends = () => {
 					</div>
 				)}
 
-				{/* Confirm Modal (Papelera) */}
+				{/* Confirm Modal */}
 				<ConfirmModal
 					isOpen={friendToDelete !== null}
 					title={t('friends.remove_friend')}

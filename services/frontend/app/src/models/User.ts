@@ -2,6 +2,7 @@
 import type { MatchHistory } from "./Match";
 
 /* Definition of User-related interfaces */
+
 export interface UserStats {
 	level?: number;
     experience?: number;
@@ -22,5 +23,4 @@ export interface UserProfile {
 	bio?: string;
     language?: 'en' | 'es' | 'ca';
 	match_history?: MatchHistory[]; 
-	// campos adicionales según sea necesario
 }

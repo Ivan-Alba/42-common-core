@@ -11,31 +11,22 @@ export interface MatchData {
 }
 
 const gameService = {
-    // 1. Entrar a la cola (Original version commented)
-    /*
-    joinQueue: async (mode: string, submode?: string | null) => {
-        const response = await api.post('/v1/matchmaking/join', { mode, submode });
-        return response.data;
-    },
-    */
-
-    // New version receiving game_mode (as requested for PVE tests)
+	/* Game modes: 'campaign' for PVE, 'ranked' for competitive PVP, 'casual' for non-ranked PVP */
     joinQueue: async (game_mode: string) => {
-        // Enviamos game_mode tal como espera tu MatchmakingController en Laravel
         const response = await api.post('/v1/matchmaking/join', { game_mode });
         return response.data;
     },
 
-    // 2. Salir de la cola (si el usuario le da a cancelar)
+	/* Go back to the index and leave the matchmaking queue */
     leaveQueue: async () => {
         const response = await api.post('/v1/matchmaking/leave');
         return response.data;
     },
 
-    // 3. Comprobar si ya hay partida (Polling)
+	/* Check matchmaking status. If is_ready: true, return match data, else return null */
     checkQueueStatus: async (): Promise<MatchData | null> => {
         const response = await api.get('/v1/matchmaking/status');
-        // Si el backend devuelve is_ready: true, devolvemos los datos
+		/* If the backend returns is_ready: true, we return the data. Otherwise, we return null to indicate that we're still waiting. This way, the frontend can easily check if a match is ready without having to handle exceptions for flow control. */
         if (response.data && response.data.is_ready) {
             return response.data;
         }

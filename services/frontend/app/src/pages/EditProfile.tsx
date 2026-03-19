@@ -186,13 +186,13 @@ const EditProfile = () => {
 
         try {
             const response = await fetch(presetUrl);
-            if (!response.ok) throw new Error("No se pudo descargar la imagen predefinida");
+            if (!response.ok) throw new Error("Error");
             const blob = await response.blob();
             const file = new File([blob], 'preset_avatar.png', { type: blob.type });
 
             setFormData(prev => prev ? { ...prev, avatarFile: file } : null);
         } catch (error) {
-            console.error("Error al convertir el preset a archivo:", error);
+            console.error("Error:", error);
             setAvatarError(t('edit_profile.avatar_error_file'));
         }
     };
@@ -260,8 +260,10 @@ const EditProfile = () => {
         i18n.changeLanguage(langCode);
     };
 
-    if (isLoading) return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
-    if (!formData) return null;
+    if (isLoading)
+		return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
+    if (!formData)
+		return null;
 
     return (
         <DashboardLayout isCentered={false}>

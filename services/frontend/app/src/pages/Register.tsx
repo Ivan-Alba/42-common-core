@@ -50,7 +50,7 @@ const Register = () => {
     };
 
     /* Handle Form Submit */
-    const handleSubmit = async (e: React.FormEvent) => { // Hazlo ASYNC
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
         const cleanData = {
@@ -64,26 +64,22 @@ const Register = () => {
         if (validate(cleanData)) {
             try {
 				console.log(cleanData);
-                // LLAMADA REAL AL BACKEND
                 await register(cleanData);
                 
                 setIsRegistered(true);
-                // Si el backend loguea automáticamente, podrías redirigir a /index directamente
-                // Pero si prefieres mostrar el mensaje de éxito y luego ir al login:
-				// TODO verificar segundos de espera antes de redirigir al index
                 setTimeout(() => navigate('/index'), 5000000); 
                 
             } catch (error: any) {
-                // MANEJO DE ERRORES DEL BACKEND (Ej: Email ya existe)
-                console.error("Fallo el registro", error);
+                
+                console.error("Error: ", error);
                 
 				if (error.response?.status === 404)
 				{
-					console.log("Puto 404");
+					console.log("Error 404");
 				}
 
                 if (error.response?.status === 422) {
-                    // Errores de validación de Laravel (ej: email duplicado)
+					/* Laravel errors validation format is { errors: { field: [msg1, msg2] } } */
                     const serverErrors = error.response.data.errors;
                     if (serverErrors.email) {
                         setErrors(prev => ({ ...prev, email: t("validation.email_registered") }));
@@ -92,8 +88,7 @@ const Register = () => {
                         setErrors(prev => ({ ...prev, name: t("validation.name_taken") }));
                     }
                 } else {
-                    // Error genérico
-                    alert("Error en el registro. Inténtalo de nuevo.");
+                    console.log("Error", error);
                 }
             }
         }
@@ -110,7 +105,6 @@ const Register = () => {
                     <InputGroup label={t('common.email')} type="email" name="email" placeholder="email@email.com" value={formData.email} onChange={handleChange} error={errors.email} />
                     <InputGroup label={t('common.password')} type="password" name="password" placeholder="••••••••" value={formData.password} onChange={handleChange} error={errors.password} className="mb-8" />
 
-                    {/* Arreglado: Se usa la clase definida en CSS */}
                     <button type="submit" className="btn-primary-full">
                         {t('common.register')}
                     </button>

@@ -23,7 +23,7 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
     const avatarUrl = userService.getFullAvatarUrl(userData.avatar);
 
 	/* Level calculation based on experience points */
-	/*XP necesaria=100×(Nivel Actual)1.5*/
+	/*XP required=100×(Actual Level)1.5*/
 	const totalXp = userData.experience || 0;
 	const nextLevelXp = Math.floor(100 * Math.pow((userData.level || 1), 1.5));
     const currentLevel = userData.level || 0;
@@ -62,10 +62,9 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
                     <div className="flex flex-col items-center lg:items-end justify-center gap-6">
                         <div className="bg-dark-900/60 p-4 rounded-xl border border-white/5 w-full md:w-64 backdrop-blur-sm">
                             <div className="flex justify-between items-baseline mb-2">
-                                {/* Usamos la variable dinámica del nivel */}
                                 <span className="text-brand-500 font-black text-xl tracking-tighter">LVL. {currentLevel}</span>
                                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-                                    {/* Usamos la variable del progreso de XP */}
+                                    {/* Variable progress XP bar  */}
                                     {totalXp} / {nextLevelXp} XP
                                 </span>
                             </div>
@@ -78,7 +77,7 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
                             </div>
                         </div>
 
-                        {/* Botonera Dinámica */}
+                        {/* Own Profile Edit or Other User Profile */}
                         {isOwnProfile ? (
                             <Link to="/edit_profile" className="w-full md:w-auto">
                                 <button className="btn-secondary rounded-full px-8 py-2.5 flex items-center justify-center gap-3 text-sm font-bold transition-all border border-white/10 hover:bg-white/5">
