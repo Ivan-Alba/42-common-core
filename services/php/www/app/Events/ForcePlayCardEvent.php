@@ -8,28 +8,30 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ForceDeckSelectionEvent implements ShouldBroadcast
+class ForcePlayCardEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
         public string $matchUuid,
-        public string $reason = 'selection_timeout'
+        public string $playerId,
+        public string $reason = 'turn_timeout'
     ) {}
 
     /**
      * The event's broadcast name.
-     * This decouples the PHP class name from the WebSocket event name.
+     * In Unity: "match.force_play_card"
      */
     public function broadcastAs(): string
     {
-        return 'match.force_selection';
+        return 'match.force_play_card';
     }
 
     public function broadcastWith(): array
     {
         return [
-            'reason' => $this->reason,
+            'player_id' => $this->playerId,
+            'reason'    => $this->reason,
         ];
     }
 

@@ -55,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Ranking
         Route::get('/ranking', [UserController::class, 'getRanking']);
 
+        // Matchmaking
         Route::post('/matchmaking/join', [MatchmakingController::class, 'join']);
 
         // Route::get('/users/{id}/games', [UserController::class, 'getUser']);

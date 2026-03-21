@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -17,6 +16,15 @@ class RivalReadyEvent implements ShouldBroadcast
         public string $matchUuid,
         public string $rivalId
     ) {}
+
+    /**
+     * The event's broadcast name.
+     * In Unity, you will listen for "match.rival_ready".
+     */
+    public function broadcastAs(): string
+    {
+        return 'match.rival_ready';
+    }
 
     /**
      * The data that will be sent in the JSON payload.

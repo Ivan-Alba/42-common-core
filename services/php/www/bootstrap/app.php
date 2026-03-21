@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+
+        // EXCLUDE API ROUTES FROM CSRF PROTECTION
+        // This allows Unity to make POST requests using Sanctum tokens without 419 errors
+        $middleware->validateCsrfTokens(except: [
+            'api/*', // This covers all routes in your api.php file
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (SocialException $e) {

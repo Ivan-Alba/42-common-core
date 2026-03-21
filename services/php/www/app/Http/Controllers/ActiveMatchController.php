@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\ActiveMatch;
 use App\Models\Card;
+use App\Models\User;
 use App\Jobs\ForceSelectionTimeout;
+use App\Jobs\TurnTimeoutJob;
 use App\Http\Resources\MatchInitialResource;
 use App\Enums\GameMode;
 use App\Services\MatchConfigProvider;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ActiveMatchController extends Controller
 {
@@ -45,7 +48,7 @@ class ActiveMatchController extends Controller
             $config = $match->match_config;
             $delay = $config['selection_time_limit'] + 5; // 5s network buffer
 
-            \App\Jobs\ForceSelectionTimeout::dispatch($match->match_uuid)
+            ForceSelectionTimeout::dispatch($match->match_uuid)
                 ->delay(now()->addSeconds($delay));
             
             // We use next_timeout_at as a flag to know the timer is already running
@@ -64,8 +67,17 @@ class ActiveMatchController extends Controller
      */
     public function createMatch(int $p1Id, int $p2Id, GameMode $mode): ActiveMatch
     {
-        // Randomly decide who starts the game
-        $firstPlayerId = collect([$p1Id, $p2Id])->random();
+        $p1 = User::find($p1Id);
+        $p2 = User::find($p2Id);
+
+        if ($p1->is_bot && !$p2->is_bot) {
+            $firstPlayerId = $p2Id;
+        } elseif (!$p1->is_bot && $p2->is_bot) {
+            $firstPlayerId = $p1Id;
+        } else {
+            // Both are humans or both are bots, keep it random
+            $firstPlayerId = collect([$p1Id, $p2Id])->random();
+        }
 
         // Initialize an empty board state (9 slots for 3x3)
         $emptyBoard = array_fill(0, 9, null);
@@ -83,7 +95,7 @@ class ActiveMatchController extends Controller
             'game_mode' => $mode,
             'status' => 'selecting',
             'first_player_id' => $firstPlayerId,
-            'current_turn_player_id' => $firstPlayerId, // Usually same as first player
+            'current_turn_player_id' => $firstPlayerId,
             'board_state' => $emptyBoard,
             'hands_state' => $initialHands,
             'p1_ready' => false,
@@ -93,39 +105,43 @@ class ActiveMatchController extends Controller
     }
 
 /**
- * Unity calls this to confirm the selected deck.
+ * Handle deck confirmation for both human players and authorized bots.
+ *
+ * @param Request $request
+ * @param string $matchUuid
+ * @return JsonResponse
  */
 public function confirmDeck(Request $request, string $matchUuid): JsonResponse
 {
-    $user = $request->user();
-    $cardIds = $request->input('card_ids'); // Array of card IDs
+    $authUser = $request->user();
+    $targetPlayerId = (int) $request->input('player_id'); // ID of the player performing the action
+    $cardIds = $request->input('card_ids');
+    $cardIds = array_map('intval', (array)$cardIds);
 
     $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
+    $targetUser = User::findOrFail($targetPlayerId);
 
-    // 1. Validation: Phase and Ownership
-    if ($match->status !== 'selecting') {
-        return response()->json(['success' => false, 'error' => 'Invalid phase.'], 400);
-    }
+    // --- SECURITY GATE: Check if the action is authorized ---
+    if ($authUser->id !== $targetUser->id) {
+        // Only allow proxying actions if target is a bot within the same match
+        $isBotInMatch = $targetUser->is_bot && 
+                        ($targetUser->id === $match->player_1_id || $targetUser->id === $match->player_2_id) &&
+                        ($authUser->id === $match->player_1_id || $authUser->id === $match->player_2_id);
 
-    $userCardIds = $user->cards()->pluck('cards.id')->map(fn($id) => (string)$id)->toArray();
-    foreach ($cardIds as $id) {
-        if (!in_array($id, $userCardIds)) {
-            return response()->json(['success' => false, 'error' => "Unauthorized card: $id"], 403);
+        if (!$isBotInMatch) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized action.'], 403);
         }
     }
 
-    // 2. Validation: Deck Cost
-    $config = $match->match_config;
-    $totalCost = \App\Models\Card::whereIn('id', $cardIds)->get()->sum(fn($c) => $c->rarity->getCost());
-
-    if ($totalCost > $config['max_deck_cost']) {
-        return response()->json(['success' => false, 'error' => 'Deck cost exceeded.'], 400);
+    // 1. Verify match phase
+    if ($match->status !== 'selecting') {
+        return response()->json(['success' => false, 'error' => 'Invalid match phase.'], 400);
     }
 
-    // 3. Update State
-    $isP1 = $user->id === $match->player_1_id;
-    $hands = $match->hands_state;
-    
+    // 2. Persist hand state and readiness
+    $isP1 = $targetUser->id === $match->player_1_id;
+    $hands = $match->hands_state ?? ['p1' => [], 'p2' => []];
+
     if ($isP1) {
         $match->p1_ready = true;
         $hands['p1'] = $cardIds;
@@ -133,20 +149,28 @@ public function confirmDeck(Request $request, string $matchUuid): JsonResponse
         $match->p2_ready = true;
         $hands['p2'] = $cardIds;
     }
+    
     $match->hands_state = $hands;
 
-    // 4. Notify Rival (Event 1)
-    // We notify the other player that this player is ready
-    broadcast(new \App\Events\RivalReadyEvent($matchUuid, (string)$user->id))->toOthers();
+    // 3. BROADCAST LOGIC: Only if BOTH players are humans
+    // We check if the match is NOT a PvE match
+    $player1 = User::find($match->player_1_id);
+    $player2 = User::find($match->player_2_id);
 
-    // 5. Transition to Combat (Event 2)
+    $isPvP = ($player1 && !$player1->is_bot) && ($player2 && !$player2->is_bot);
+
+    if ($isPvP) {
+        broadcast(new \App\Events\RivalReadyEvent($matchUuid, (string)$targetUser->id))->toOthers();
+    }
+
+    // 4. Trigger match transition if both participants are ready
     if ($match->p1_ready && $match->p2_ready) {
         $this->startMatchTransition($match);
     }
 
     $match->save();
 
-    return response()->json(['success' => true, 'data' => true]);
+    return response()->json(['success' => true]);
 }
 
 /**
@@ -173,8 +197,8 @@ private function startMatchTransition(ActiveMatch $match)
     ));
 
     // Dispatch the first Turn Timeout Job
-    \App\Jobs\TurnTimeoutJob::dispatch($match->match_uuid, (string)$match->first_player_id)
-        ->delay(now()->addSeconds($startDelay + $turnDuration + 1));
+    //TurnTimeoutJob::dispatch($match->match_uuid, (string)$match->first_player_id)
+      //  ->delay(now()->addSeconds($startDelay + $turnDuration + 1));
 }
 
 }

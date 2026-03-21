@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -20,6 +19,18 @@ class MatchStartEvent implements ShouldBroadcast
         public float $turnStartTime
     ) {}
 
+    /**
+     * The event's broadcast name.
+     * In Unity, you will listen for "match.start".
+     */
+    public function broadcastAs(): string
+    {
+        return 'match.start';
+    }
+
+    /**
+     * Data payload for the event.
+     */
     public function broadcastWith(): array
     {
         return [

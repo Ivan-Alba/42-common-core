@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ActiveMatch;
-// use App\Events\ForceDeckSelectionEvent; // You'll create this for Reverb
+use App\Events\ForceDeckSelectionEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,11 +37,8 @@ class ForceSelectionTimeout implements ShouldQueue
 
         // If anyone is still not ready, we broadcast the force event
         if (!$match->p1_ready || !$match->p2_ready) {
-        // Broadcast the Force event (Event 3)
-        broadcast(new \App\Events\ForceDeckSelectionEvent($this->matchUuid, 'selection_timeout'));
-        
-        // TODO Logical safety: If you want the server to auto-pick cards, do it here
-        // and then call $this->startMatchTransition($match);
+            // Broadcast the Force event (Event 3)
+            broadcast(new ForceDeckSelectionEvent($this->matchUuid, 'selection_timeout'));
         }
     }
 }
