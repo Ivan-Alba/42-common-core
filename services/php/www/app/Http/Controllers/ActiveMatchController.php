@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\ActiveMatch;
 use App\Models\Card;
 use App\Models\User;
+use App\Events\RivalReadyEvent;
+use App\Events\RivalCardCountEvent;
+use App\Events\MatchStartEvent;
 use App\Jobs\ForceSelectionTimeout;
 use App\Jobs\TurnTimeoutJob;
 use App\Http\Resources\MatchInitialResource;
@@ -42,11 +45,9 @@ class ActiveMatchController extends Controller
 
         // 3. Trigger Selection Timeout Watchdog
         // We only dispatch it if the match is in 'selecting' and no timeout was set
-        // Note: Using a simple flag or checking if a job was already sent.
-        // For now, we'll check status and a basic timestamp check to avoid duplicates.
         if ($match->status === 'selecting' && $match->next_timeout_at === null) {
             $config = $match->match_config;
-            $delay = $config['selection_time_limit'] + 5; // 5s network buffer
+            $delay = $config['selection_time_limit'];
 
             ForceSelectionTimeout::dispatch($match->match_uuid)
                 ->delay(now()->addSeconds($delay));
@@ -75,7 +76,7 @@ class ActiveMatchController extends Controller
         } elseif (!$p1->is_bot && $p2->is_bot) {
             $firstPlayerId = $p1Id;
         } else {
-            // Both are humans or both are bots, keep it random
+            // Both are humans keep it random
             $firstPlayerId = collect([$p1Id, $p2Id])->random();
         }
 
@@ -103,6 +104,42 @@ class ActiveMatchController extends Controller
             'next_timeout_at' => null // Set this after returning the first response
         ]);
     }
+
+    /**
+ * Updates the current card selection count and notifies the opponent.
+ * Path: /api/matches/{matchUuid}/update-selection
+ */
+public function updateSelection(Request $request, $matchUuid)
+{
+    $request->validate([
+        'player_id' => 'required|integer',
+        'current_count' => 'required|integer',
+    ]);
+
+    $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
+    
+    $senderId = (int) $request->player_id;
+    $currentCount = (int) $request->current_count;
+
+    // 1. Identify who is the rival
+    $rivalId = ($senderId === (int)$match->player_1_id) 
+               ? $match->player_2_id 
+               : $match->player_1_id;
+
+    $rival = User::find($rivalId);
+
+    // 2. Broadcast only if the rival is a human (not a bot)
+    // and use "toOthers" so the person who sent the request doesn't receive it back
+    if ($rival && !$rival->is_bot) {
+        broadcast(new RivalCardCountEvent(
+            $matchUuid, 
+            $senderId, 
+            $currentCount
+        ))->toOthers();
+    }
+
+    return response()->json(['success' => true]);
+}
 
 /**
  * Handle deck confirmation for both human players and authorized bots.
@@ -160,7 +197,7 @@ public function confirmDeck(Request $request, string $matchUuid): JsonResponse
     $isPvP = ($player1 && !$player1->is_bot) && ($player2 && !$player2->is_bot);
 
     if ($isPvP) {
-        broadcast(new \App\Events\RivalReadyEvent($matchUuid, (string)$targetUser->id))->toOthers();
+        broadcast(new RivalReadyEvent($matchUuid, (string)$targetUser->id))->toOthers();
     }
 
     // 4. Trigger match transition if both participants are ready
@@ -189,7 +226,7 @@ private function startMatchTransition(ActiveMatch $match)
     $match->next_timeout_at = $turnStartTime + $turnDuration;
 
     // Trigger Match Start Event (Event 2)
-    broadcast(new \App\Events\MatchStartEvent(
+    broadcast(new MatchStartEvent(
         $match->match_uuid,
         (string)$match->first_player_id,
         $serverNow,
