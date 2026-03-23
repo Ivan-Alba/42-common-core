@@ -397,7 +397,7 @@ const Friends = () => {
 										<FriendCard
 											key={friend.id}
 											name={friend.username}
-											variant={friend.status}
+											status={friend.status}
 											icon={<FaCircle />}
 											avatar={friend.avatar}
 											onInviteClick={() => handleInvite(friend.username)}

@@ -135,7 +135,12 @@
 		"remove_friend": "Remove Friend",
 		"request_sent": "Wants to be your friend",
 		"pending_requests": "Pending Requests",
-		"remove_alert": "Are you sure you want to remove this friend? This action cannot be undone."
+		"remove_alert": "Are you sure you want to remove this friend? This action cannot be undone.",
+		"online": "Online",
+		"offline": "Offline",
+		"playing": "Playing", 
+		"invite": "Invite to Play",
+		"not_available": "Not Available"
 	},
 	"profile": {
 		"title": "User Profile",

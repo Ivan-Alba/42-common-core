@@ -133,7 +133,12 @@
 		"remove_friend": "Eliminar amic",
 		"request_sent": "Vols ser el teu amic",
 		"pending_requests": "Sol·licituds pendents",
-		"remove_alert": "Estàs segur que vols eliminar aquest amic? Aquesta acció no es pot desfer."
+		"remove_alert": "Estàs segur que vols eliminar aquest amic? Aquesta acció no es pot desfer.",
+		"online": "Online",
+		"offline": "Offline",
+		"playing": "Jugant", 
+		"invite": "Convidar a jugar",
+		"not_available": "No disponible"
 	},
 	"profile": {
 		"title": "Perfil d'usuari",
