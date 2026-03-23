@@ -2,28 +2,29 @@ import React from 'react';
 import { FaUser, FaGamepad, FaTrash } from "react-icons/fa";
 import { MdPersonSearch } from "react-icons/md";
 import userService from '../../services/userService';
+import {useTranslation} from 'react-i18next';
 
 interface FriendCardProps {
 	name: string;
 	icon: React.ReactNode;
 	avatar?: string;
-	variant?: 'online' | 'offline' | 'playing';
+	status?: 'online' | 'offline' | 'playing';
 	onInviteClick?: () => void;
 	onProfileClick?: () => void;
 	onRemoveClick?: () => void;
 }
 
-const FriendCard = ({ name, icon, avatar, variant = 'offline', onProfileClick, onInviteClick, onRemoveClick }: FriendCardProps) => {
-
+const FriendCard = ({ name, icon, avatar, status = 'offline', onProfileClick, onInviteClick, onRemoveClick }: FriendCardProps) => {
+	const { t } = useTranslation();
 	const avatarUrl = userService.getFullAvatarUrl(avatar);
 	const statusConfig = {
-		online: { ring: "border-success shadow-[0_0_10px_rgba(34,197,94,0.4)]", text: "text-success", label: "En línea" },
-		offline: { ring: "border-slate-600", text: "text-slate-500", label: "Desconectado" },
-		playing: { ring: "border-brand-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]", text: "text-brand-400", label: "Jugando..." }
+		online: { ring: "border-success shadow-[0_0_10px_rgba(34,197,94,0.4)]", text: "text-success", label: t('friends.online') },
+		offline: { ring: "border-slate-600", text: "text-slate-500", label: t('friends.offline') },
+		playing: { ring: "border-brand-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]", text: "text-brand-400", label: t('friends.playing') }
 	};
 
-	const currentStatus = statusConfig[variant];
-	const isPlayable = variant === 'online';
+	const currentStatus = statusConfig[status];
+	const isPlayable = status === 'online';
 
 	return (
 		<div className="group relative flex flex-col md:flex-row items-center justify-between p-4 gap-4 md:gap-0 glass-panel glass-panel-hover">
@@ -56,7 +57,7 @@ const FriendCard = ({ name, icon, avatar, variant = 'offline', onProfileClick, o
 				<button
 					onClick={isPlayable ? onInviteClick : undefined}
 					disabled={!isPlayable}
-					title={isPlayable ? "Invitar a jugar" : "No disponible"}
+					title={isPlayable ? t('friends.invite') : t('friends.not_available')}
 					className={`btn-icon ${isPlayable ? "btn-primary" : "btn-disabled"}`}
 				>
 					<FaGamepad size={24} />
