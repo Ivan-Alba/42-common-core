@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActiveMatch;
-use App\Models\Card;
+use App\Models\Matches;
 use App\Models\User;
 use App\Events\RivalReadyEvent;
 use App\Events\RivalCardCountEvent;
 use App\Events\MatchStartEvent;
+use App\Events\PlayCardResponseEvent;
 use App\Jobs\ForceSelectionTimeout;
 use App\Jobs\TurnTimeoutJob;
 use App\Http\Resources\MatchInitialResource;
 use App\Enums\GameMode;
-use App\Services\MatchConfigProvider;
+use App\Services\MatchLogicEngine;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -29,16 +30,16 @@ class ActiveMatchController extends Controller
     {
         // 1. Eager load everything needed for the MatchInitialResource
         $match = ActiveMatch::with([
-            'player1.cards', 
+            'player1.cards',
             'player2.cards'
         ])->where('match_uuid', $matchUuid)->firstOrFail();
 
-        $authUserId = $request->user()->id; 
+        $authUserId = $request->user()->id;
 
         // 2. Security check
         if ($authUserId != $match->player_1_id && $authUserId != $match->player_2_id) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Unauthorized: You are not a participant in this match.'
             ], 403);
         }
@@ -46,19 +47,19 @@ class ActiveMatchController extends Controller
         // 3. Trigger Selection Timeout Watchdog
         // We only dispatch it if the match is in 'selecting' and no timeout was set
         if ($match->status === 'selecting' && $match->next_timeout_at === null) {
-            $config = $match->match_config;
+            $config = $match->GetMatchConfigAttribute();
             $delay = $config['selection_time_limit'];
 
             ForceSelectionTimeout::dispatch($match->match_uuid)
                 ->delay(now()->addSeconds($delay));
-            
+
             // We use next_timeout_at as a flag to know the timer is already running
             $match->update(['next_timeout_at' => now()->addSeconds($delay)->timestamp]);
         }
 
         return response()->json([
             'success' => true,
-            'data' => new MatchInitialResource($match, $authUserId) 
+            'data' => new MatchInitialResource($match, $authUserId)
         ]);
     }
 
@@ -106,136 +107,332 @@ class ActiveMatchController extends Controller
     }
 
     /**
- * Updates the current card selection count and notifies the opponent.
- * Path: /api/matches/{matchUuid}/update-selection
- */
-public function updateSelection(Request $request, $matchUuid)
-{
-    $request->validate([
-        'player_id' => 'required|integer',
-        'current_count' => 'required|integer',
-    ]);
+     * Updates the current card selection count and notifies the opponent.
+     * Path: /api/matches/{matchUuid}/update-selection
+     */
+    public function updateSelection(Request $request, $matchUuid)
+    {
+        $request->validate([
+            'player_id' => 'required|integer',
+            'current_count' => 'required|integer',
+        ]);
 
-    $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
-    
-    $senderId = (int) $request->player_id;
-    $currentCount = (int) $request->current_count;
+        $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
 
-    // 1. Identify who is the rival
-    $rivalId = ($senderId === (int)$match->player_1_id) 
-               ? $match->player_2_id 
-               : $match->player_1_id;
+        $senderId = (int) $request->player_id;
+        $currentCount = (int) $request->current_count;
 
-    $rival = User::find($rivalId);
+        // 1. Identify who is the rival
+        $rivalId = ($senderId === (int) $match->player_1_id)
+            ? $match->player_2_id
+            : $match->player_1_id;
 
-    // 2. Broadcast only if the rival is a human (not a bot)
-    // and use "toOthers" so the person who sent the request doesn't receive it back
-    if ($rival && !$rival->is_bot) {
-        broadcast(new RivalCardCountEvent(
-            $matchUuid, 
-            $senderId, 
-            $currentCount
-        ))->toOthers();
-    }
+        $rival = User::find($rivalId);
 
-    return response()->json(['success' => true]);
-}
-
-/**
- * Handle deck confirmation for both human players and authorized bots.
- *
- * @param Request $request
- * @param string $matchUuid
- * @return JsonResponse
- */
-public function confirmDeck(Request $request, string $matchUuid): JsonResponse
-{
-    $authUser = $request->user();
-    $targetPlayerId = (int) $request->input('player_id'); // ID of the player performing the action
-    $cardIds = $request->input('card_ids');
-    $cardIds = array_map('intval', (array)$cardIds);
-
-    $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
-    $targetUser = User::findOrFail($targetPlayerId);
-
-    // --- SECURITY GATE: Check if the action is authorized ---
-    if ($authUser->id !== $targetUser->id) {
-        // Only allow proxying actions if target is a bot within the same match
-        $isBotInMatch = $targetUser->is_bot && 
-                        ($targetUser->id === $match->player_1_id || $targetUser->id === $match->player_2_id) &&
-                        ($authUser->id === $match->player_1_id || $authUser->id === $match->player_2_id);
-
-        if (!$isBotInMatch) {
-            return response()->json(['success' => false, 'error' => 'Unauthorized action.'], 403);
+        // 2. Broadcast only if the rival is a human (not a bot)
+        // and use "toOthers" so the person who sent the request doesn't receive it back
+        if ($rival && !$rival->is_bot) {
+            broadcast(new RivalCardCountEvent(
+                $matchUuid,
+                $senderId,
+                $currentCount
+            ))->toOthers();
         }
+
+        return response()->json(['success' => true]);
     }
 
-    // 1. Verify match phase
-    if ($match->status !== 'selecting') {
-        return response()->json(['success' => false, 'error' => 'Invalid match phase.'], 400);
+    /**
+     * Handle deck confirmation for both human players and authorized bots.
+     *
+     * @param Request $request
+     * @param string $matchUuid
+     * @return JsonResponse
+     */
+    public function confirmDeck(Request $request, string $matchUuid): JsonResponse
+    {
+        $authUser = $request->user();
+        $targetPlayerId = (int) $request->input('player_id'); // ID of the player performing the action
+        $cardIds = $request->input('card_ids');
+        $cardIds = array_map('intval', (array) $cardIds);
+
+        $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
+        $targetUser = User::findOrFail($targetPlayerId);
+
+        // --- SECURITY GATE: Check if the action is authorized ---
+        if ($authUser->id !== $targetUser->id) {
+            // Only allow proxying actions if target is a bot within the same match
+            $isBotInMatch = $targetUser->is_bot &&
+                ($targetUser->id === $match->player_1_id || $targetUser->id === $match->player_2_id) &&
+                ($authUser->id === $match->player_1_id || $authUser->id === $match->player_2_id);
+
+            if (!$isBotInMatch) {
+                return response()->json(['success' => false, 'error' => 'Unauthorized action.'], 403);
+            }
+        }
+
+        // 1. Verify match phase
+        if ($match->status !== 'selecting') {
+            return response()->json(['success' => false, 'error' => 'Invalid match phase.'], 400);
+        }
+
+        // 2. Persist hand state and readiness
+        $isP1 = $targetUser->id === $match->player_1_id;
+        $hands = $match->hands_state ?? ['p1' => [], 'p2' => []];
+
+        if ($isP1) {
+            $match->p1_ready = true;
+            $hands['p1'] = $cardIds;
+        } else {
+            $match->p2_ready = true;
+            $hands['p2'] = $cardIds;
+        }
+
+        $match->hands_state = $hands;
+
+        // 3. BROADCAST LOGIC: Only if BOTH players are humans
+        // We check if the match is NOT a PvE match
+        $player1 = User::find($match->player_1_id);
+        $player2 = User::find($match->player_2_id);
+
+        $isPvP = ($player1 && !$player1->is_bot) && ($player2 && !$player2->is_bot);
+
+        if ($isPvP) {
+            broadcast(new RivalReadyEvent($matchUuid, (string) $targetUser->id))->toOthers();
+        }
+
+        // 4. Trigger match transition if both participants are ready
+        if ($match->p1_ready && $match->p2_ready) {
+            $this->startMatchTransition($match);
+        }
+
+        $match->save();
+
+        return response()->json(['success' => true]);
     }
 
-    // 2. Persist hand state and readiness
-    $isP1 = $targetUser->id === $match->player_1_id;
-    $hands = $match->hands_state ?? ['p1' => [], 'p2' => []];
+    /**
+     * Handles the logic when both players are ready.
+     */
+    private function startMatchTransition(ActiveMatch $match)
+    {
+        $match->status = 'playing';
 
-    if ($isP1) {
-        $match->p1_ready = true;
-        $hands['p1'] = $cardIds;
-    } else {
-        $match->p2_ready = true;
-        $hands['p2'] = $cardIds;
+        $serverNow = microtime(true);
+        $startDelay = 2.0; // START_MATCH_DELAY
+        $turnStartTime = $serverNow + $startDelay;
+
+        // Update the next timeout for the first turn watchdog
+        $config = $match->GetMatchConfigAttribute();
+        $turnDuration = $config['turn_time_limit'] ?? 30;
+        $match->next_timeout_at = $turnStartTime + $turnDuration;
+
+        // Trigger Match Start Event (Event 2)
+        broadcast(new MatchStartEvent(
+            $match->match_uuid,
+            $match->first_player_id,
+            $serverNow,
+            $turnStartTime
+        ));
+
+        // Dispatch the first Turn Timeout Job
+        TurnTimeoutJob::dispatch($match->match_uuid, (string) $match->first_player_id)
+            ->delay(now()->addSeconds($startDelay + $turnDuration + 1));
     }
-    
-    $match->hands_state = $hands;
 
-    // 3. BROADCAST LOGIC: Only if BOTH players are humans
-    // We check if the match is NOT a PvE match
-    $player1 = User::find($match->player_1_id);
-    $player2 = User::find($match->player_2_id);
+    /**
+     * Executes a card placement move, calculates captures, and schedules the next timeout.
+     * * @param Request $request [player_id, card_id, board_index]
+     * @param string $matchUuid
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function playCard(Request $request, $matchUuid)
+    {
+        return DB::transaction(function () use ($request, $matchUuid) {
+            $match = ActiveMatch::where('match_uuid', $matchUuid)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-    $isPvP = ($player1 && !$player1->is_bot) && ($player2 && !$player2->is_bot);
+            // 1. Basic Validations
+            if ($match->current_turn_player_id !== $request->player_id) {
+                return response()->json(['success' => false, 'error' => 'Not your turn'], 403);
+            }
 
-    if ($isPvP) {
-        broadcast(new RivalReadyEvent($matchUuid, (string)$targetUser->id))->toOthers();
+            $board = $match->board_state;
+            if ($board[$request->board_index] !== null) {
+                return response()->json(['success' => false, 'error' => 'Slot occupied'], 400);
+            }
+
+            $hands = $match->hands_state;
+            $playerKey = ($match->player_1_id == $request->player_id) ? 'p1' : 'p2';
+
+            if (!in_array($request->card_id, $hands[$playerKey])) {
+                return response()->json(['success' => false, 'error' => 'Card not in hand'], 400);
+            }
+
+            // 2. Initial State Update
+            $hands[$playerKey] = array_values(array_diff($hands[$playerKey], [$request->card_id]));
+            $board[$request->board_index] = [
+                'card_id' => (int) $request->card_id,
+                'owner_id' => (int) $request->player_id
+            ];
+
+            $match->board_state = $board;
+
+            // 3. Capture Logic Calculation
+            $result = MatchLogicEngine::calculateMove($match, $board, $request->board_index, (int) $request->player_id);
+
+            // 4. Dynamic Timing Calculation
+            $animationDelaySeconds = $this->calculateAnimationsDelay($result['steps']);
+            $config = $match->GetMatchConfigAttribute();
+            $turnLimit = $config['turn_time_limit'] ?? 30;
+
+            $nextTurnStartTime = now()->addMilliseconds($animationDelaySeconds * 1000);
+            $nextTimeoutAt = $nextTurnStartTime->copy()->addSeconds($turnLimit);
+
+            // 5. Determine Game State
+            $gameStatus = $this->checkGameOver($result['new_board'], $match);
+            $isMatchOver = $gameStatus['is_over'];
+            $nextPlayerId = ($match->player_1_id == $request->player_id) ? $match->player_2_id : $match->player_1_id;
+
+            // 6. Persistence
+            $match->board_state = $result['new_board'];
+            $match->hands_state = $hands;
+
+            if ($isMatchOver) {
+                $match->current_turn_player_id = null;
+                $match->next_timeout_at = null;
+                $match->save();
+
+                $this->finalizeMatch($match, $gameStatus['scores'], $gameStatus['winner_id']);
+            } else {
+                $match->current_turn_player_id = $nextPlayerId;
+                $match->next_timeout_at = (float) $nextTimeoutAt->getTimestamp() + ($nextTimeoutAt->format('u') / 1000000);
+                $match->save();
+
+                TurnTimeoutJob::dispatch($match->match_uuid, $nextPlayerId)
+                    ->delay($nextTimeoutAt);
+            }
+
+            // 7. BROADCAST DATA: The "Single Source of Truth" for Unity
+            $payload = [
+                'player_id' => $request->player_id,
+                'card_id' => $request->card_id,
+                'board_index' => $request->board_index,
+                'animation_steps' => $result['steps'],
+                'match_over' => $isMatchOver,
+                'next_turn_start_time' => (float) $nextTurnStartTime->getTimestamp() + ($nextTurnStartTime->format('u') / 1000000)
+            ];
+
+            // IMPORTANT: We do NOT use ->toOthers() here because the sender
+            // also needs this data (the animation steps) to update their local UI.
+            broadcast(new PlayCardResponseEvent($matchUuid, $payload));
+
+            // 8. Minimal Response for the POST request
+            return response()->json(['success' => true]);
+        });
     }
 
-    // 4. Trigger match transition if both participants are ready
-    if ($match->p1_ready && $match->p2_ready) {
-        $this->startMatchTransition($match);
+    /**
+     * Calculates the total time (in seconds) required for the client to play all flip animations.
+     * * @param array $steps
+     * @return float
+     */
+    private function calculateAnimationsDelay(array $steps): float
+    {
+        $baseStepDelay = 0.8;
+        $specialRuleExtra = 0.8;
+        $networkBuffer = 0.5;
+
+        $totalDelay = $networkBuffer;
+        foreach ($steps as $step) {
+            $totalDelay += $baseStepDelay;
+            if (isset($step['rule']) && strtolower($step['rule']) !== 'normal') {
+                $totalDelay += $specialRuleExtra;
+            }
+        }
+        return $totalDelay;
     }
 
-    $match->save();
+    /**
+     * Checks if the board is full and returns the current game standing.
+     * * @param array $board
+     * @param ActiveMatch $match
+     * @return array [is_over, scores]
+     */
+    private function checkGameOver(array $board, ActiveMatch &$match): array
+    {
+        // 1. If there's any empty slot, the game is not over
+        if (in_array(null, $board, true)) {
+            return ['is_over' => false, 'scores' => null];
+        }
 
-    return response()->json(['success' => true]);
-}
+        $match->status = 'finished';
 
-/**
- * Handles the logic when both players are ready.
- */
-private function startMatchTransition(ActiveMatch $match)
-{
-    $match->status = 'playing';
-    
-    $serverNow = microtime(true);
-    $startDelay = 2.0; // START_MATCH_DELAY
-    $turnStartTime = $serverNow + $startDelay;
-    
-    // Update the next timeout for the first turn watchdog
-    $turnDuration = $match->match_config['turn_time_limit'];
-    $match->next_timeout_at = $turnStartTime + $turnDuration;
+        // 2. Initial count from the board cards
+        $p1Count = 0;
+        $p2Count = 0;
 
-    // Trigger Match Start Event (Event 2)
-    broadcast(new MatchStartEvent(
-        $match->match_uuid,
-        (string)$match->first_player_id,
-        $serverNow,
-        $turnStartTime
-    ));
+        foreach ($board as $slot) {
+            if ($slot && isset($slot['owner_id'])) {
+                if ($slot['owner_id'] == $match->player_1_id)
+                    $p1Count++;
+                elseif ($slot['owner_id'] == $match->player_2_id)
+                    $p2Count++;
+            }
+        }
 
-    // Dispatch the first Turn Timeout Job
-    //TurnTimeoutJob::dispatch($match->match_uuid, (string)$match->first_player_id)
-      //  ->delay(now()->addSeconds($startDelay + $turnDuration + 1));
-}
+        // 3. Add the unplayed card from the players' hands
+        // In a standard match, one player will have 0 cards and the other will have 1.
+        $firstPlayerId = $match->first_player_id;
+        if ($firstPlayerId == $match->player_1_id) {
+            $p2Count += 1;
+        } else {
+            $p1Count += 1;
+        }
+
+
+        // 4. Determine the winner based on the final 10-point total
+        $winnerId = null;
+        if ($p1Count > $p2Count) {
+            $winnerId = $match->player_1_id;
+        } elseif ($p2Count > $p1Count) {
+            $winnerId = $match->player_2_id;
+        }
+
+        return [
+            'is_over' => true,
+            'winner_id' => $winnerId,
+            'scores' => ['p1' => $p1Count, 'p2' => $p2Count]
+        ];
+    }
+
+    /**
+     * Moves the match data to the history table and performs cleanup.
+     * * @param ActiveMatch $match
+     * @param array $scores
+     * @return void
+     */
+    private function finalizeMatch(ActiveMatch $match, array $scores, ?int $winner_id): void
+    {
+        DB::transaction(function () use ($match, $scores, $winner_id) {
+            Matches::create([
+                'match_uuid' => $match->match_uuid,
+                'player_1_id' => $match->player_1_id,
+                'player_2_id' => $match->player_2_id,
+                'winner_id' => $winner_id,
+                'game_mode' => $match->game_mode,
+                'p1_score' => $scores['p1'],
+                'p2_score' => $scores['p2'],
+                'played_at' => $match->created_at,
+            ]);
+
+            // Add rewards logic here
+            // $this->distributeRewards($match);
+
+            $match->delete();
+            Log::info("[Match] History recorded and active session cleared for {$match->match_uuid}");
+        });
+    }
 
 }

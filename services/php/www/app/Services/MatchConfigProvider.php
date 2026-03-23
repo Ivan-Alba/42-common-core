@@ -57,8 +57,8 @@ class MatchConfigProvider
         return [
             'board_size' => 3,
             'hand_size' => 5,
-            'turn_time_limit' => 60,
-            'selection_time_limit' => 45,
+            'turn_time_limit' => 10,
+            'selection_time_limit' => 15,
             'max_deck_cost' => 6,
             'rules' => ['open'],
         ];

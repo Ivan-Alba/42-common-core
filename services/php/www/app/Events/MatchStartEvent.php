@@ -14,7 +14,7 @@ class MatchStartEvent implements ShouldBroadcast
 
     public function __construct(
         public string $matchUuid,
-        public string $firstPlayerId,
+        public int $firstPlayerId,
         public float $serverTimeNow,
         public float $turnStartTime
     ) {}

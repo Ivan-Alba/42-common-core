@@ -18,13 +18,9 @@ return new class extends Migration
 
             $table->enum('game_mode', array_column(GameMode::cases(), 'value'));
             
-            $table->boolean('is_vs_ai')->default(false);
             $table->integer('p1_score')->default(0);
             $table->integer('p2_score')->default(0);
-            
-            $table->integer('p1_points_earned')->default(0);
-            $table->integer('p2_points_earned')->nullable();
-            
+                        
             $table->timestamps();
         });
     }

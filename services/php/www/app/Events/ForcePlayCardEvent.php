@@ -8,30 +8,45 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Event broadcasted to notify Unity that a move must be forced due to timeout.
+ * Matches the ForcePlayCardEvent DTO in Unity.
+ */
 class ForcePlayCardEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    /**
+     * @param string $matchUuid
+     * @param int $playerId
+     * @param int $cardId
+     * @param int $boardIndex
+     */
     public function __construct(
         public string $matchUuid,
-        public string $playerId,
-        public string $reason = 'turn_timeout'
-    ) {}
+        public int $playerId,
+        public int $cardId,
+        public int $boardIndex
+    ) {
+    }
 
     /**
-     * The event's broadcast name.
-     * In Unity: "match.force_play_card"
+     * In Unity listener: "match.force_play_card"
      */
     public function broadcastAs(): string
     {
         return 'match.force_play_card';
     }
 
+    /**
+     * Payload matching the Unity DTO structure.
+     */
     public function broadcastWith(): array
     {
         return [
             'player_id' => $this->playerId,
-            'reason'    => $this->reason,
+            'card_id' => $this->cardId,
+            'board_index' => $this->boardIndex,
         ];
     }
 

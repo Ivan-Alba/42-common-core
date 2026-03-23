@@ -9,4 +9,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cards', [CardController::class, 'index']);
     Route::post('/matches/{matchUuid}/update-selection', [ActiveMatchController::class, 'updateSelection']);
     Route::post('/matches/{matchUuid}/confirm-deck', [ActiveMatchController::class, 'confirmDeck']);
+    Route::post('/matches/{matchUuid}/play-card', [ActiveMatchController::class, 'playCard']);
 });
