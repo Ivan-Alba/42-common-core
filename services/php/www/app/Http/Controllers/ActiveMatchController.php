@@ -15,6 +15,7 @@ use App\Jobs\TurnTimeoutJob;
 use App\Http\Resources\MatchInitialResource;
 use App\Enums\GameMode;
 use App\Services\MatchLogicEngine;
+use App\Services\MatchConfigProvider;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -428,11 +429,84 @@ class ActiveMatchController extends Controller
             ]);
 
             // Add rewards logic here
-            // $this->distributeRewards($match);
+            $this->distributeRewards($match, $winner_id);
 
             $match->delete();
             Log::info("[Match] History recorded and active session cleared for {$match->match_uuid}");
         });
+    }
+
+
+    /**
+     * Calculates and grants XP and Ranked Points based on match outcome.
+     * Handles level-up logic recursively.
+     * * @param ActiveMatch $match
+     * @param int|null $winnerId
+     * @return void
+     */
+    private function distributeRewards(ActiveMatch $match, ?int $winnerId): void
+    {
+        $config = MatchConfigProvider::getConfig($match->game_mode);
+        $rewards = $config['rewards'] ?? null;
+
+        if (!$rewards)
+            return;
+
+        $playerIds = [
+            'p1' => $match->player_1_id,
+            'p2' => $match->player_2_id
+        ];
+
+        foreach ($playerIds as $playerId) {
+            $user = User::with('stats')->find($playerId);
+
+            // Skip bots and users without stats record
+            if (!$user || $user->is_bot || !$user->stats)
+                continue;
+
+            $stats = $user->stats;
+            $xpGain = 0;
+            $rankedGain = 0;
+
+            // 1. Determine Win/Loss/Draw and update counters
+            if ($winnerId === null) {
+                $xpGain = $rewards['draw_xp'];
+                $rankedGain = $rewards['draw_ranked_points'];
+                $stats->increment('draws');
+            } elseif ((int) $winnerId === (int) $playerId) {
+                $xpGain = $rewards['win_xp'];
+                $rankedGain = $rewards['win_ranked_points'];
+                $stats->increment('wins');
+            } else {
+                $xpGain = $rewards['loss_xp'];
+                $rankedGain = $rewards['loss_ranked_points'];
+                $stats->increment('losses');
+            }
+
+            // 2. Update Ranked Points (Ensure it doesn't drop below 0)
+            $stats->ranked_points = max(0, $stats->ranked_points + $rankedGain);
+
+            // 3. Process XP and Level Up Logic
+            $stats->experience += $xpGain;
+
+            // Loop in case the XP gained triggers multiple level ups
+            while (true) {
+                // Formula: 100 * (level ^ 1.5)
+                $xpRequired = (int) (100 * pow($stats->level, 1.5));
+
+                if ($stats->experience >= $xpRequired) {
+                    $stats->experience -= $xpRequired;
+                    $stats->level += 1;
+                    Log::info("[Rewards] User {$playerId} leveled up to {$stats->level}!");
+                } else {
+                    break;
+                }
+            }
+
+            $stats->save();
+
+            Log::info("[Rewards] Processed for User {$playerId}: +{$xpGain}XP, +{$rankedGain} Rank.");
+        }
     }
 
 }
