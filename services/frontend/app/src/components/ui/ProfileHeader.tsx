@@ -27,7 +27,7 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
 	const totalXp = userData.experience || 0;
 	const nextLevelXp = Math.floor(100 * Math.pow((userData.level || 1), 1.5));
     const currentLevel = userData.level || 0;
-	console.log("Datos que llegan de Laravel:", userData);
+	//console.log("Datos que llegan de Laravel:", userData);
 	
     return (
         <div className="glass-panel p-6 md:p-8 mb-8 relative overflow-hidden">

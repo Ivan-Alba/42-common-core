@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Unity, useUnityContext } from 'react-unity-webgl';
+import { useNavigate } from 'react-router-dom';
 
 interface UnityGameProps {
     token: string;
@@ -7,21 +8,32 @@ interface UnityGameProps {
 }
 
 const UnityGame: React.FC<UnityGameProps> = ({ token, matchId }) => {
+
+    const navigate = useNavigate();
+
     /* Motor Unity starting */
     const { unityProvider, sendMessage, addEventListener, removeEventListener, isLoaded, loadingProgression } = useUnityContext({
-		loaderUrl: "/game/Build/NexusNineBuild.loader.js",
+        loaderUrl: "/game/Build/NexusNineBuild.loader.js",
         dataUrl: "/game/Build/NexusNineBuild.data.gz",
         frameworkUrl: "/game/Build/NexusNineBuild.framework.js.gz",
         codeUrl: "/game/Build/NexusNineBuild.wasm.gz",
+        companyName: "Transcendence",
+        productName: "NexusNine",
+        productVersion: "0.7",
     });
 
-	/* Function to handle match finished event, data from Unity to React */
+    /* Function to handle match finished event, data from Unity to React */
     useEffect(() => {
         /* Function to handle match finished event */
         const handleMatchFinished = (json: string) => {
             const results = JSON.parse(json);
             console.log("Match Over:", results);
-            // navigate('/postgame', { state: results })
+
+            // Le damos 200ms al motor para que termine sus procesos internos
+            // antes de que React desmonte el canvas por completo
+            setTimeout(() => {
+                navigate(`/index`);
+            }, 200);
         };
 
         /* Event Listener to data from Unity */
@@ -39,13 +51,13 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId }) => {
             const initData = { token, matchId };
 
             /* Call to InitializeMatch with token and matchId */
-            sendMessage('WebClient', 'InitializeMatch', JSON.stringify(initData));
+            sendMessage('NetworkManager', 'InitializeMatch', JSON.stringify(initData));
         }
     }, [isLoaded, token, matchId, sendMessage]);
 
     return (
         <div className="relative flex items-center justify-center w-full h-full bg-black overflow-hidden">
-            
+
             {/* Loading Screen */}
             {!isLoaded && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black">
@@ -56,8 +68,8 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId }) => {
             )}
 
             {/* Unity Canvas */}
-            <Unity 
-                unityProvider={unityProvider} 
+            <Unity
+                unityProvider={unityProvider}
                 style={{
                     aspectRatio: '16/9',
                     width: '100% !important',
@@ -66,9 +78,9 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId }) => {
                     maxHeight: '100vh',
                     objectFit: 'contain',
                     background: '#000000',
-					boxShadow: '0 0 30px rgba(0,0,0,0.7)'
+                    boxShadow: '0 0 30px rgba(0,0,0,0.7)'
                 }}
-                devicePixelRatio={window.devicePixelRatio || 1} 
+                devicePixelRatio={window.devicePixelRatio || 1}
             />
         </div>
     );

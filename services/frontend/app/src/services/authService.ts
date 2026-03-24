@@ -21,7 +21,7 @@ const authService = {
             // Save in sessionStorage if you need it to persist on page refresh
             sessionStorage.setItem('unity_auth_token', token);
 
-            console.log("[Auth] Unity Token captured and stored.", token);
+            //console.log("[Auth] Unity Token captured and stored.", token);
         }
 
 		/* If login is successful, get the current user to update the authentication state in the frontend */
