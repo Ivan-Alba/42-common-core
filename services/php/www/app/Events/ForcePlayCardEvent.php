@@ -44,9 +44,9 @@ class ForcePlayCardEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'player_id' => $this->playerId,
-            'card_id' => $this->cardId,
-            'board_index' => $this->boardIndex,
+            'player_id' => (int) $this->playerId,
+            'card_id' => (int) $this->cardId,
+            'board_index' => (int) $this->boardIndex,
         ];
     }
 

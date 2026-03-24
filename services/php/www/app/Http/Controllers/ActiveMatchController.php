@@ -29,38 +29,28 @@ class ActiveMatchController extends Controller
      */
     public function getMatchData(Request $request, string $matchUuid): JsonResponse
     {
-        // 1. Eager load everything needed for the MatchInitialResource
-        $match = ActiveMatch::with([
-            'player1.cards',
-            'player2.cards'
-        ])->where('match_uuid', $matchUuid)->firstOrFail();
+        $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
+        $serverNow = microtime(true);
+        $gracePeriod = 2.0;
 
-        $authUserId = $request->user()->id;
-
-        // 2. Security check
-        if ($authUserId != $match->player_1_id && $authUserId != $match->player_2_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized: You are not a participant in this match.'
-            ], 403);
-        }
-
-        // 3. Trigger Selection Timeout Watchdog
-        // We only dispatch it if the match is in 'selecting' and no timeout was set
         if ($match->status === 'selecting' && $match->next_timeout_at === null) {
             $config = $match->GetMatchConfigAttribute();
-            $delay = $config['selection_time_limit'];
+            $delay = (int) ($config['selection_time_limit'] ?? 60);
 
+            // Calculamos el final real
+            $expiration = $serverNow + $delay;
+
+            // El Watchdog espera un poco más (Grace Period)
             ForceSelectionTimeout::dispatch($match->match_uuid)
-                ->delay(now()->addSeconds($delay));
+                ->delay(now()->addSeconds($delay + $gracePeriod));
 
-            // We use next_timeout_at as a flag to know the timer is already running
-            $match->update(['next_timeout_at' => now()->addSeconds($delay)->timestamp]);
+            $match->update(['next_timeout_at' => $expiration]);
         }
 
+        // Asegúrate de que tu MatchInitialResource use $serverNow para 'server_timestamp'
         return response()->json([
             'success' => true,
-            'data' => new MatchInitialResource($match, $authUserId)
+            'data' => new MatchInitialResource($match, $request->user()->id, $serverNow)
         ]);
     }
 
@@ -199,7 +189,7 @@ class ActiveMatchController extends Controller
         $isPvP = ($player1 && !$player1->is_bot) && ($player2 && !$player2->is_bot);
 
         if ($isPvP) {
-            broadcast(new RivalReadyEvent($matchUuid, (string) $targetUser->id))->toOthers();
+            broadcast(new RivalReadyEvent($matchUuid, $targetUser->id))->toOthers();
         }
 
         // 4. Trigger match transition if both participants are ready
@@ -220,12 +210,16 @@ class ActiveMatchController extends Controller
         $match->status = 'playing';
 
         $serverNow = microtime(true);
-        $startDelay = 2.0; // START_MATCH_DELAY
-        $turnStartTime = $serverNow + $startDelay;
+        $startDelay = 2.0; // Transition buffer to allow clients to process the "ready" state and prepare for the match start
+        $gracePeriod = 2.0; // Latency buffer to ensure clients are ready before the first turn timer starts
 
-        // Update the next timeout for the first turn watchdog
         $config = $match->GetMatchConfigAttribute();
         $turnDuration = $config['turn_time_limit'] ?? 30;
+
+        $turnStartTime = $serverNow + $startDelay;
+        $turnEndTime = $turnStartTime + $turnDuration;
+
+        // Update the next timeout for the first turn watchdog
         $match->next_timeout_at = $turnStartTime + $turnDuration;
 
         // Trigger Match Start Event (Event 2)
@@ -233,14 +227,14 @@ class ActiveMatchController extends Controller
             $match->match_uuid,
             $match->first_player_id,
             $serverNow,
-            $turnStartTime
+            $turnStartTime,
+            $turnEndTime
         ));
 
         // Dispatch the first Turn Timeout Job
-        TurnTimeoutJob::dispatch($match->match_uuid, (string) $match->first_player_id)
-            ->delay(now()->addSeconds($startDelay + $turnDuration));
+        TurnTimeoutJob::dispatch($match->match_uuid, $match->first_player_id)
+            ->delay(now()->addSeconds($startDelay + $turnDuration + $gracePeriod));
     }
-
     /**
      * Executes a card placement move, calculates captures, and schedules the next timeout.
      * * @param Request $request [player_id, card_id, board_index]
@@ -255,7 +249,7 @@ class ActiveMatchController extends Controller
                 ->firstOrFail();
 
             // 1. Basic Validations
-            if ($match->current_turn_player_id !== $request->player_id) {
+            if ($match->current_turn_player_id !== (int) $request->player_id) {
                 return response()->json(['success' => false, 'error' => 'Not your turn'], 403);
             }
 
@@ -271,14 +265,14 @@ class ActiveMatchController extends Controller
                 return response()->json(['success' => false, 'error' => 'Card not in hand'], 400);
             }
 
-            // 2. Initial State Update
+            // 2. Timing and State Preparation
+            $serverNow = microtime(true); // Single source of time for this transaction
+
             $hands[$playerKey] = array_values(array_diff($hands[$playerKey], [$request->card_id]));
             $board[$request->board_index] = [
                 'card_id' => (int) $request->card_id,
                 'owner_id' => (int) $request->player_id
             ];
-
-            $match->board_state = $board;
 
             // 3. Capture Logic Calculation
             $result = MatchLogicEngine::calculateMove($match, $board, $request->board_index, (int) $request->player_id);
@@ -287,9 +281,12 @@ class ActiveMatchController extends Controller
             $animationDelaySeconds = $this->calculateAnimationsDelay($result['steps']);
             $config = $match->GetMatchConfigAttribute();
             $turnLimit = $config['turn_time_limit'] ?? 30;
+            $gracePeriod = 2.0; // Margin for network latency before ForcePlay
 
-            $nextTurnStartTime = now()->addMilliseconds($animationDelaySeconds * 1000);
-            $nextTimeoutAt = $nextTurnStartTime->copy()->addSeconds($turnLimit);
+            // Next turn starts after animations finish
+            $nextTurnStartTime = $serverNow + $animationDelaySeconds;
+            // Turn ends exactly after the limit, starting from the moment animations finish
+            $turnEndTime = $nextTurnStartTime + $turnLimit;
 
             // 5. Determine Game State
             $gameStatus = $this->checkGameOver($result['new_board'], $match);
@@ -308,28 +305,29 @@ class ActiveMatchController extends Controller
                 $this->finalizeMatch($match, $gameStatus['scores'], $gameStatus['winner_id']);
             } else {
                 $match->current_turn_player_id = $nextPlayerId;
-                $match->next_timeout_at = (float) $nextTimeoutAt->getTimestamp() + ($nextTimeoutAt->format('u') / 1000000);
+                $match->next_timeout_at = $turnEndTime;
                 $match->save();
 
+                // The Job executes AFTER turnEndTime + gracePeriod
                 TurnTimeoutJob::dispatch($match->match_uuid, $nextPlayerId)
-                    ->delay($nextTimeoutAt);
+                    ->delay(now()->addSeconds($animationDelaySeconds + $turnLimit + $gracePeriod));
             }
 
             // 7. BROADCAST DATA: The "Single Source of Truth" for Unity
             $payload = [
-                'player_id' => $request->player_id,
-                'card_id' => $request->card_id,
-                'board_index' => $request->board_index,
+                'player_id' => (int) $request->player_id,
+                'card_id' => (int) $request->card_id,
+                'board_index' => (int) $request->board_index,
                 'animation_steps' => $result['steps'],
                 'match_over' => $isMatchOver,
-                'next_turn_start_time' => (float) $nextTurnStartTime->getTimestamp() + ($nextTurnStartTime->format('u') / 1000000)
+                'server_time_now' => $serverNow,
+                'next_turn_start_time' => $nextTurnStartTime,
+                'turn_end_time' => $turnEndTime,
             ];
 
-            // IMPORTANT: We do NOT use ->toOthers() here because the sender
-            // also needs this data (the animation steps) to update their local UI.
             broadcast(new PlayCardResponseEvent($matchUuid, $payload));
 
-            // 8. Minimal Response for the POST request
+            // 8. Minimal Response
             return response()->json(['success' => true]);
         });
     }

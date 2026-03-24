@@ -32,7 +32,7 @@ class CardResource extends JsonResource
         }
 
         return [
-            'id' => $this->id,
+            'id' => (int) $this->id,
             'name' => $translation ? $translation->name : $this->name,
             'description' => $translation ? $translation->description : $this->description,
             'category' => $this->category,
@@ -42,10 +42,10 @@ class CardResource extends JsonResource
             'red_url' => "{$baseUrl}/{$this->red_artwork}.png",
             'rarity' => $this->rarity,
             'stats' => [
-                'top'    => $this->top,
-                'bottom' => $this->bottom,
-                'left'   => $this->left,
-                'right'  => $this->right,
+                'top'    => (int) $this->top,
+                'bottom' => (int) $this->bottom,
+                'left'   => (int) $this->left,
+                'right'  => (int) $this->right,
             ],
         ];
     }

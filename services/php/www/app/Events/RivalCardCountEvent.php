@@ -29,8 +29,8 @@ class RivalCardCountEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'player_id' => $this->player_id,
-            'current_count' => $this->current_count,
+            'player_id' => (int) $this->player_id,
+            'current_count' => (int) $this->current_count,
         ];
     }
 

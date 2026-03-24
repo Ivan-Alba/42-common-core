@@ -14,7 +14,7 @@ class RivalReadyEvent implements ShouldBroadcast
 
     public function __construct(
         public string $matchUuid,
-        public string $rivalId
+        public int $rivalId
     ) {}
 
     /**
@@ -32,7 +32,7 @@ class RivalReadyEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'rival_id' => $this->rivalId,
+            'rival_id' => (int) $this->rivalId,
         ];
     }
 

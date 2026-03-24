@@ -16,12 +16,13 @@ class MatchStartEvent implements ShouldBroadcast
         public string $matchUuid,
         public int $firstPlayerId,
         public float $serverTimeNow,
-        public float $turnStartTime
-    ) {}
+        public float $turnStartTime,
+        public float $turnEndTime
+    ) {
+    }
 
     /**
      * The event's broadcast name.
-     * In Unity, you will listen for "match.start".
      */
     public function broadcastAs(): string
     {
@@ -30,13 +31,15 @@ class MatchStartEvent implements ShouldBroadcast
 
     /**
      * Data payload for the event.
+     * We explicitly cast timestamps to (float) for C# double precision compatibility.
      */
     public function broadcastWith(): array
     {
         return [
-            'first_player_id' => $this->firstPlayerId,
-            'server_time_now' => $this->serverTimeNow,
-            'turn_start_time' => $this->turnStartTime,
+            'first_player_id' => (int) $this->firstPlayerId,
+            'server_time_now' => (float) $this->serverTimeNow,
+            'turn_start_time' => (float) $this->turnStartTime,
+            'turn_end_time' => (float) $this->turnEndTime,
         ];
     }
 

@@ -48,8 +48,9 @@ class PlayCardResponseEvent implements ShouldBroadcast
             'board_index' => (int) $this->responseData['board_index'],
             'animation_steps' => $this->responseData['animation_steps'],
             'match_over' => (bool) $this->responseData['match_over'],
-            // PHP floats are double precision by default, matching C# double?
-            'next_turn_start_time' => $this->responseData['next_turn_start_time'] ?? null,
+            'server_time_now' => (float) $this->responseData['server_time_now'],
+            'next_turn_start_time' => (float) $this->responseData['next_turn_start_time'],
+            'turn_end_time' => (float) $this->responseData['turn_end_time'],
         ];
     }
 
