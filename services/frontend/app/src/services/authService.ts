@@ -4,47 +4,54 @@ import type { LoginCredentials, RegisterCredentials, User } from '../context/Aut
 const authService = {
     /* Get CSRF token from Laravel Sanctum */
     getCsrfToken: async (): Promise<void> => {
-        await api.get('/sanctum/csrf-cookie'); 
+        await api.get('/sanctum/csrf-cookie');
     },
 
     /* Login */
-    login: async (creds: LoginCredentials): Promise<User> => {        
-		/* Security handshake to get the cookie CSRF */
+    login: async (creds: LoginCredentials): Promise<User> => {
+        /* Security handshake to get the cookie CSRF */
         await authService.getCsrfToken();
-		/* Send credentials to backend, Sanctum will create the session if everithing is ok */
+        /* Send credentials to backend, Sanctum will create the session if everithing is ok */
         const response = await api.post('/login', creds);
 
-		/* Capture Unity token if it exists and store it in sessionStorage for later use */
+        /* Capture Unity token if it exists and store it in sessionStorage for later use */
         if (response.data && response.data.unity_token) {
             const token = response.data.unity_token;
-        
+
             // Save in sessionStorage if you need it to persist on page refresh
             sessionStorage.setItem('unity_auth_token', token);
 
             //console.log("[Auth] Unity Token captured and stored.", token);
         }
 
-		/* If login is successful, get the current user to update the authentication state in the frontend */
+        /* If login is successful, get the current user to update the authentication state in the frontend */
         return authService.getUser();
     },
-	
+
     /* Register */
     register: async (data: RegisterCredentials): Promise<User> => {
         await authService.getCsrfToken();
         await api.post('/register', data);
         return authService.getUser();
-		
+
     },
 
     /* Logout */
-    logout: async (): Promise<void> => {        
+    logout: async (): Promise<void> => {
         await api.post('/logout');
     },
 
     /** getUser to obtain actual user (Check Session) */
-	getUser: async (): Promise<User> => {
+    getUser: async (): Promise<User> => {
         const response = await api.get(`/v1/user`);
-        return response.data;  
+
+        if (response.data && response.data.id) {
+            const userId = response.data.id;
+            sessionStorage.setItem('unity_user_id', userId);
+            //console.log("[Auth] User ID captured and stored in sessionStorage:", userId);
+        }
+
+        return response.data;
     }
 };
 

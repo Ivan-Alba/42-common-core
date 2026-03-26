@@ -24,6 +24,22 @@ Broadcast::channel('reverb-ping-presence', function ($user) {
 }, ['guards' => ['sanctum']]);
 
 
+// --- INDIVIDUAL USER PRIVATE CHANNEL ---
+
+/**
+ * Personal channel for a specific user.
+ * Used for latency monitoring (Pong) and user-specific notifications.
+ * Unity clients must subscribe to: private-user.{id}
+ */
+Broadcast::channel('user.{id}', function ($user, $id) {
+    // Authorization Logic:
+    // A user can only subscribe to their own private channel.
+    // We cast to (int) to ensure strict ID comparison from the Sanctum token.
+    return (int) $user->id === (int) $id;
+
+}, ['guards' => ['sanctum']]);
+
+
 // --- GAME SESSION PRIVATE CHANNEL ---
 
 /**
@@ -33,7 +49,7 @@ Broadcast::channel('reverb-ping-presence', function ($user) {
 Broadcast::channel('match.{matchUuid}', function ($user, $matchUuid) {
     // 1. Fetch the active match session using the UUID
     $match = ActiveMatch::where('match_uuid', $matchUuid)->first();
-    
+
     if (!$match) {
         return false;
     }
@@ -41,7 +57,7 @@ Broadcast::channel('match.{matchUuid}', function ($user, $matchUuid) {
     // 2. Authorization Logic:
     // Only allow the two participants defined in the database to subscribe to this channel.
     // We cast to (int) to ensure strict ID comparison.
-    return (int) $user->id === (int) $match->player_1_id || 
-           (int) $user->id === (int) $match->player_2_id;
+    return (int) $user->id === (int) $match->player_1_id ||
+        (int) $user->id === (int) $match->player_2_id;
 
 }, ['guards' => ['sanctum']]); // CRITICAL: Ensure Sanctum guard is used for API token validation

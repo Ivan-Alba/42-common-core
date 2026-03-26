@@ -31,7 +31,7 @@ class ActiveMatchController extends Controller
     {
         $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
         $serverNow = microtime(true);
-        $gracePeriod = 2.0;
+        $gracePeriod = 1.5;
 
         if ($match->status === 'selecting' && $match->next_timeout_at === null) {
             $config = $match->GetMatchConfigAttribute();
@@ -211,7 +211,7 @@ class ActiveMatchController extends Controller
 
         $serverNow = microtime(true);
         $startDelay = 2.0; // Transition buffer to allow clients to process the "ready" state and prepare for the match start
-        $gracePeriod = 2.0; // Latency buffer to ensure clients are ready before the first turn timer starts
+        $gracePeriod = 1.5; // Latency buffer to ensure clients are ready before the first turn timer starts
 
         $config = $match->GetMatchConfigAttribute();
         $turnDuration = $config['turn_time_limit'] ?? 30;
@@ -220,21 +220,22 @@ class ActiveMatchController extends Controller
         $turnEndTime = $turnStartTime + $turnDuration;
 
         // Update the next timeout for the first turn watchdog
-        $match->next_timeout_at = $turnStartTime + $turnDuration;
+        $match->next_timeout_at = $turnEndTime;
 
         // Trigger Match Start Event (Event 2)
         broadcast(new MatchStartEvent(
             $match->match_uuid,
             $match->first_player_id,
-            $serverNow,
             $turnStartTime,
             $turnEndTime
         ));
 
         // Dispatch the first Turn Timeout Job
         TurnTimeoutJob::dispatch($match->match_uuid, $match->first_player_id)
-            ->delay(now()->addSeconds($startDelay + $turnDuration + $gracePeriod));
+            ->delay(now()->addSeconds(($turnEndTime - $serverNow) + $gracePeriod));
     }
+
+
     /**
      * Executes a card placement move, calculates captures, and schedules the next timeout.
      * * @param Request $request [player_id, card_id, board_index]
@@ -281,7 +282,7 @@ class ActiveMatchController extends Controller
             $animationDelaySeconds = $this->calculateAnimationsDelay($result['steps']);
             $config = $match->GetMatchConfigAttribute();
             $turnLimit = $config['turn_time_limit'] ?? 30;
-            $gracePeriod = 2.0; // Margin for network latency before ForcePlay
+            $gracePeriod = 1.5; // Margin for network latency before ForcePlay
 
             // Next turn starts after animations finish
             $nextTurnStartTime = $serverNow + $animationDelaySeconds;
@@ -310,7 +311,7 @@ class ActiveMatchController extends Controller
 
                 // The Job executes AFTER turnEndTime + gracePeriod
                 TurnTimeoutJob::dispatch($match->match_uuid, $nextPlayerId)
-                    ->delay(now()->addSeconds($animationDelaySeconds + $turnLimit + $gracePeriod));
+                    ->delay(now()->addSeconds(($turnEndTime - $serverNow) + $gracePeriod));
             }
 
             // 7. BROADCAST DATA: The "Single Source of Truth" for Unity
@@ -320,7 +321,6 @@ class ActiveMatchController extends Controller
                 'board_index' => (int) $request->board_index,
                 'animation_steps' => $result['steps'],
                 'match_over' => $isMatchOver,
-                'server_time_now' => $serverNow,
                 'next_turn_start_time' => $nextTurnStartTime,
                 'turn_end_time' => $turnEndTime,
             ];

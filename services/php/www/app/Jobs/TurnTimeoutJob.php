@@ -94,5 +94,7 @@ class TurnTimeoutJob implements ShouldQueue
             $cardId,
             $boardIndex
         ));
+
+        Log::info("[Job Success] Broadcasting ForcePlayCardEvent...");
     }
 }
