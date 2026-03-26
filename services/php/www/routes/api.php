@@ -1,10 +1,13 @@
 <?php
 use App\Http\Controllers\ActiveMatchController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\NetworkController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/network/ping', [NetworkController::class, 'sendPong']);
+
     Route::get('/matches/{matchUuid}', [ActiveMatchController::class, 'getMatchData']);
     Route::get('/cards', [CardController::class, 'index']);
     Route::post('/matches/{matchUuid}/update-selection', [ActiveMatchController::class, 'updateSelection']);

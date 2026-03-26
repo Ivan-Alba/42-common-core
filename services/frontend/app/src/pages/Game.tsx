@@ -10,8 +10,10 @@ const Game = () => {
     const { t } = useTranslation();
     
     const token = sessionStorage.getItem('unity_auth_token');
+    const userId = sessionStorage.getItem('unity_user_id');
 
-    if (!token || !matchId) {
+
+    if (!token || !matchId || !userId) {
         return <Navigate to="/index" />;
     }
 
@@ -42,7 +44,7 @@ const Game = () => {
             </button>
 
             {/* Game Component */}
-            <UnityGame token={token} matchId={matchId} />
+            <UnityGame token={token} matchId={matchId} userId={userId} />
             
         </div>
     );

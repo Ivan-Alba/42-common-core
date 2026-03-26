@@ -4,18 +4,17 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MatchStartEvent implements ShouldBroadcast
+class MatchStartEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
         public string $matchUuid,
         public int $firstPlayerId,
-        public float $serverTimeNow,
         public float $turnStartTime,
         public float $turnEndTime
     ) {
@@ -37,7 +36,6 @@ class MatchStartEvent implements ShouldBroadcast
     {
         return [
             'first_player_id' => (int) $this->firstPlayerId,
-            'server_time_now' => (float) $this->serverTimeNow,
             'turn_start_time' => (float) $this->turnStartTime,
             'turn_end_time' => (float) $this->turnEndTime,
         ];

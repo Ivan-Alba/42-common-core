@@ -4,7 +4,7 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
  * Event triggered when a player successfully places a card.
  * This is the "Source of Truth" for all clients to update their UI.
  */
-class PlayCardResponseEvent implements ShouldBroadcast
+class PlayCardResponseEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -48,7 +48,6 @@ class PlayCardResponseEvent implements ShouldBroadcast
             'board_index' => (int) $this->responseData['board_index'],
             'animation_steps' => $this->responseData['animation_steps'],
             'match_over' => (bool) $this->responseData['match_over'],
-            'server_time_now' => (float) $this->responseData['server_time_now'],
             'next_turn_start_time' => (float) $this->responseData['next_turn_start_time'],
             'turn_end_time' => (float) $this->responseData['turn_end_time'],
         ];

@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 interface UnityGameProps {
     token: string;
     matchId: string;
+    userId: number;
 }
 
-const UnityGame: React.FC<UnityGameProps> = ({ token, matchId }) => {
+const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
 
     const navigate = useNavigate();
 
@@ -48,12 +49,14 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId }) => {
     /* React to Unity Handshake still Unity is ready */
     useEffect(() => {
         if (isLoaded) {
-            const initData = { token, matchId };
+            const initData = { token, matchId, userId };
+
+            //console.log("Unity Loaded. Sending initialization data:", initData);
 
             /* Call to InitializeMatch with token and matchId */
             sendMessage('NetworkManager', 'InitializeMatch', JSON.stringify(initData));
         }
-    }, [isLoaded, token, matchId, sendMessage]);
+    }, [isLoaded, token, matchId, userId, sendMessage]);
 
     return (
         <div className="relative flex items-center justify-center w-full h-full bg-black overflow-hidden">
