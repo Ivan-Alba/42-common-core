@@ -79,6 +79,32 @@ services:
       redis:
         condition: service_healthy
     restart: always
+
+  laravel_scheduler:
+    build: ./services/php
+    image: php
+    container_name: laravel_scheduler
+    # 'schedule:work' is the command that runs the scheduler every minute automatically
+    command: php artisan schedule:work
+    volumes:
+      - .env:/var/www/.env
+      - ${PWD}/services/php/www:/var/www
+      - php_vendor_vm:/var/www/vendor
+      - ${PWD}/services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - transcendence
+    healthcheck:
+      # Check if the schedule:work process is alive
+      test: ["CMD-SHELL", "ps aux | grep 'schedule:work' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      laravel:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+    restart: always
   
 # Game (Nginx)
   game:
