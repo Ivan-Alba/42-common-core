@@ -14,6 +14,7 @@ use App\Jobs\ForceSelectionTimeout;
 use App\Jobs\TurnTimeoutJob;
 use App\Http\Resources\MatchInitialResource;
 use App\Enums\GameMode;
+use App\Enums\UserStatus;
 use App\Services\MatchLogicEngine;
 use App\Services\MatchConfigProvider;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class ActiveMatchController extends Controller
     {
         $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
         $serverNow = microtime(true);
-        $gracePeriod = 1.5;
+        $gracePeriod = 1.0;
 
         if ($match->status === 'selecting' && $match->next_timeout_at === null) {
             $config = $match->GetMatchConfigAttribute();
@@ -211,7 +212,7 @@ class ActiveMatchController extends Controller
 
         $serverNow = microtime(true);
         $startDelay = 2.0; // Transition buffer to allow clients to process the "ready" state and prepare for the match start
-        $gracePeriod = 1.5; // Latency buffer to ensure clients are ready before the first turn timer starts
+        $gracePeriod = 1.0; // Latency buffer to ensure clients are ready before the first turn timer starts
 
         $config = $match->GetMatchConfigAttribute();
         $turnDuration = $config['turn_time_limit'] ?? 30;
@@ -282,7 +283,7 @@ class ActiveMatchController extends Controller
             $animationDelaySeconds = $this->calculateAnimationsDelay($result['steps']);
             $config = $match->GetMatchConfigAttribute();
             $turnLimit = $config['turn_time_limit'] ?? 30;
-            $gracePeriod = 1.5; // Margin for network latency before ForcePlay
+            $gracePeriod = 1.0; // Margin for network latency before ForcePlay
 
             // Next turn starts after animations finish
             $nextTurnStartTime = $serverNow + $animationDelaySeconds;
@@ -437,6 +438,10 @@ class ActiveMatchController extends Controller
 
             // Add rewards logic here
             $this->distributeRewards($match, $winner_id);
+
+            User::whereIn('id', [$match->player_1_id, $match->player_2_id])
+                ->where('is_bot', false)
+                ->update(['status' => UserStatus::ONLINE]);
 
             $match->delete();
             Log::info("[Match] History recorded and active session cleared for {$match->match_uuid}");

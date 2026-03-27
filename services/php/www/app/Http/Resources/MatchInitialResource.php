@@ -58,7 +58,7 @@ class MatchInitialResource extends JsonResource
         return [
             'id' => (int) $user->id,
             'name' => $user->name,
-            'avatar_url' => $user->avatar,
+            'avatar_url' => $user->avatar ? asset('storage/' . $user->avatar) : null,
             'is_ai' => $isAi,
             'collection_ids' => $user->cards->pluck('id')->map(fn($id) => (int) $id)->toArray(),
         ];

@@ -10,6 +10,7 @@ services:
       - ${PWD}/services/nginx/conf:/etc/nginx/conf.d 
       - ${PWD}/certs:/etc/ssl/certs
       - ${PWD}/private:/etc/ssl/private
+      - ${PWD}/services/php/www:/var/www
     networks:
       - transcendence
     healthcheck:

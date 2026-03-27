@@ -1,3 +1,5 @@
 www/vendor
 www/.env.example
 storage/*.log
+www/public/storage
+.git
