@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\Language;
 use App\Enums\OrderDirection;
+use App\Enums\UserStatus;
 use App\Http\Resources\FriendResource;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
@@ -23,26 +24,26 @@ use Illuminate\Validation\Rules\Password;
 
 class UserController
 {
-	public function getUser(Request $request, User $user)
-	{
+    public function getUser(Request $request, User $user)
+    {
         // Add PlayerStatsResource to UserResource
         $user->load('stats');
 
         // Add match history
         $history = UserMatch::where('player_1_id', $user->id)
-        ->orWhere('player_2_id', $user->id)
-        ->with(['player1', 'player2']) 
-        ->orderBy('created_at', 'desc')
-        ->take(15)
-        ->get();
+            ->orWhere('player_2_id', $user->id)
+            ->with(['player1', 'player2'])
+            ->orderBy('created_at', 'desc')
+            ->take(15)
+            ->get();
 
         $user->setRelation('match_history', $history);
 
-		return response()->json($user->toResource(), 200);
-	}
+        return response()->json($user->toResource(), 200);
+    }
 
     public function getUsers(Request $request)
-    {   
+    {
         $validated = $request->validate([
             'search' => ['sometimes', 'string', 'max:255'],
             'page_size' => ['sometimes', 'integer', 'min:1', 'max:' . config('social.max_page_size')],
@@ -68,16 +69,43 @@ class UserController
         return $users->toResourceCollection();
     }
 
-	public function logout(Request $request)
-	{
-		Auth::logout();
-		$request->session()->invalidate();
-		$request->session()->regenerateToken();
-		return response()->noContent();
-	}
+    /**
+     * Forcefully set the user status to OFFLINE.
+     * Used during emergency quits or tab closures.
+     */
+    public function forceOffline(Request $request)
+    {
+        $user = auth()->user();
 
-	public function getOwnUser(Request $request)
-	{
+        if ($user) {
+            // 1. Cambiamos el estado
+            $user->update(['status' => UserStatus::OFFLINE]);
+
+            // 2. Revocamos el token de Unity específicamente
+            $user->tokens()->where('name', 'unity_token')->delete();
+
+            // 3. Opcional: Loguear para debug (puedes quitarlo en producción)
+            \Illuminate\Support\Facades\Log::info("User ID {$user->id} forced OFFLINE via beacon.");
+        } else {
+            \Illuminate\Support\Facades\Log::warning("Force offline called but no authenticated user found.");
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User status updated to OFFLINE'
+        ], 200);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response()->noContent();
+    }
+
+    public function getOwnUser(Request $request)
+    {
         $user = auth()->user();
 
         // Add PlayerStatsResource to UserResource
@@ -85,93 +113,99 @@ class UserController
 
         // Add match history
         $history = UserMatch::where('player_1_id', $user->id)
-        ->orWhere('player_2_id', $user->id)
-        ->with(['player1', 'player2']) 
-        ->orderBy('created_at', 'desc')
-        ->take(10)
-        ->get();
+            ->orWhere('player_2_id', $user->id)
+            ->with(['player1', 'player2'])
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
 
         $user->setRelation('match_history', $history);
 
-        return response()->json($user->toResource(), 200);
+        // Unity token generation for authenticated API access
+        $user->tokens()->where('name', 'unity_token')->delete();
+        $token = $user->createToken('unity_token')->plainTextToken;
+
+        return response()->json($user->toResource(), 200)
+            ->header('X-Unity-Token', $token)
+            ->header('Access-Control-Expose-Headers', 'X-Unity-Token');
     }
 
-	public function updateOwnPassword(Request $request)
-	{
-		$request->validate(['password' =>  ['required', 'string', Password::default()]]);
+    public function updateOwnPassword(Request $request)
+    {
+        $request->validate(['password' => ['required', 'string', Password::default()]]);
 
-		auth()->user()->forceFill([
-			'password' => Hash::make($request['password']),
-		])->save();
+        auth()->user()->forceFill([
+            'password' => Hash::make($request['password']),
+        ])->save();
 
-		return response()->json(auth()->user()->toResource(), 200);
-	}
+        return response()->json(auth()->user()->toResource(), 200);
+    }
 
-	public function updateUser(Request $request)
-	{
-		$user = auth()->user();
+    public function updateUser(Request $request)
+    {
+        $user = auth()->user();
 
-		$request->validate([
-			'username' => ['nullable', 'string', 'max:255'],
-			'email' => [
-				'nullable',
-				'string',
-				'email',
-				'max:255',
-				Rule::unique('users')->ignore($user->id),
-			],
-			'bio' => [
-				'nullable',
-				'string',
-				'max:255',
-			],
-			'avatar' => ['nullable', 'image', 'max:2048'],
-			'language' => ['nullable', Rule::enum(Language::class)]
-		]);
+        $request->validate([
+            'username' => ['nullable', 'string', 'max:255'],
+            'email' => [
+                'nullable',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'bio' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'avatar' => ['nullable', 'image', 'max:2048'],
+            'language' => ['nullable', Rule::enum(Language::class)]
+        ]);
 
-		$user->fill([
-			'name' => $request['username'] ?? $user->name,
-			'email' => $request['email'] ?? $user->email,
-			'bio' => $request['bio'] ?? $user->bio,
-			'language' => $request['language'] ?? $user->language,
-		]);
+        $user->fill([
+            'name' => $request['username'] ?? $user->name,
+            'email' => $request['email'] ?? $user->email,
+            'bio' => $request['bio'] ?? $user->bio,
+            'language' => $request['language'] ?? $user->language,
+        ]);
 
-		if ($request->hasFile('avatar')) {
-			$user->updateAvatar($request['avatar']);
-		}
+        if ($request->hasFile('avatar')) {
+            $user->updateAvatar($request['avatar']);
+        }
 
-		$user->save();
+        $user->save();
 
-		return response()->json(auth()->user()->toResource(), 200);
-	}
+        return response()->json(auth()->user()->toResource(), 200);
+    }
 
-	// public function getFriends(User $user, Request $request)
-	// {
-	// 	if ($user->id != auth()->user()->id) {
-	// 		abort(403);
-	// 	}
+    // public function getFriends(User $user, Request $request)
+    // {
+    // 	if ($user->id != auth()->user()->id) {
+    // 		abort(403);
+    // 	}
 
-	// 	$validated = $request->validate([
-	// 		'page_size' => ['sometimes', 'integer', 'min:1', 'max:' . config('social.max_page_size')],
-	// 		'page' => ['sometimes', 'integer', 'min:1'],
-	// 		'sort_order' => ['sometimes', Rule::enum(OrderDirection::class)],
-	// 		'name' => ['sometimes', 'string', 'max:255'],
-	// 	]);
+    // 	$validated = $request->validate([
+    // 		'page_size' => ['sometimes', 'integer', 'min:1', 'max:' . config('social.max_page_size')],
+    // 		'page' => ['sometimes', 'integer', 'min:1'],
+    // 		'sort_order' => ['sometimes', Rule::enum(OrderDirection::class)],
+    // 		'name' => ['sometimes', 'string', 'max:255'],
+    // 	]);
 
-	// 	$pageSize = $request->integer('page_size', config('social.default_page_size'));
-	// 	$page = $request->integer('page', 1);
-	// 	$sortOrder =  $request->enum('sort_order', OrderDirection::class, OrderDirection::DESC);
-	// 	$name = $request->string('name') ?? "";
+    // 	$pageSize = $request->integer('page_size', config('social.default_page_size'));
+    // 	$page = $request->integer('page', 1);
+    // 	$sortOrder =  $request->enum('sort_order', OrderDirection::class, OrderDirection::DESC);
+    // 	$name = $request->string('name') ?? "";
 
-	// 	$friends = $user->friendsOfMine()
-	// 		->orderBy('created_at', $sortOrder->value)
-	// 		->when(!empty($name), fn($query) => $query->where('name', 'like', '%' . $name . '%'))
-	// 		->paginate($pageSize, ['*'], 'page', $page);
+    // 	$friends = $user->friendsOfMine()
+    // 		->orderBy('created_at', $sortOrder->value)
+    // 		->when(!empty($name), fn($query) => $query->where('name', 'like', '%' . $name . '%'))
+    // 		->paginate($pageSize, ['*'], 'page', $page);
 
-	// 	return FriendResource::collection($friends);
-	// }
+    // 	return FriendResource::collection($friends);
+    // }
 
-	public function getFriends(User $user, Request $request)
+    public function getFriends(User $user, Request $request)
     {
         if ($user->id != auth()->user()->id) {
             abort(403);
@@ -202,9 +236,9 @@ class UserController
         $friends->getCollection()->transform(function ($friend) use ($friendships, $user) {
             $pivot = $friendships->first(function ($f) use ($friend, $user) {
                 return ($f->user_id === $user->id && $f->friend_id === $friend->id) ||
-                       ($f->user_id === $friend->id && $f->friend_id === $user->id);
+                    ($f->user_id === $friend->id && $f->friend_id === $user->id);
             });
-            
+
             $friend->pivot = $pivot;
             return $friend;
         });

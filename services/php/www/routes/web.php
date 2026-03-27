@@ -10,155 +10,92 @@ use App\Http\Controllers\PlayerStatsController;
 use App\Http\Controllers\CardUserController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\MatchmakingController;
+use App\Http\Middleware\UpdateUserActivity;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
+/*
+|--------------------------------------------------------------------------
+| Authenticated Web Routes (With Activity Tracking)
+|--------------------------------------------------------------------------
+| These routes require Sanctum authentication and trigger the 
+| UpdateUserActivity middleware to keep the user ONLINE.
+*/
+Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function () {
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {return $request->user();});
+    /* Basic user check */
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
-    /**
-     * Friend system
-     * Chat system (Friend and ingame)
-     * User profiles
-     * Profile updates
-     * 
-     * Games
-     * Tournaments
-     * Game statistics
-     * Match history
-     * User game stadistics
-     * Achievements
-     * Progression
-     * Leaderboards
-     * Badges
-     * 
-     */
     Route::prefix('/v1')->group(function () {
-        // Own user
+
+        /* Own user management */
         Route::get('/user', [UserController::class, 'getOwnUser']);
         Route::patch('/user/update', [UserController::class, 'updateUser']);
         Route::put('/user/password/update', [UserController::class, 'updateOwnPassword']);
-    
-        // User
+
+        /* User directory & Friends */
         Route::get('/users', [UserController::class, 'getUsers']);
         Route::get('/users/{user}', [UserController::class, 'getUser']);
         Route::get('/users/{user}/friends', [UserController::class, 'getFriends']);
 
-        // PlayerStats
+        /* Player statistics */
         Route::get('/user/{user}/stats', [PlayerStatsController::class, 'getUserStats']);
 
-        // Cards
+        /* Card collection */
         Route::get('/cards', [CardController::class, 'index']);
         Route::get('/user/cards', [CardUserController::class, 'getMyCards']);
 
-        // Ranking
+        /* Leaderboard and Ranking */
         Route::get('/ranking', [UserController::class, 'getRanking']);
 
-        // Matchmaking
+        /* Matchmaking system */
         Route::post('/matchmaking/join', [MatchmakingController::class, 'join']);
 
-        // Route::get('/users/{id}/games', [UserController::class, 'getUser']);
-        // Route::get('/users/{id}/chats', [UserController::class, 'getUser']);
-        // Route::get('/users/{id}/achievements', [UserController::class, 'getUser']);
-        // Route::patch('/users/{id}', [UserController::class, 'getUser']);
-        // Route::delete('/users/{id}', [UserController::class, 'getUser']);
-
-        // Friendship
+        /* Friendship actions */
         Route::post('/users/{user}/friends/{friend}', [FriendshipController::class, 'sendFriendRequest']);
         Route::patch('/users/{user}/friends/{friend}', [FriendshipController::class, 'updateFriendship']);
         Route::delete('/users/{user}/friends/{friend}', [FriendshipController::class, 'deleteFriendship']);
 
-        // Chat
-        // Route::get('/chats/{chat}', [ChatController::class, 'getChat']); // Guests might be able to read chats, make it public.
+        /* Chat and messaging */
         Route::post('/chats/{chat}/messages', [ChatController::class, 'postMessage']);
         Route::patch('/messages/{message}', [ChatController::class, 'editMessage']);
         Route::post('/messages/{message}/read', [ChatController::class, 'readMessage']);
 
-        // Games
-        // Route::get('/games', [UserController::class, 'getUser']);
-        // Route::get('/games/{id}', [UserController::class, 'getUser']);
+        /* Game session management (Web interface) */
         Route::post('/games', [GameController::class, 'createGame']);
-
-        // {
-        // "match_id": "string",
-        // "server_timestamp": 1705932000,
-        // "config": {
-        //     "board_size": 3,
-        //     "hand_size": 5,
-        //     "turn_time_limit": 30,
-        //     "max_deck_cost": 999,
-        //     "rules": ["open", "same", "plus"],
-        //     "random_first_player": false,
-        //     "first_player_id": "string"
-        // },
-        // "local_player": {
-        //     "id": "string", "name": "string", "avatar_url": "url",
-        //     "collection_ids": ["id1", "id2", "..."]
-        // },
-        // "opponent": {
-        //     "id": "string", "name": "string", "avatar_url": "url",
-        //     "is_ai": bool, "collection_ids": ["id10", "..."]
-        // }
-        // }
         Route::get('/games/{game}', [GameController::class, 'getGame']);
-
-        // REQ: { "player_id": string, "card_ids": string[] }
-        // RESP: { "success": bool, "data": { "confirmed": true } }
         Route::post('/games/{game}/confirm-deck', [GameController::class, 'confirmDeck']);
-        
-        // REQ: { "player_id": string, "card_id": string, "board_index": int }
-        // RESP: 
-        // {
-        // "player_id": "player_local",
-        // "card_id": "card_005",
-        // "board_index": 4,
-        // "animation_steps": [
-        // {
-        // "rule": "plus",
-        // "card_indices": [3, 5],
-        // "caused_by_index": 4
-        // },
-        // {
-        // "rule": "combo",
-        // "card_indices": [2],
-        // "caused_by_index": 3
-        // },
-        // {
-        // "rule": "normal",
-        // "card_indices": [1],
-        // "caused_by_index": 4
-        // }
-        // ],
-        // "match_over": false
-        // }
         Route::post('/games/{game}/play-card', [GameController::class, 'playCard']);
-
-
-        // Achivements
-        // Route::get('/achievements', [UserController::class, 'getUsers']);
-        // Route::get('/achievements/{id}/users', [UserController::class, 'getUsers']);
-        // Route::put('/achievements/{id}/users/{user_id}', [UserController::class, 'getUsers']);
-
-        // Tournaments
-        // Route::get('/tournaments', [UserController::class, 'getUsers']);
-        // Route::get('/tournaments/{id}', [UserController::class, 'getUsers']);
-        // Route::post('/tournaments', [UserController::class, 'getUsers']);
-        // Route::delete('/tournaments/{id}', [UserController::class, 'getUsers']);
-        // Route::patch('/tournaments/{id}', [UserController::class, 'getUsers']);
-
-        // Other
-        // Route::get('/leaderboard', [UserController::class, 'getUsers']);
     });
-
 });
 
+/*
+|--------------------------------------------------------------------------
+| Authenticated Web Routes (Without Activity Tracking)
+|--------------------------------------------------------------------------
+| We exclude force-offline from the activity middleware to prevent it from
+| accidentally setting the user to ONLINE during the logout/close process.
+*/
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/v1/user/force-offline', [UserController::class, 'forceOffline']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+/* Public chat viewing */
 Route::get('/v1/chats/{chat}', [ChatController::class, 'getChat']);
 
+/* OAuth Authentication routes */
 Route::get(config('oauth.uri_generation'), [OAuthController::class, 'getRedirectUri']);
+Route::post(config('oauth.redirected') . '/{provider}', [OAuthController::class, 'handleOAuthResponse']);
 
-Route::post(config('oauth.redirected').'/{provider}', [OAuthController::class, 'handleOAuthResponse']);
-
+/* Media and asset delivery */
 Route::get('/media/{path}', [MediaController::class, 'getMedia'])->where('path', '.*');
 
-Route::fallback(fn () => redirect('/error'));
+/* Default fallback for non-existing routes */
+Route::fallback(fn() => redirect('/error'));

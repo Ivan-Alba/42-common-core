@@ -21,8 +21,6 @@ class MatchmakingService
             $controller = new ActiveMatchController();
             $bot = User::where('is_bot', true)->firstOrFail();
 
-            // Change user status to PLAYING
-            $user->update(['status' => UserStatus::PLAYING]);
 
             return $controller->createMatch($user->id, $bot->id, $mode);
         }

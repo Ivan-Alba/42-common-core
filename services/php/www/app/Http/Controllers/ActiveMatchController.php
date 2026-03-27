@@ -14,7 +14,6 @@ use App\Jobs\ForceSelectionTimeout;
 use App\Jobs\TurnTimeoutJob;
 use App\Http\Resources\MatchInitialResource;
 use App\Enums\GameMode;
-use App\Enums\UserStatus;
 use App\Services\MatchLogicEngine;
 use App\Services\MatchConfigProvider;
 use Illuminate\Http\Request;
@@ -438,10 +437,6 @@ class ActiveMatchController extends Controller
 
             // Add rewards logic here
             $this->distributeRewards($match, $winner_id);
-
-            User::whereIn('id', [$match->player_1_id, $match->player_2_id])
-                ->where('is_bot', false)
-                ->update(['status' => UserStatus::ONLINE]);
 
             $match->delete();
             Log::info("[Match] History recorded and active session cleared for {$match->match_uuid}");
