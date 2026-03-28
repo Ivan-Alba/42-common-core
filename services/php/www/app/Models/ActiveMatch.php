@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\GameMode;
+use App\Enums\MatchStatus;
 use App\Services\MatchConfigProvider;
 use Illuminate\Support\Str;
 
@@ -32,13 +33,14 @@ class ActiveMatch extends Model
 
     protected $casts = [
         'game_mode' => GameMode::class,
+        'status' => MatchStatus::class,
         'board_state' => 'array',
         'hands_state' => 'array',
         'p1_ready' => 'boolean',
         'p2_ready' => 'boolean',
     ];
 
-     /**
+    /**
      * Boot function to auto-generate UUID on creation.
      */
     protected static function boot()

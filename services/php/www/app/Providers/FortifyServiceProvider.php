@@ -6,6 +6,8 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Enums\UserStatus;
+use App\Http\Controllers\MatchmakingController;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -13,9 +15,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
-use App\Enums\UserStatus;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Logout;
+use Illuminate\Support\Facades\Log;
 
 // IMPORTANT: We must use the Contract (Interface) for the singleton to work correctly
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
@@ -44,7 +46,7 @@ class FortifyServiceProvider extends ServiceProvider
 
         // Rate limiting for login attempts
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
@@ -76,7 +78,8 @@ class FortifyServiceProvider extends ServiceProvider
 
                 $event->user->update(['status' => UserStatus::OFFLINE]);
                 $event->user->tokens()->delete();
-                \Illuminate\Support\Facades\Log::info("User {$event->user->email} is now OFFLINE (Event based).");
+                app(MatchmakingController::class)->handleUserDisconnection($event->user);
+                Log::info("User {$event->user->email} is now OFFLINE (Event based).");
             }
         });
     }

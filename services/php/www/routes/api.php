@@ -22,6 +22,8 @@ Route::middleware(['auth:sanctum', SetUserPlaying::class])->group(function () {
     Route::get('/matches/{matchUuid}', [ActiveMatchController::class, 'getMatchData']);
     Route::get('/cards', [CardController::class, 'index']);
 
+    Route::post('/matches/{matchUuid}/loading-ready', [ActiveMatchController::class, 'loadingReady']);
+
     /* In-game Actions */
     Route::post('/matches/{matchUuid}/update-selection', [ActiveMatchController::class, 'updateSelection']);
     Route::post('/matches/{matchUuid}/confirm-deck', [ActiveMatchController::class, 'confirmDeck']);

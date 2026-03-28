@@ -12,6 +12,7 @@ use App\Models\OAuthExchange;
 use App\Models\User;
 use App\Models\UserMatch;
 use App\Models\PlayerStat;
+use App\Http\Controllers\MatchmakingController;
 use App\OAuth\Contracts\OAuthServer;
 use App\OAuth\Factories\OAuthServerFactory;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -78,16 +80,15 @@ class UserController
         $user = auth()->user();
 
         if ($user) {
-            // 1. Cambiamos el estado
             $user->update(['status' => UserStatus::OFFLINE]);
 
-            // 2. Revocamos el token de Unity específicamente
             $user->tokens()->where('name', 'unity_token')->delete();
 
-            // 3. Opcional: Loguear para debug (puedes quitarlo en producción)
-            \Illuminate\Support\Facades\Log::info("User ID {$user->id} forced OFFLINE via beacon.");
+            app(MatchmakingController::class)->handleUserDisconnection($user);
+
+            Log::info("User ID {$user->id} forced OFFLINE via beacon.");
         } else {
-            \Illuminate\Support\Facades\Log::warning("Force offline called but no authenticated user found.");
+            Log::warning("Force offline called but no authenticated user found.");
         }
 
         return response()->json([

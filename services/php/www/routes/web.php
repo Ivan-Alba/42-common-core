@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 |--------------------------------------------------------------------------
 | Authenticated Web Routes (With Activity Tracking)
 |--------------------------------------------------------------------------
-| These routes require Sanctum authentication and trigger the 
+| These routes require Sanctum authentication and trigger the
 | UpdateUserActivity middleware to keep the user ONLINE.
 */
 Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function () {
@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function (
 
         /* Matchmaking system */
         Route::post('/matchmaking/join', [MatchmakingController::class, 'join']);
+        Route::post('/matchmaking/cancel', [MatchmakingController::class, 'cancel']);
 
         /* Friendship actions */
         Route::post('/users/{user}/friends/{friend}', [FriendshipController::class, 'sendFriendRequest']);
@@ -73,14 +74,19 @@ Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function (
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated Web Routes (Without Activity Tracking)
+| Authenticated Web Routes (WITHOUT Activity Tracking)
 |--------------------------------------------------------------------------
-| We exclude force-offline from the activity middleware to prevent it from
-| accidentally setting the user to ONLINE during the logout/close process.
+| Excluded to prevent accidental queue removal or state conflicts.
 */
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/v1/user/force-offline', [UserController::class, 'forceOffline']);
+Route::middleware(['auth:sanctum'])->prefix('/v1')->group(function () {
+
+    // Corregido: Quitamos el /v1 interno ya que está en el prefijo del grupo
+    Route::post('/user/force-offline', [UserController::class, 'forceOffline']);
+
+    /* Matchmaking Confirmation */
+    Route::post('/matchmaking/confirm/{uuid}', [MatchmakingController::class, 'confirm']);
 });
+
 
 /*
 |--------------------------------------------------------------------------

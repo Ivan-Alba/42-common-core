@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\GameMode;
+use App\Enums\MatchStatus;
 
 return new class extends Migration
 {
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('game_mode'); 
 
             // Game State Machine: 'selecting', 'playing', 'finished'
-            $table->string('status')->default('selecting');
+            $table->string('status')->default(MatchStatus::PENDING->value);
             
             // Tracks current turn and first player (decided at match creation)
             $table->foreignId('first_player_id')->constrained('users');

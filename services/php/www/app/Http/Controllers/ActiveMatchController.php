@@ -10,10 +10,12 @@ use App\Events\RivalReadyEvent;
 use App\Events\RivalCardCountEvent;
 use App\Events\MatchStartEvent;
 use App\Events\PlayCardResponseEvent;
+use App\Events\LoadingFinishedEvent;
 use App\Jobs\ForceSelectionTimeout;
 use App\Jobs\TurnTimeoutJob;
 use App\Http\Resources\MatchInitialResource;
 use App\Enums\GameMode;
+use App\Enums\MatchStatus;
 use App\Services\MatchLogicEngine;
 use App\Services\MatchConfigProvider;
 use Illuminate\Http\Request;
@@ -23,37 +25,6 @@ use Illuminate\Support\Facades\Log;
 
 class ActiveMatchController extends Controller
 {
-    /**
-     * Get initial data for Unity to boot the match.
-     * Uses the match_uuid for lookup.
-     */
-    public function getMatchData(Request $request, string $matchUuid): JsonResponse
-    {
-        $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
-        $serverNow = microtime(true);
-        $gracePeriod = 1.0;
-
-        if ($match->status === 'selecting' && $match->next_timeout_at === null) {
-            $config = $match->GetMatchConfigAttribute();
-            $delay = (int) ($config['selection_time_limit'] ?? 60);
-
-            // Calculamos el final real
-            $expiration = $serverNow + $delay;
-
-            // El Watchdog espera un poco más (Grace Period)
-            ForceSelectionTimeout::dispatch($match->match_uuid)
-                ->delay(now()->addSeconds($delay + $gracePeriod));
-
-            $match->update(['next_timeout_at' => $expiration]);
-        }
-
-        // Asegúrate de que tu MatchInitialResource use $serverNow para 'server_timestamp'
-        return response()->json([
-            'success' => true,
-            'data' => new MatchInitialResource($match, $request->user()->id, $serverNow)
-        ]);
-    }
-
     /**
      * Internal/Private function to create a new active match session.
      * This would typically be called by a Matchmaking Service.
@@ -86,7 +57,7 @@ class ActiveMatchController extends Controller
             'player_1_id' => $p1Id,
             'player_2_id' => $p2Id,
             'game_mode' => $mode,
-            'status' => 'selecting',
+            'status' => MatchStatus::LOADING,
             'first_player_id' => $firstPlayerId,
             'current_turn_player_id' => $firstPlayerId,
             'board_state' => $emptyBoard,
@@ -95,6 +66,76 @@ class ActiveMatchController extends Controller
             'p2_ready' => false,
             'next_timeout_at' => null // Set this after returning the first response
         ]);
+    }
+
+
+    /**
+     * Endpoint: GET /api/matches/{matchUuid}
+     * Returns initial match data for Unity to start loading assets.
+     */
+    public function getMatchData(Request $request, string $matchUuid): JsonResponse
+    {
+        $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
+        $serverNow = microtime(true);
+
+        return response()->json([
+            'success' => true,
+            'data' => new MatchInitialResource($match, $request->user()->id, $serverNow)
+        ]);
+    }
+
+    /**
+     * Path: POST /api/matches/{matchUuid}/loading-ready
+     * Unity calls this after loading all assets (avatars, config, etc.)
+     */
+    public function loadingReady(Request $request, string $matchUuid): JsonResponse
+    {
+        $user = $request->user();
+
+        return DB::transaction(function () use ($user, $matchUuid) {
+            $match = ActiveMatch::where('match_uuid', $matchUuid)
+                ->where('status', MatchStatus::LOADING)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($match->player_1_id === $user->id) {
+                $match->p1_ready = true;
+            } elseif ($match->player_2_id === $user->id) {
+                $match->p2_ready = true;
+            } else {
+                return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+            }
+
+            $match->save();
+
+            if ($match->p1_ready && $match->p2_ready) {
+
+                $serverNow = microtime(true);
+                $gracePeriod = 1.0; // Latency buffer to ensure clients are ready before the first turn timer starts
+                $selectionDuration = MatchConfigProvider::getConfig($match->game_mode)['selection_time_limit'] ?? 30;
+                $endTime = $serverNow + $selectionDuration;
+
+                $match->status = MatchStatus::SELECTING;
+                $match->next_timeout_at = $endTime;
+
+                $match->p1_ready = false;
+                $match->p2_ready = false;
+
+                $match->save();
+
+                ForceSelectionTimeout::dispatch($match->match_uuid)
+                    ->delay(now()->addSeconds($selectionDuration + $gracePeriod))
+                    ->afterCommit();
+
+                broadcast(new LoadingFinishedEvent(
+                    $match->match_uuid,
+                    $serverNow,
+                    $endTime
+                ));
+            }
+
+            return response()->json(['success' => true]);
+        });
     }
 
     /**
@@ -163,7 +204,7 @@ class ActiveMatchController extends Controller
         }
 
         // 1. Verify match phase
-        if ($match->status !== 'selecting') {
+        if ($match->status !== MatchStatus::SELECTING) {
             return response()->json(['success' => false, 'error' => 'Invalid match phase.'], 400);
         }
 
@@ -207,7 +248,7 @@ class ActiveMatchController extends Controller
      */
     private function startMatchTransition(ActiveMatch $match)
     {
-        $match->status = 'playing';
+        $match->status = MatchStatus::PLAYING;
 
         $serverNow = microtime(true);
         $startDelay = 2.0; // Transition buffer to allow clients to process the "ready" state and prepare for the match start
@@ -375,7 +416,7 @@ class ActiveMatchController extends Controller
             return ['is_over' => false, 'scores' => null];
         }
 
-        $match->status = 'finished';
+        $match->status = MatchStatus::FINISHED;
 
         // 2. Initial count from the board cards
         $p1Count = 0;

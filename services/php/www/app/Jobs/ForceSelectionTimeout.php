@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ActiveMatch;
+use App\Enums\MatchStatus;
 use App\Events\ForceDeckSelectionEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -31,7 +32,7 @@ class ForceSelectionTimeout implements ShouldQueue
         $match = ActiveMatch::where('match_uuid', $this->matchUuid)->first();
 
         // If match doesn't exist or is no longer in selection phase, do nothing
-        if (!$match || $match->status !== 'selecting') {
+        if (!$match || $match->status !== MatchStatus::SELECTING) {
             return;
         }
 
