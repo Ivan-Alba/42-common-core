@@ -38,6 +38,7 @@ class User extends Authenticatable
         'experience',
         'language',
         'status',
+        'last_activity',
         'is_bot'
     ];
 

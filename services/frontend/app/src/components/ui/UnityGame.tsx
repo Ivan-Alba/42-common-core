@@ -12,6 +12,7 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
 
     const navigate = useNavigate();
 
+
     /* Motor Unity starting */
     const { unityProvider, sendMessage, addEventListener, removeEventListener, isLoaded, loadingProgression } = useUnityContext({
         loaderUrl: "/game/Build/NexusNineBuild.loader.js",
@@ -22,6 +23,27 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
         productName: "NexusNine",
         productVersion: "0.7",
     });
+
+    const isMounted = React.useRef(true);
+
+    useEffect(() => {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    /* React to Unity Handshake still Unity is ready */
+    useEffect(() => {
+        if (isLoaded && isMounted.current) {
+            const initData = { token, matchId, userId };
+
+            //console.log("Unity Loaded. Sending initialization data:", initData);
+
+            /* Call to InitializeMatch with token and matchId */
+            sendMessage('NetworkManager', 'InitializeMatch', JSON.stringify(initData));
+        }
+    }, [isLoaded, token, matchId, userId, sendMessage]);
 
     /* Function to handle match finished event, data from Unity to React */
     useEffect(() => {
@@ -46,17 +68,24 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
         };
     }, [addEventListener, removeEventListener]);
 
-    /* React to Unity Handshake still Unity is ready */
+    const hasCleanedUp = React.useRef(false);
+
+    /* React to beforeunload event to handle emergency cleanup */
     useEffect(() => {
-        if (isLoaded) {
-            const initData = { token, matchId, userId };
+        const handleEmergency = () => {
+            if (isLoaded && !hasCleanedUp.current) {
+                hasCleanedUp.current = true;
+                // Llamamos a la función centralizada en GameManager
+                sendMessage('GameManager', 'HandleEmergencyQuit');
+            }
+        };
 
-            //console.log("Unity Loaded. Sending initialization data:", initData);
-
-            /* Call to InitializeMatch with token and matchId */
-            sendMessage('NetworkManager', 'InitializeMatch', JSON.stringify(initData));
-        }
-    }, [isLoaded, token, matchId, userId, sendMessage]);
+        window.addEventListener("beforeunload", handleEmergency);
+        return () => {
+            handleEmergency();
+            window.removeEventListener("beforeunload", handleEmergency);
+        };
+    }, [isLoaded, sendMessage]);
 
     return (
         <div className="relative flex items-center justify-center w-full h-full bg-black overflow-hidden">

@@ -1,0 +1,25 @@
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher as any;
+
+const echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
+    // Critical: Echo needs the token to authorize private channels
+    authEndpoint: '/broadcasting/auth',
+    auth: {
+        headers: {
+            // Using the same token key you stored in login
+            Authorization: `Bearer ${sessionStorage.getItem('unity_auth_token')}`,
+            Accept: 'application/json',
+        },
+    },
+});
+
+export default echo;

@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ActiveMatch;
+use App\Enums\MatchStatus;
 use App\Events\ForcePlayCardEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -40,7 +41,7 @@ class TurnTimeoutJob implements ShouldQueue
         $match = ActiveMatch::where('match_uuid', $this->matchUuid)->first();
 
         // 1. Safety Checks
-        if (!$match || $match->status !== 'playing') {
+        if (!$match || $match->status !== MatchStatus::PLAYING) {
             return;
         }
 

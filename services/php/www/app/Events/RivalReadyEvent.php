@@ -4,17 +4,18 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RivalReadyEvent implements ShouldBroadcast
+class RivalReadyEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
         public string $matchUuid,
-        public int $rivalId
+        public int $rivalId,
+        public array $selectedCardIds
     ) {}
 
     /**
@@ -33,6 +34,7 @@ class RivalReadyEvent implements ShouldBroadcast
     {
         return [
             'rival_id' => (int) $this->rivalId,
+            'selected_card_ids' => $this->selectedCardIds,
         ];
     }
 

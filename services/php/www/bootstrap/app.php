@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // This allows Unity to make POST requests using Sanctum tokens without 419 errors
         $middleware->validateCsrfTokens(except: [
             'api/*', // This covers all routes in your api.php file
+            'v1/user/force-offline', // SendBeacon route for forcing user offline
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

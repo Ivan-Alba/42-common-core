@@ -1,415 +1,416 @@
 {
-	"common": {
-		"home": "Inicio",
-		"login": "Iniciar sesión",
-		"register": "Registrarse",
-		"logout": "Cerrar sesión",
-		"name": "Nombre de usuario",
-		"email": "Correo electrónico",
-		"password": "Contraseña",
-		"confirm_password": "Confirmar contraseña",
-		"enter": "Entrar",
-		"submit": "Enviar",
-		"loading": "Cargando...",
-		"accept": "Aceptar",
-		"decline": "Cancelar",
-		"you": "Tú",
-		"all": "Todas",
-		"player": "Jugador",
-		"opponent": "Oponente",
-		"exit": "Salir"
-	},
-	"validation": {
-		"required": "Este campo es obligatorio.",
-		"email_required": "El correo electrónico es obligatorio.",
-		"email_invalid": "Dirección de correo electrónico no válida.",
-		"email_registered": "El correo electrónico ya está registrado en nuestra base de datos.",
-		"email_not_registered": "El correo electrónico no está registrado en nuestra base de datos.",
-		"name_required": "El nombre de usuario es obligatorio.",
-		"name_short": "El nombre de usuario debe tener al menos 3 caracteres.",
-		"name_long": "El nombre de usuario debe tener como máximo 14 caracteres.",
-		"name_spaces": "El nombre de usuario no puede contener espacios.",
-		"name_invalid": "El nombre de usuario solo puede contener letras, números y guiones bajos.",
-		"name_taken": "El nombre de usuario ya está en uso.",
-		"password_required": "La contraseña es obligatoria.",
-		"password_short": "La contraseña debe tener al menos 6 caracteres.",
-		"password_capital": "La contraseña debe contener al menos una letra mayúscula.",
-		"password_number": "La contraseña debe contener al menos un número.",
-		"password_special": "La contraseña debe contener al menos un carácter especial.",
-		"passwords_match": "Las contraseñas deben coincidir.",
-		"invalid_file": "Archivo no válido. Por favor, suba un archivo de imagen (jpg, png)."
-	},
-	"errors": {
-		"no_response": "No se puede conectar con el servidor. Por favor, inténtalo más tarde.",
-		"invalid_credentials": "Nombre de usuario o contraseña incorrectos.",
-		"csrf_error": "La sesión ha expirado. Por favor, recarga la página.",
-		"link_invalid": "El enlace ha caducado o los datos son inválidos.",
-		"unexpected": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
-		"unknown": "Ocurrió un error desconocido. Por favor, inténtalo de nuevo.",
-		"database_error": "Error conectando con la base de datos (Endpoint no encontrado o usuario inexistente)"
-	},
-	"landing": {
-		"title": "TRANSCENDENCE CARD GAME",
-		"subtitle": "Juega partidas en línea con tus amigos. Sube en el ranking y compite en torneos.",
-		"start": "Comenzar ahora"
-	},
-	"footer": {
-		"privacy": "Política de privacidad",
-		"terms": "Términos de servicio"
-	},
-	"login": {
-		"title": "Iniciar sesión",
-		"subtitle": "Bienvenido a Nexus Nine",
-		"enter": "Entrar",
-		"forgot_pass": "¿Olvidaste tu contraseña?",
-		"no_account": "¿No tienes una cuenta?"
-	},
-	"register": {
-		"title": "Crear cuenta",
-		"subtitle": "Únete a Nexus Nine",
-		"enter": "Crear cuenta",
-		"account": "¿Tienes una cuenta?",
-		"success": "¡Registro exitoso!",
-		"redirecting": "Redirigiendo ..."
-	},
-	"password": {
-		"title": "Restablecer contraseña",
-		"subtitle": "Introduce tu correo electrónico para restablecer tu contraseña",
-		"enter": "Cambiar contraseña",
-		"success": "Contraseña cambiada para:",
-		"email_registered": "El correo electrónico está en la base de datos.",
-		"link_sent": "¡Enlace enviado!",
-		"instructions_sent": "Hemos enviado instrucciones a",
-		"check_inbox": "Revisa tu bandeja de entrada o spam.",
-		"processing": "Procesando...",
-		"back_login": "Redirigiendo a Iniciar sesión..."
-	},
-	"navbar": {
-		"dashboard": "Tablero",
-		"friends": "Amigos",
-		"leaderboard": "Clasificación",
-		"collection": "Colección",
-		"profile": "Perfil",
-		"logout": "Cerrar sesión"
-	},
-	"dashboard": {
-		"play": "Jugar ahora",
-		"select_mode": "Selecciona el modo de juego",
-		"friends": "Amigos",
-		"profile": "Perfil",
-		"ranking": "Ranking",
-		"collection": "Colección",
-		"profile_info": "Ver tu perfil",
-		"ranking_info": "Top players ranking",
-		"collection_info": "Ver tu colección"
-	},
-	"game_modes": {
-		"title": "Selecciona el modo de juego",
-		"subtitle": "Elige tu camino hacia la gloria.",
-		"campaign": "Campana (PvE)",
-		"campaign_desc": "Aprende las reglas, desbloquea cartas y domina las mecánicas. Perfecto para principiantes.",
-		"current_phase": "Fase actual",
-		"casual": "Partida casual (PvP)",
-		"casual_desc": "Practica contra otros jugadores sin presión de ranking. Gana XP.",
-		"unlimited": "Ilimitado",
-		"no_cost_limit": "Sin límite de coste",
-		"limited": "Limitado",
-		"cost_limit": "Coste máximo 4",
-		"ranked": "Partida clasificada (PvP)",
-		"locked_ranked": "Completa la Fase 3 en la Campana para desbloquear",
-		"ranked_desc": "Modo competitivo con todas las reglas activas. Sube en el ranking.",
-		"deck_limit": "Límite de coste del mazo",
-		"find_match": "Buscar partida"
-	},
-	"friends": {
-		"title": "Amigos",
-		"subtitle": "Tu lista de amigos",
-		"search_placeholder": "Introduce el nombre de usuario",
-		"no_friends": "Aún no tienes amigos agregados.",
-		"already_friend": "Amigo",
-		"pending": "Pendiente",
-		"sent": "Enviada",
-		"add_friend": "Añadir amigo",
-		"remove_friend": "Eliminar amigo",
-		"request_sent": "Quiere ser tu amigo",
-		"pending_requests": "Solicitudes Pendientes",
-		"remove_alert": "¿Estás seguro de que quieres eliminar a este amigo? Esta acción no se puede deshacer.",
-		"online": "Online",
-		"offline": "Offline",
-		"playing": "Jugando", 
-		"invite": "Invitar a jugar",
-		"not_available": "No disponible"
-	},
-	"profile": {
-		"title": "Perfil de usuario",
-		"avatar": "Avatar",
-		"change_avatar": "Cambiar avatar",
-		"upload": "Subir",
-		"stats": "Estadísticas",
-		"games_played": "Partidas jugadas",
-		"wins": "Victorias",
-		"losses": "Derrotas",
-		"win_rate": "Tasa de victorias",
-		"history": "Historial de partidas",
-		"no_bio": "No hay bio disponible.",
-		"no_stats": "No hay estadísticas disponibles.",
-		"edit_profile": "Editar perfil",
-		"save_changes": "Guardar cambios",
-		"changes_saved": "Cambios en el perfil guardados.",
-		"result": "Resultado",
-		"opponent": "Oponente",
-		"score": "Puntuación",
-		"date": "Fecha",
-		"no_history": "No hay historial de partidas disponible.",
-		"error_loading": "Error al cargar los datos del perfil.",
-		"error_msg": "Hubo un error al cargar el perfil o un problema de red.",
-		"try_again": "Intentar de nuevo"
-	},
-	"edit_profile": {
-		"subtitle": "Edita tu perfil",
-		"choose_avatar": "O elige uno",
-		"avatar_error_file": "Formato no válido. Usa JPG, PNG o WEBP.",
-		"avatar_error_size": "La imagen es demasiado grande (Máx 5MB).",
-		"bio": "Acerca de ti",
-		"bio_placeholder": "Cuéntanos algo sobre ti...",
-		"no_bio": "No hay bio disponible.",
-		"language": "Idioma",
-		"english": "Inglés",
-		"spanish": "Español",
-		"catalan": "Catalán",
-		"security": "Seguridad",
-		"current_password": "Contraseña actual",
-		"new_password": "Nueva contraseña",
-		"confirm_new_password": "Confirmar nueva contraseña",
-		"save": " Guardar cambios",
-		"sure": "¿Estás seguro de que quieres guardar estos cambios?",
-		"saving": "Guardando...",
-		"changes_saved": "Perfil actualizado con éxito.",
-		"error_saving": "Error al guardar los cambios del perfil."
-	},
-	"ranking": {
-		"title": "Ranking",
-		"subtitle": "Mejores jugadores",
-		"search_player": "Buscar jugador...",
-		"no_ranking": "No hay datos de ranking disponibles.",
-		"position": "Posición",
-		"trend": "Tendencia",
-		"points": "Puntos"
-	},
-	"privacy": {
-		"1": "Introducción",
-		"1text": "En Nexus Nine, respetamos la privacidad de nuestros usuarios...",
-		"2": "Información que recopilamos",
-		"2text": "Podemos recopilar los siguientes datos cuando usas Nexus Nine:",
-		"21": "Información proporcionada por el usuario",
-		"211": "Nombre de usuario",
-		"212": "Dirección de correo electrónico",
-		"213": "Contraseña (almacenada en forma encriptada)",
-		"214": "Avatar o foto de perfil (si el usuario la proporciona)",
-		"22": "Información generada por el uso del servicio",
-		"221": "Estadísticas de juego (partidas jugadas, victorias, derrotas, puntuaciones)",
-		"222": "Historial de partidas",
-		"223": "Interacciones dentro del juego (por ejemplo, partidas multijugador)",
-		"23": "Información técnica",
-		"231": "Dirección IP",
-		"232": "Tipo de navegador y dispositivo",
-		"233": "Fecha y hora de acceso",
-		"3": "Uso de la información",
-		"3text": "La información recopilada se utiliza únicamente para:",
-		"31": "Permitir el registro y la autenticación de usuarios",
-		"32": "Gestionar partidas y funciones multijugador",
-		"33": "Almacenar estadísticas y progreso de juego",
-		"34": "Mejorar la estabilidad, seguridad y experiencia del usuario",
-		"35": "Detectar usos indebidos o problemas técnicos",
-		"3text2": "No usamos los datos con fines comerciales o publicitarios.",
-		"4": "Almacenamiento y seguridad de datos",
-		"41": "Las contraseñas se almacenan encriptadas y nunca en texto plano",
-		"42": "Los datos se almacenan en una base de datos protegida",
-		"43": "Se aplican medidas técnicas razonables para prevenir el acceso no autorizado",
-		"4text": "Sin embargo, ningún sistema es 100% seguro y no se puede garantizar la seguridad absoluta.",
-		"5": "Compartición de datos",
-		"5text": "Nexus Nine no vende, alquila ni comparte datos personales con terceros.",
-		"5text2": "Los datos solo pueden ser accedidos por los desarrolladores del proyecto para fines técnicos o académicos.",
-		"6": "Derechos del usuario",
-		"6text": "Como usuario, tienes derecho a:",
-		"61": "Acceder a tus datos personales",
-		"62": "Solicitar la corrección de datos incorrectos",
-		"63": "Solicitar la eliminación de tu cuenta y datos asociados",
-		"6text2": "Para ejercer estos derechos, puedes eliminar tu cuenta desde la aplicación (si está disponible) o contactar a los desarrolladores del proyecto.",
-		"7": "Cookies",
-		"7text": "Nexus Nine puede usar cookies o almacenamiento local del navegador para:",
-		"71": "Mantener la sesión activa",
-		"72": "Mejorar la experiencia de navegación",
-		"7text2": "No se usan cookies de seguimiento ni publicitarias.",
-		"8": "Cambios en esta política",
-		"8text": "Esta Política de Privacidad puede actualizarse a medida que el proyecto evoluciona.",
-		"8text2": "Los cambios se publicarán en esta misma página.",
-		"9": "Contacto",
-		"9text": "Si tienes preguntas sobre esta Política de Privacidad, puedes contactar al equipo de desarrollo a través del repositorio del proyecto."
-	},
-	"terms": {
-		"1": "Aceptación de términos",
-		"1text1": "Al acceder y usar Nexus Nine, aceptas estos Términos de Servicio.",
-		"1text2": "Si no estás de acuerdo con ellos, debes dejar de usar la aplicación.",
-		"2": "Descripción del servicio",
-		"2text1": "Nexus Nine es un juego de cartas en línea, inspirado en Triple Triad...",
-		"21": "Crear una cuenta",
-		"22": "Jugar partidas contra otros jugadores",
-		"23": "Ver estadísticas y progreso",
-		"2text2": "El servicio se proporciona con fines educativos y sin garantías comerciales.",
-		"3": "Registro de usuarios y cuentas",
-		"31": "El usuario es responsable de mantener la confidencialidad de sus credenciales",
-		"32": "No se permite compartir cuentas",
-		"33": "Cada usuario es responsable de la actividad realizada desde su cuenta",
-		"4": "Código de conducta",
-		"4text1": "Al usar Nexus Nine, el usuario se compromete a:",
-		"41": "No usar el servicio para fines ilegales",
-		"42": "No intentar explotar errores, fallos o vulnerabilidades",
-		"43": "No interferir con la experiencia de otros jugadores",
-		"44": "No realizar ataques, trampas o manipulaciones del sistema",
-		"45": "No usar lenguaje inapropiado y/o abusivo",
-		"46": "No discriminar por sexo, edad, raza, religión o preferencia política",
-		"4text2": "El incumplimiento de estas normas puede resultar en la suspensión o eliminación de la cuenta.",
-		"5": "Propiedad intelectual",
-		"51": "El código, diseño y contenido de Nexus Nine pertenecen a sus desarrolladores",
-		"52": "El juego está inspirado en Triple Triad pero no está afiliado ni respaldado por Square Enix",
-		"53": "Todo el contenido se utiliza con fines educativos y sin ánimo de lucro",
-		"6": "Disponibilidad del servicio",
-		"61": "El servicio puede no estar disponible en todo momento",
-		"62": "Puede interrumpirse debido a mantenimiento, errores o modificaciones",
-		"63": "No se garantiza la disponibilidad continua ni la preservación permanente de datos",
-		"7": "Limitación de responsabilidad",
-		"7text1": "Nexus Nine se proporciona “tal cual”, sin garantías de ningún tipo.",
-		"7text2": "Los desarrolladores no son responsables de:",
-		"71": "Pérdida de datos",
-		"72": "Interrupciones del servicio",
-		"73": "Daños resultantes del uso de la aplicación",
-		"8": "Modificaciones al servicio o términos",
-		"8text1": "Los desarrolladores se reservan el derecho de:",
-		"81": "Modificar o descontinuar el servicio",
-		"82": "Actualizar estos Términos de Servicio",
-		"8text2": "Las modificaciones se publicarán en esta página.",
-		"9": "Ley aplicable",
-		"9text": "Este proyecto se rige por principios generales y no está sujeto a un marco legal comercial específico, ya que es un proyecto académico.",
-		"10": "Contacto",
-		"10text": "Para cualquier pregunta relacionada con estos Términos de Servicio, puedes contactar al equipo de desarrollo a través del repositorio del proyecto."
-	},
-	"error": {
-		"title": "Error",
-		"subtitle": "Página no encontrada. La página que estás buscando no existe o ha ocurrido un error inesperado.",
-		"back": "Volver"
-	},
-	"categories": {
-		"human": "Humano",
-		"animal": "Animal",
-		"beast": "Bestia",
-		"artifact": "Artefacto"
-	},
-	"rarities": {
-		"common": "Común",
-		"rare": "Rara",
-		"epic": "Épica",
-		"legendary": "Legendaria"
-	},
-	"collection": {
-		"cards_unlocked": "Cartas desbloqueadas"
-	},
-	"cards": {
-		"1": {
-			"name": "Gran Inquisidor",
-			"description": "Un juez implacable de la verdad y la herejía. Busca el conocimiento prohibido, purgando el reino de magia oscura con puño de hierro y resolución."
-		},
-		"2": {
-			"name": "Sabio de Maná",
-			"description": "Un vagabundo pacífico que lleva la sabiduría de siglos. Restaura el equilibrio del mundo, ofreciendo guía tranquila y energía mágica inmensa a los campeones dignos."
-		},
-		"3": {
-			"name": "Hechicera Dragón",
-			"description": "Canalizando la furia de los dracos, ella domina hechizos y escamas, mezclando magia arcana destructiva con la ira ardiente de las legendarias bestias aladas."
-		},
-		"4": {
-			"name": "Alquimista de Maná",
-			"description": "Una mente brillante obsesionada con la esencia mágica. Destila la energía del mundo en elixires potentes, transformando líquidos simples en milagros de poder místico inimaginable."
-		},
-		"5": {
-			"name": "Hechicera de Runas",
-			"description": "Dominando los símbolos olvidados de poder, manipula el campo de batalla con sellos brillantes, desatando caos elemental sobre cualquiera que se cruce en su camino."
-		},
-		"6": {
-			"name": "Mago Rúnico",
-			"description": "Un maestro anciano de las artes arcanas. Lee el tejido del universo, lanzando hechizos complejos que alteran la realidad y cambian el rumbo de guerras."
-		},
-		"7": {
-			"name": "Búho de Bronce",
-			"description": "Un antiguo guardián creado por mecánicos olvidados, vigila los cielos con precisión implacable, registrando cada secreto oculto en los rincones más oscuros del tiempo."
-		},
-		"8": {
-			"name": "Cuervo de Hierro",
-			"description": "Forjado con armaduras desechadas, este carroñero mecánico espía desde las nubes grises, recolectando secretos brillantes y trayendo oscuros presagios al campo de batalla olvidado."
-		},
-		"9": {
-			"name": "Lobo Sombrío",
-			"description": "Una bestia fantasma formada por pesadillas oscuras. Caza implacablemente bajo la luz de la luna, desapareciendo en la niebla antes de que su presa reaccione."
-		},
-		"10": {
-			"name": "Araña Mecánica",
-			"description": "Un terror intrincado construido con engranajes y precisión venenosa. Teje redes de acero invisibles, atrapando a los incautos antes de atacar con gracia mecánica letal."
-		},
-		"11": {
-			"name": "Serpiente de Cristal",
-			"description": "Acechando en cuevas brillantes, este hermoso pero letal depredador ataca con veneno perforador, convirtiendo la sangre de sus desafortunadas víctimas en cristal sólido al instante."
-		},
-		"12": {
-			"name": "Pantera de Humo",
-			"description": "Nacido de las cenizas de bosques quemados, este escurridizo felino ataca con velocidad cegadora. Deja solo un rastro de humo oscuro y una devastación silenciosa."
-		},
-		"13": {
-			"name": "Gárgola de Piedra",
-			"description": "Una estatua animada ligada a antiguas catedrales. Protege terrenos sagrados de intrusos oscuros, descendiendo con peso aplastante y una resolución de granito totalmente inquebrantable."
-		},
-		"14": {
-			"name": "Coloso de Hierro",
-			"description": "Un imponente monumento de metal encantado. Este gigante indestructible aplasta ejércitos enteros bajo sus pesados pasos, sirviendo como el bastión definitivo de la defensa antigua."
-		},
-		"15": {
-			"name": "Forjador de Almas",
-			"description": "Un misterioso herrero del inframundo. Martilla los espíritus de los muertos en armas poderosas y eternas, uniendo el valor mortal al frío y despiadado acero."
-		},
-		"16": {
-			"name": "Dragón Arcano",
-			"description": "Forjado en los fuegos primordiales de la magia, esta antigua criatura controla los elementos, trayendo devastación absoluta a quienes desafíen su inmenso poder."
-		},
-		"17": {
-			"name": "Centinela de Obsidiana",
-			"description": "Tallado en la piedra volcánica más oscura, este vigilante silencioso monta guardia eterna. Despierta solo cuando los reinos antiguos enfrentan la ruina y destrucción inminente."
-		},
-		"18": {
-			"name": "Leviatán Rúnico",
-			"description": "Un monstruoso titán de las profundidades, inscrito con runas antiguas. Su rugido masivo domina el océano, hundiendo flotas poderosas en el oscuro abismo de agua."
-		},
-		"19": {
-			"name": "Escudo de Maná",
-			"description": "Tejida con hilos arcanos puros, esta barrera absorbe impactos mágicos devastadores, protegiendo al portador valiente al convertir la destrucción entrante en inofensivos estallidos de luz."
-		},
-		"20": {
-			"name": "Núcleo Errante",
-			"description": "Una esfera sintiente de magia pura e inestable. Flota sin rumbo por tierras en ruinas, descargando energía elemental volátil sobre cualquiera que se acerque demasiado."
-		},
-		"21": {
-			"name": "Brújula de las Sombras",
-			"description": "Un artefacto maldito que nunca apunta al norte. En su lugar, guía al portador hacia sus miedos más profundos, revelando caminos ocultos en la oscuridad."
-		},
-		"22": {
-			"name": "Espada Rúnica",
-			"description": "Forjada por maestros herreros, su hoja brillante corta armaduras y magia por igual. Otorga al portador la fuerza legendaria de todos los héroes antiguos caídos."
-		},
-		"23": {
-			"name": "Orbe de Visión",
-			"description": "Una esfera brillante que contiene luz estelar atrapada. Mira a través de las ilusiones, revelando enemigos ocultos, tesoros perdidos y secretos del pasado olvidado."
-		},
-		"24": {
-			"name": "Cáliz de Energía",
-			"description": "Un recipiente sagrado forjado para contener la esencia más pura. Quienes beben de él obtienen una fuerza inimaginable y una vitalidad eterna y sin límites."
-		}
-	}
+  "common": {
+    "home": "Inicio",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "name": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirm_password": "Confirmar contraseña",
+    "enter": "Entrar",
+    "submit": "Enviar",
+    "loading": "Cargando...",
+    "accept": "Aceptar",
+    "decline": "Cancelar",
+    "you": "Tú",
+    "all": "Todas",
+    "player": "Jugador",
+    "opponent": "Oponente",
+    "exit": "Salir"
+  },
+  "validation": {
+    "required": "Este campo es obligatorio.",
+    "email_required": "El correo electrónico es obligatorio.",
+    "email_invalid": "Dirección de correo electrónico no válida.",
+    "email_registered": "El correo electrónico ya está registrado en nuestra base de datos.",
+    "email_not_registered": "El correo electrónico no está registrado en nuestra base de datos.",
+    "name_required": "El nombre de usuario es obligatorio.",
+    "name_short": "El nombre de usuario debe tener al menos 3 caracteres.",
+    "name_long": "El nombre de usuario debe tener como máximo 14 caracteres.",
+    "name_spaces": "El nombre de usuario no puede contener espacios.",
+    "name_invalid": "El nombre de usuario solo puede contener letras, números y guiones bajos.",
+    "name_taken": "El nombre de usuario ya está en uso.",
+    "password_required": "La contraseña es obligatoria.",
+    "password_short": "La contraseña debe tener al menos 6 caracteres.",
+    "password_capital": "La contraseña debe contener al menos una letra mayúscula.",
+    "password_number": "La contraseña debe contener al menos un número.",
+    "password_special": "La contraseña debe contener al menos un carácter especial.",
+    "passwords_match": "Las contraseñas deben coincidir.",
+    "invalid_file": "Archivo no válido. Por favor, suba un archivo de imagen (jpg, png)."
+  },
+  "errors": {
+    "no_response": "No se puede conectar con el servidor. Por favor, inténtalo más tarde.",
+    "invalid_credentials": "Nombre de usuario o contraseña incorrectos.",
+    "csrf_error": "La sesión ha expirado. Por favor, recarga la página.",
+    "link_invalid": "El enlace ha caducado o los datos son inválidos.",
+    "unexpected": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+    "unknown": "Ocurrió un error desconocido. Por favor, inténtalo de nuevo.",
+    "database_error": "Error conectando con la base de datos (Endpoint no encontrado o usuario inexistente)"
+  },
+  "landing": {
+    "title": "TRANSCENDENCE CARD GAME",
+    "subtitle": "Juega partidas en línea con tus amigos. Sube en el ranking y compite en torneos.",
+    "start": "Comenzar ahora"
+  },
+  "footer": {
+    "privacy": "Política de privacidad",
+    "terms": "Términos de servicio"
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "subtitle": "Bienvenido a Nexus Nine",
+    "enter": "Entrar",
+    "forgot_pass": "¿Olvidaste tu contraseña?",
+    "no_account": "¿No tienes una cuenta?"
+  },
+  "register": {
+    "title": "Crear cuenta",
+    "subtitle": "Únete a Nexus Nine",
+    "enter": "Crear cuenta",
+    "account": "¿Tienes una cuenta?",
+    "success": "¡Registro exitoso!",
+    "redirecting": "Redirigiendo ..."
+  },
+  "password": {
+    "title": "Restablecer contraseña",
+    "subtitle": "Introduce tu correo electrónico para restablecer tu contraseña",
+    "enter": "Cambiar contraseña",
+    "success": "Contraseña cambiada para:",
+    "email_registered": "El correo electrónico está en la base de datos.",
+    "link_sent": "¡Enlace enviado!",
+    "instructions_sent": "Hemos enviado instrucciones a",
+    "check_inbox": "Revisa tu bandeja de entrada o spam.",
+    "processing": "Procesando...",
+    "back_login": "Redirigiendo a Iniciar sesión..."
+  },
+  "navbar": {
+    "dashboard": "Tablero",
+    "friends": "Amigos",
+    "leaderboard": "Clasificación",
+    "collection": "Colección",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión"
+  },
+  "dashboard": {
+    "play": "Jugar ahora",
+    "select_mode": "Selecciona el modo de juego",
+    "friends": "Amigos",
+    "profile": "Perfil",
+    "ranking": "Ranking",
+    "collection": "Colección",
+    "profile_info": "Ver tu perfil",
+    "ranking_info": "Top players ranking",
+    "collection_info": "Ver tu colección"
+  },
+  "game_modes": {
+    "title": "Selecciona el modo de juego",
+    "subtitle": "Elige tu camino hacia la gloria.",
+    "campaign": "Campana (PvE)",
+    "campaign_desc": "Aprende las reglas, desbloquea cartas y domina las mecánicas. Perfecto para principiantes.",
+    "current_phase": "Fase actual",
+    "casual": "Partida casual (PvP)",
+    "casual_desc": "Practica contra otros jugadores sin presión de ranking. Gana XP.",
+    "unlimited": "Ilimitado",
+    "no_cost_limit": "Sin límite de coste",
+    "limited": "Limitado",
+    "cost_limit": "Coste máximo 4",
+    "ranked": "Partida clasificada (PvP)",
+    "locked_ranked": "Completa la Fase 3 en la Campana para desbloquear",
+    "ranked_desc": "Modo competitivo con todas las reglas activas. Sube en el ranking.",
+    "deck_limit": "Límite de coste del mazo",
+    "find_match": "Buscar partida"
+  },
+  "friends": {
+    "title": "Amigos",
+    "subtitle": "Tu lista de amigos",
+    "search_placeholder": "Introduce el nombre de usuario",
+    "no_friends": "Aún no tienes amigos agregados.",
+    "already_friend": "Amigo",
+    "pending": "Pendiente",
+    "sent": "Enviada",
+    "add_friend": "Añadir amigo",
+    "remove_friend": "Eliminar amigo",
+    "request_sent": "Quiere ser tu amigo",
+    "pending_requests": "Solicitudes Pendientes",
+    "remove_alert": "¿Estás seguro de que quieres eliminar a este amigo? Esta acción no se puede deshacer.",
+    "online": "Online",
+    "offline": "Offline",
+    "playing": "Jugando",
+    "away": "Ausente",
+    "invite": "Invitar a jugar",
+    "not_available": "No disponible"
+  },
+  "profile": {
+    "title": "Perfil de usuario",
+    "avatar": "Avatar",
+    "change_avatar": "Cambiar avatar",
+    "upload": "Subir",
+    "stats": "Estadísticas",
+    "games_played": "Partidas jugadas",
+    "wins": "Victorias",
+    "losses": "Derrotas",
+    "win_rate": "Tasa de victorias",
+    "history": "Historial de partidas",
+    "no_bio": "No hay bio disponible.",
+    "no_stats": "No hay estadísticas disponibles.",
+    "edit_profile": "Editar perfil",
+    "save_changes": "Guardar cambios",
+    "changes_saved": "Cambios en el perfil guardados.",
+    "result": "Resultado",
+    "opponent": "Oponente",
+    "score": "Puntuación",
+    "date": "Fecha",
+    "no_history": "No hay historial de partidas disponible.",
+    "error_loading": "Error al cargar los datos del perfil.",
+    "error_msg": "Hubo un error al cargar el perfil o un problema de red.",
+    "try_again": "Intentar de nuevo"
+  },
+  "edit_profile": {
+    "subtitle": "Edita tu perfil",
+    "choose_avatar": "O elige uno",
+    "avatar_error_file": "Formato no válido. Usa JPG, PNG o WEBP.",
+    "avatar_error_size": "La imagen es demasiado grande (Máx 5MB).",
+    "bio": "Acerca de ti",
+    "bio_placeholder": "Cuéntanos algo sobre ti...",
+    "no_bio": "No hay bio disponible.",
+    "language": "Idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "catalan": "Catalán",
+    "security": "Seguridad",
+    "current_password": "Contraseña actual",
+    "new_password": "Nueva contraseña",
+    "confirm_new_password": "Confirmar nueva contraseña",
+    "save": " Guardar cambios",
+    "sure": "¿Estás seguro de que quieres guardar estos cambios?",
+    "saving": "Guardando...",
+    "changes_saved": "Perfil actualizado con éxito.",
+    "error_saving": "Error al guardar los cambios del perfil."
+  },
+  "ranking": {
+    "title": "Ranking",
+    "subtitle": "Mejores jugadores",
+    "search_player": "Buscar jugador...",
+    "no_ranking": "No hay datos de ranking disponibles.",
+    "position": "Posición",
+    "trend": "Tendencia",
+    "points": "Puntos"
+  },
+  "privacy": {
+    "1": "Introducción",
+    "1text": "En Nexus Nine, respetamos la privacidad de nuestros usuarios...",
+    "2": "Información que recopilamos",
+    "2text": "Podemos recopilar los siguientes datos cuando usas Nexus Nine:",
+    "21": "Información proporcionada por el usuario",
+    "211": "Nombre de usuario",
+    "212": "Dirección de correo electrónico",
+    "213": "Contraseña (almacenada en forma encriptada)",
+    "214": "Avatar o foto de perfil (si el usuario la proporciona)",
+    "22": "Información generada por el uso del servicio",
+    "221": "Estadísticas de juego (partidas jugadas, victorias, derrotas, puntuaciones)",
+    "222": "Historial de partidas",
+    "223": "Interacciones dentro del juego (por ejemplo, partidas multijugador)",
+    "23": "Información técnica",
+    "231": "Dirección IP",
+    "232": "Tipo de navegador y dispositivo",
+    "233": "Fecha y hora de acceso",
+    "3": "Uso de la información",
+    "3text": "La información recopilada se utiliza únicamente para:",
+    "31": "Permitir el registro y la autenticación de usuarios",
+    "32": "Gestionar partidas y funciones multijugador",
+    "33": "Almacenar estadísticas y progreso de juego",
+    "34": "Mejorar la estabilidad, seguridad y experiencia del usuario",
+    "35": "Detectar usos indebidos o problemas técnicos",
+    "3text2": "No usamos los datos con fines comerciales o publicitarios.",
+    "4": "Almacenamiento y seguridad de datos",
+    "41": "Las contraseñas se almacenan encriptadas y nunca en texto plano",
+    "42": "Los datos se almacenan en una base de datos protegida",
+    "43": "Se aplican medidas técnicas razonables para prevenir el acceso no autorizado",
+    "4text": "Sin embargo, ningún sistema es 100% seguro y no se puede garantizar la seguridad absoluta.",
+    "5": "Compartición de datos",
+    "5text": "Nexus Nine no vende, alquila ni comparte datos personales con terceros.",
+    "5text2": "Los datos solo pueden ser accedidos por los desarrolladores del proyecto para fines técnicos o académicos.",
+    "6": "Derechos del usuario",
+    "6text": "Como usuario, tienes derecho a:",
+    "61": "Acceder a tus datos personales",
+    "62": "Solicitar la corrección de datos incorrectos",
+    "63": "Solicitar la eliminación de tu cuenta y datos asociados",
+    "6text2": "Para ejercer estos derechos, puedes eliminar tu cuenta desde la aplicación (si está disponible) o contactar a los desarrolladores del proyecto.",
+    "7": "Cookies",
+    "7text": "Nexus Nine puede usar cookies o almacenamiento local del navegador para:",
+    "71": "Mantener la sesión activa",
+    "72": "Mejorar la experiencia de navegación",
+    "7text2": "No se usan cookies de seguimiento ni publicitarias.",
+    "8": "Cambios en esta política",
+    "8text": "Esta Política de Privacidad puede actualizarse a medida que el proyecto evoluciona.",
+    "8text2": "Los cambios se publicarán en esta misma página.",
+    "9": "Contacto",
+    "9text": "Si tienes preguntas sobre esta Política de Privacidad, puedes contactar al equipo de desarrollo a través del repositorio del proyecto."
+  },
+  "terms": {
+    "1": "Aceptación de términos",
+    "1text1": "Al acceder y usar Nexus Nine, aceptas estos Términos de Servicio.",
+    "1text2": "Si no estás de acuerdo con ellos, debes dejar de usar la aplicación.",
+    "2": "Descripción del servicio",
+    "2text1": "Nexus Nine es un juego de cartas en línea, inspirado en Triple Triad...",
+    "21": "Crear una cuenta",
+    "22": "Jugar partidas contra otros jugadores",
+    "23": "Ver estadísticas y progreso",
+    "2text2": "El servicio se proporciona con fines educativos y sin garantías comerciales.",
+    "3": "Registro de usuarios y cuentas",
+    "31": "El usuario es responsable de mantener la confidencialidad de sus credenciales",
+    "32": "No se permite compartir cuentas",
+    "33": "Cada usuario es responsable de la actividad realizada desde su cuenta",
+    "4": "Código de conducta",
+    "4text1": "Al usar Nexus Nine, el usuario se compromete a:",
+    "41": "No usar el servicio para fines ilegales",
+    "42": "No intentar explotar errores, fallos o vulnerabilidades",
+    "43": "No interferir con la experiencia de otros jugadores",
+    "44": "No realizar ataques, trampas o manipulaciones del sistema",
+    "45": "No usar lenguaje inapropiado y/o abusivo",
+    "46": "No discriminar por sexo, edad, raza, religión o preferencia política",
+    "4text2": "El incumplimiento de estas normas puede resultar en la suspensión o eliminación de la cuenta.",
+    "5": "Propiedad intelectual",
+    "51": "El código, diseño y contenido de Nexus Nine pertenecen a sus desarrolladores",
+    "52": "El juego está inspirado en Triple Triad pero no está afiliado ni respaldado por Square Enix",
+    "53": "Todo el contenido se utiliza con fines educativos y sin ánimo de lucro",
+    "6": "Disponibilidad del servicio",
+    "61": "El servicio puede no estar disponible en todo momento",
+    "62": "Puede interrumpirse debido a mantenimiento, errores o modificaciones",
+    "63": "No se garantiza la disponibilidad continua ni la preservación permanente de datos",
+    "7": "Limitación de responsabilidad",
+    "7text1": "Nexus Nine se proporciona “tal cual”, sin garantías de ningún tipo.",
+    "7text2": "Los desarrolladores no son responsables de:",
+    "71": "Pérdida de datos",
+    "72": "Interrupciones del servicio",
+    "73": "Daños resultantes del uso de la aplicación",
+    "8": "Modificaciones al servicio o términos",
+    "8text1": "Los desarrolladores se reservan el derecho de:",
+    "81": "Modificar o descontinuar el servicio",
+    "82": "Actualizar estos Términos de Servicio",
+    "8text2": "Las modificaciones se publicarán en esta página.",
+    "9": "Ley aplicable",
+    "9text": "Este proyecto se rige por principios generales y no está sujeto a un marco legal comercial específico, ya que es un proyecto académico.",
+    "10": "Contacto",
+    "10text": "Para cualquier pregunta relacionada con estos Términos de Servicio, puedes contactar al equipo de desarrollo a través del repositorio del proyecto."
+  },
+  "error": {
+    "title": "Error",
+    "subtitle": "Página no encontrada. La página que estás buscando no existe o ha ocurrido un error inesperado.",
+    "back": "Volver"
+  },
+  "categories": {
+    "human": "Humano",
+    "animal": "Animal",
+    "beast": "Bestia",
+    "artifact": "Artefacto"
+  },
+  "rarities": {
+    "common": "Común",
+    "rare": "Rara",
+    "epic": "Épica",
+    "legendary": "Legendaria"
+  },
+  "collection": {
+    "cards_unlocked": "Cartas desbloqueadas"
+  },
+  "cards": {
+    "1": {
+      "name": "Gran Inquisidor",
+      "description": "Un juez implacable de la verdad y la herejía. Busca el conocimiento prohibido, purgando el reino de magia oscura con puño de hierro y resolución."
+    },
+    "2": {
+      "name": "Sabio de Maná",
+      "description": "Un vagabundo pacífico que lleva la sabiduría de siglos. Restaura el equilibrio del mundo, ofreciendo guía tranquila y energía mágica inmensa a los campeones dignos."
+    },
+    "3": {
+      "name": "Hechicera Dragón",
+      "description": "Canalizando la furia de los dracos, ella domina hechizos y escamas, mezclando magia arcana destructiva con la ira ardiente de las legendarias bestias aladas."
+    },
+    "4": {
+      "name": "Alquimista de Maná",
+      "description": "Una mente brillante obsesionada con la esencia mágica. Destila la energía del mundo en elixires potentes, transformando líquidos simples en milagros de poder místico inimaginable."
+    },
+    "5": {
+      "name": "Hechicera de Runas",
+      "description": "Dominando los símbolos olvidados de poder, manipula el campo de batalla con sellos brillantes, desatando caos elemental sobre cualquiera que se cruce en su camino."
+    },
+    "6": {
+      "name": "Mago Rúnico",
+      "description": "Un maestro anciano de las artes arcanas. Lee el tejido del universo, lanzando hechizos complejos que alteran la realidad y cambian el rumbo de guerras."
+    },
+    "7": {
+      "name": "Búho de Bronce",
+      "description": "Un antiguo guardián creado por mecánicos olvidados, vigila los cielos con precisión implacable, registrando cada secreto oculto en los rincones más oscuros del tiempo."
+    },
+    "8": {
+      "name": "Cuervo de Hierro",
+      "description": "Forjado con armaduras desechadas, este carroñero mecánico espía desde las nubes grises, recolectando secretos brillantes y trayendo oscuros presagios al campo de batalla olvidado."
+    },
+    "9": {
+      "name": "Lobo Sombrío",
+      "description": "Una bestia fantasma formada por pesadillas oscuras. Caza implacablemente bajo la luz de la luna, desapareciendo en la niebla antes de que su presa reaccione."
+    },
+    "10": {
+      "name": "Araña Mecánica",
+      "description": "Un terror intrincado construido con engranajes y precisión venenosa. Teje redes de acero invisibles, atrapando a los incautos antes de atacar con gracia mecánica letal."
+    },
+    "11": {
+      "name": "Serpiente de Cristal",
+      "description": "Acechando en cuevas brillantes, este hermoso pero letal depredador ataca con veneno perforador, convirtiendo la sangre de sus desafortunadas víctimas en cristal sólido al instante."
+    },
+    "12": {
+      "name": "Pantera de Humo",
+      "description": "Nacido de las cenizas de bosques quemados, este escurridizo felino ataca con velocidad cegadora. Deja solo un rastro de humo oscuro y una devastación silenciosa."
+    },
+    "13": {
+      "name": "Gárgola de Piedra",
+      "description": "Una estatua animada ligada a antiguas catedrales. Protege terrenos sagrados de intrusos oscuros, descendiendo con peso aplastante y una resolución de granito totalmente inquebrantable."
+    },
+    "14": {
+      "name": "Coloso de Hierro",
+      "description": "Un imponente monumento de metal encantado. Este gigante indestructible aplasta ejércitos enteros bajo sus pesados pasos, sirviendo como el bastión definitivo de la defensa antigua."
+    },
+    "15": {
+      "name": "Forjador de Almas",
+      "description": "Un misterioso herrero del inframundo. Martilla los espíritus de los muertos en armas poderosas y eternas, uniendo el valor mortal al frío y despiadado acero."
+    },
+    "16": {
+      "name": "Dragón Arcano",
+      "description": "Forjado en los fuegos primordiales de la magia, esta antigua criatura controla los elementos, trayendo devastación absoluta a quienes desafíen su inmenso poder."
+    },
+    "17": {
+      "name": "Centinela de Obsidiana",
+      "description": "Tallado en la piedra volcánica más oscura, este vigilante silencioso monta guardia eterna. Despierta solo cuando los reinos antiguos enfrentan la ruina y destrucción inminente."
+    },
+    "18": {
+      "name": "Leviatán Rúnico",
+      "description": "Un monstruoso titán de las profundidades, inscrito con runas antiguas. Su rugido masivo domina el océano, hundiendo flotas poderosas en el oscuro abismo de agua."
+    },
+    "19": {
+      "name": "Escudo de Maná",
+      "description": "Tejida con hilos arcanos puros, esta barrera absorbe impactos mágicos devastadores, protegiendo al portador valiente al convertir la destrucción entrante en inofensivos estallidos de luz."
+    },
+    "20": {
+      "name": "Núcleo Errante",
+      "description": "Una esfera sintiente de magia pura e inestable. Flota sin rumbo por tierras en ruinas, descargando energía elemental volátil sobre cualquiera que se acerque demasiado."
+    },
+    "21": {
+      "name": "Brújula de las Sombras",
+      "description": "Un artefacto maldito que nunca apunta al norte. En su lugar, guía al portador hacia sus miedos más profundos, revelando caminos ocultos en la oscuridad."
+    },
+    "22": {
+      "name": "Espada Rúnica",
+      "description": "Forjada por maestros herreros, su hoja brillante corta armaduras y magia por igual. Otorga al portador la fuerza legendaria de todos los héroes antiguos caídos."
+    },
+    "23": {
+      "name": "Orbe de Visión",
+      "description": "Una esfera brillante que contiene luz estelar atrapada. Mira a través de las ilusiones, revelando enemigos ocultos, tesoros perdidos y secretos del pasado olvidado."
+    },
+    "24": {
+      "name": "Cáliz de Energía",
+      "description": "Un recipiente sagrado forjado para contener la esencia más pura. Quienes beben de él obtienen una fuerza inimaginable y una vitalidad eterna y sin límites."
+    }
+  }
 }

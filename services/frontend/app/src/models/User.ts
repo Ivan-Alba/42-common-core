@@ -18,7 +18,7 @@ export interface UserProfile {
 	username: string;
 	email?: string;
 	avatar?: string;
-	status?: 'online' | 'offline' | 'playing';
+	status?: 'online' | 'offline' | 'playing' | 'away';
 	stats: UserStats;
 	bio?: string;
     language?: 'en' | 'es' | 'ca';

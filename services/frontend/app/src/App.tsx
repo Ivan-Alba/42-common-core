@@ -17,7 +17,28 @@ import Lobby from './pages/Lobby';
 import Collection from './pages/Collection';
 import Game from './pages/Game';
 
+// Import necessary for the "force offline" mechanism when the user closes the tab or browser
+import { useEffect } from 'react';
+import authService from './services/authService';
+
 function App() {
+
+    // Force offline when the user closes the tab or browser
+	useEffect(() => {
+		const handleTabClose = () => {
+			if (sessionStorage.getItem('unity_user_id')) {
+				authService.forceOffline();
+			}
+		};
+
+		window.addEventListener('beforeunload', handleTabClose);
+
+		return () => {
+			window.removeEventListener('beforeunload', handleTabClose);
+		};
+	}, []);
+
+
 	return (
 		<AuthProvider>
 			<Router>

@@ -32,7 +32,11 @@ return new class extends Migration
                 UserStatus::OFFLINE->value,
                 UserStatus::ONLINE->value,
                 UserStatus::PLAYING->value,
+                UserStatus::AWAY->value,
             ])->default(UserStatus::OFFLINE->value);
+
+            /* Track the last time the user interacted with the API */
+            $table->timestamp('last_activity')->nullable();
 
             $table->boolean('is_bot')->default(false);
 

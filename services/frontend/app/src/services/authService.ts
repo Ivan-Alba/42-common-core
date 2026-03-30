@@ -12,17 +12,7 @@ const authService = {
         /* Security handshake to get the cookie CSRF */
         await authService.getCsrfToken();
         /* Send credentials to backend, Sanctum will create the session if everithing is ok */
-        const response = await api.post('/login', creds);
-
-        /* Capture Unity token if it exists and store it in sessionStorage for later use */
-        if (response.data && response.data.unity_token) {
-            const token = response.data.unity_token;
-
-            // Save in sessionStorage if you need it to persist on page refresh
-            sessionStorage.setItem('unity_auth_token', token);
-
-            //console.log("[Auth] Unity Token captured and stored.", token);
-        }
+        await api.post('/login', creds);
 
         /* If login is successful, get the current user to update the authentication state in the frontend */
         return authService.getUser();
@@ -33,12 +23,23 @@ const authService = {
         await authService.getCsrfToken();
         await api.post('/register', data);
         return authService.getUser();
+    },
 
+    /* Emergency Force Offline (when user closed the browser without logging out, force the user offline in the backend) */
+    forceOffline: () => {
+        const url = `/v1/user/force-offline`;
+
+        const formData = new FormData();
+        formData.append('_method', 'POST');
+
+        navigator.sendBeacon(url, formData);
     },
 
     /* Logout */
     logout: async (): Promise<void> => {
         await api.post('/logout');
+        sessionStorage.removeItem('unity_auth_token');
+        sessionStorage.removeItem('unity_user_id');
     },
 
     /** getUser to obtain actual user (Check Session) */
@@ -49,6 +50,13 @@ const authService = {
             const userId = response.data.id;
             sessionStorage.setItem('unity_user_id', userId);
             //console.log("[Auth] User ID captured and stored in sessionStorage:", userId);
+        }
+
+        const unityToken = response.headers['x-unity-token'];
+        if (unityToken) {
+            sessionStorage.setItem('unity_auth_token', unityToken);
+        } else {
+            console.warn("[Auth] X-Unity-Token not found in response headers.");
         }
 
         return response.data;

@@ -4,6 +4,9 @@
 /secrets/*
 /node_modules/
 
+# Laravel public storage
+/public/storage
+
 # Local environment
 .env
 
