@@ -34,8 +34,8 @@ class MatchConfigProvider
             GameMode::PVP_CASUAL_LIMITED => [
                 'board_size' => 3,
                 'hand_size' => 5,
-                'turn_time_limit' => 60,
-                'selection_time_limit' => 45,
+                'turn_time_limit' => 30,
+                'selection_time_limit' => 25,
                 'max_deck_cost' => 6,
                 'rules' => ['open', 'same', 'plus', 'combo'],
                 'rewards' => [

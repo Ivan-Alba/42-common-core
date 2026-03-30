@@ -184,63 +184,70 @@ class ActiveMatchController extends Controller
     public function confirmDeck(Request $request, string $matchUuid): JsonResponse
     {
         $authUser = $request->user();
-        $targetPlayerId = (int) $request->input('player_id'); // ID of the player performing the action
-        $cardIds = $request->input('card_ids');
-        $cardIds = array_map('intval', (array) $cardIds);
+        $targetPlayerId = (int) $request->input('player_id');
+        $cardIds = array_map('intval', (array) $request->input('card_ids'));
 
-        $match = ActiveMatch::where('match_uuid', $matchUuid)->firstOrFail();
-        $targetUser = User::findOrFail($targetPlayerId);
+        // We use a Transaction to ensure atomicity and prevent race conditions
+        return DB::transaction(function () use ($matchUuid, $targetPlayerId, $authUser, $cardIds) {
 
-        // --- SECURITY GATE: Check if the action is authorized ---
-        if ($authUser->id !== $targetUser->id) {
-            // Only allow proxying actions if target is a bot within the same match
-            $isBotInMatch = $targetUser->is_bot &&
-                ($targetUser->id === $match->player_1_id || $targetUser->id === $match->player_2_id) &&
-                ($authUser->id === $match->player_1_id || $authUser->id === $match->player_2_id);
+            // 1. LOCK FOR UPDATE: This is the key. 
+            // Other concurrent requests for this specific UUID will wait here until this transaction finishes.
+            $match = ActiveMatch::where('match_uuid', $matchUuid)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-            if (!$isBotInMatch) {
-                return response()->json(['success' => false, 'error' => 'Unauthorized action.'], 403);
+            $targetUser = User::findOrFail($targetPlayerId);
+
+            // --- SECURITY GATE ---
+            if ($authUser->id !== $targetUser->id) {
+                $isBotInMatch = $targetUser->is_bot &&
+                    ($targetUser->id === $match->player_1_id || $targetUser->id === $match->player_2_id) &&
+                    ($authUser->id === $match->player_1_id || $authUser->id === $match->player_2_id);
+
+                if (!$isBotInMatch) {
+                    return response()->json(['success' => false, 'error' => 'Unauthorized action.'], 403);
+                }
             }
-        }
 
-        // 1. Verify match phase
-        if ($match->status !== MatchStatus::SELECTING) {
-            return response()->json(['success' => false, 'error' => 'Invalid match phase.'], 400);
-        }
+            if ($match->status !== MatchStatus::SELECTING) {
+                return response()->json(['success' => false, 'error' => 'Invalid match phase.'], 400);
+            }
 
-        // 2. Persist hand state and readiness
-        $isP1 = $targetUser->id === $match->player_1_id;
-        $hands = $match->hands_state ?? ['p1' => [], 'p2' => []];
+            // 2. Update Readiness using the FRESHLY LOCKED state
+            $isP1 = (int) $targetUser->id === (int) $match->player_1_id;
+            $hands = $match->hands_state ?? ['p1' => [], 'p2' => []];
 
-        if ($isP1) {
-            $match->p1_ready = true;
-            $hands['p1'] = $cardIds;
-        } else {
-            $match->p2_ready = true;
-            $hands['p2'] = $cardIds;
-        }
+            if ($isP1) {
+                $match->p1_ready = true;
+                $hands['p1'] = $cardIds;
+            } else {
+                $match->p2_ready = true;
+                $hands['p2'] = $cardIds;
+            }
 
-        $match->hands_state = $hands;
+            $match->hands_state = $hands;
 
-        // 3. BROADCAST LOGIC: Only if BOTH players are humans
-        // We check if the match is NOT a PvE match
-        $player1 = User::find($match->player_1_id);
-        $player2 = User::find($match->player_2_id);
+            // 3. BROADCAST LOGIC
+            // We load participants to check bot status
+            $player1 = User::find($match->player_1_id);
+            $player2 = User::find($match->player_2_id);
+            $isPvP = ($player1 && !$player1->is_bot) && ($player2 && !$player2->is_bot);
 
-        $isPvP = ($player1 && !$player1->is_bot) && ($player2 && !$player2->is_bot);
+            if ($isPvP) {
+                broadcast(new RivalReadyEvent($matchUuid, $targetUser->id, $cardIds))->toOthers();
+            }
 
-        if ($isPvP) {
-            broadcast(new RivalReadyEvent($matchUuid, $targetUser->id))->toOthers();
-        }
+            // 4. Trigger transition if both are ready
+            // Now this check is safe because we have the most up-to-date values from the lock
+            if ($match->p1_ready && $match->p2_ready) {
+                $this->startMatchTransition($match);
+            }
 
-        // 4. Trigger match transition if both participants are ready
-        if ($match->p1_ready && $match->p2_ready) {
-            $this->startMatchTransition($match);
-        }
+            // 5. Save and release lock (implicit at end of transaction)
+            $match->save();
 
-        $match->save();
-
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        });
     }
 
     /**

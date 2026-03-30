@@ -2,6 +2,8 @@
 
 namespace App\Events;
 
+use App\Models\User;
+use App\Http\Resources\UserResource;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -12,37 +14,51 @@ class MatchFound implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    protected int $userId;
+    protected User $opponent;
+    protected string $matchUuid;
+
     /**
-     * @param int $userId El ID del usuario que estaba esperando (Jugador A).
-     * @param string $matchUuid El UUID de la partida en estado 'pending'.
+     * Using public properties here but ensuring we control the output
+     * via broadcastWith(). 
      */
-    public function __construct(
-        public int $userId,
-        public string $matchUuid
-    ) {
+    public function __construct(int $userId, User $opponent, string $matchUuid)
+    {
+        $this->userId = $userId;
+        $this->opponent = $opponent;
+        $this->matchUuid = $matchUuid;
     }
 
+    /**
+     * Get the channels the event should broadcast on.
+     */
     public function broadcastOn(): array
     {
-        // Usamos el canal privado que ya tienes para el ping/pong
         return [
             new PrivateChannel('user.' . $this->userId),
         ];
     }
 
+    /**
+     * Custom event name for Echo.
+     */
     public function broadcastAs(): string
     {
         return 'match.found';
     }
 
     /**
-     * Datos que React recibirá
+     * Data received by React.
      */
     public function broadcastWith(): array
     {
+        // Ensure stats are loaded for the Resource
+        $this->opponent->loadMissing('stats');
+
         return [
             'match_uuid' => $this->matchUuid,
-            'expires_at' => now()->addSeconds(15)->timestamp, // Opcional: para un countdown visual
+            'opponent' => (new UserResource($this->opponent))->resolve(),
+            'expires_at' => now()->addSeconds(15)->timestamp,
         ];
     }
 }

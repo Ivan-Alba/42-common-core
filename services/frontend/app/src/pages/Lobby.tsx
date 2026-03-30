@@ -1,28 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import { FaRobot, FaUserSecret, FaTimes, FaCircleNotch, FaTrophy, FaUsers } from 'react-icons/fa';
 import gameService, { type MatchData } from '../services/gameService';
+import echo from '../utils/echo';
 
 const Lobby = () => {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { user } = useAuth();
-    
+
     const mode = searchParams.get('mode') || 'unknown';
     const submode = searchParams.get('submode');
 
     const [isMatchFound, setIsMatchFound] = useState(false);
+    const [isLeaving, setIsLeaving] = useState(false);
     const [opponent, setOpponent] = useState<MatchData['opponent'] | null>(null);
     //const [matchId, setMatchId] = useState<number | null>(null);
 
+    const isInitialMount = useRef(true);
+
     const getModeDetails = () => {
         if (mode === 'campaign') return { title: 'Campaign PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
-        if (mode === 'ranked') return { title: 'Ranked Match', icon: <FaTrophy className="text-warning text-4xl mb-2" /> };
-        if (mode === 'casual') return { title: `Casual Match`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'PVP_RANKED') return { title: 'Ranked Match', icon: <FaTrophy className="text-warning text-4xl mb-2" /> };
+        if (mode === 'PVP_CASUAL_LIMITED') return { title: `Casual Match (Limited)`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'PVP_CASUAL_UNLIMITED') return { title: `Casual Match (Unlimited)`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
         return { title: 'Unknown Mode', icon: null };
     };
 
@@ -31,70 +36,114 @@ const Lobby = () => {
 
     // LÓGICA DE MATCHMAKING REAL
     useEffect(() => {
-		let pollingInterval: ReturnType<typeof setInterval>;
+        if (!isInitialMount.current) return;
+        isInitialMount.current = false;
+
+        const userId = sessionStorage.getItem('unity_user_id');
+        console.log(`[Reverb] Initializing for User ID: ${userId}`);
 
         const startMatchmaking = async () => {
             try {
-                // 1. Avisamos al backend de que entramos en cola
-                await gameService.joinQueue(mode);
+                // 1. Subscribe to Reverb BEFORE joining the queue
+                if (userId) {
+                    console.log(`[Reverb] Attempting to subscribe to private channel: user.${userId}`);
 
-                // 2. Empezamos a preguntar cada 2 segundos si hay partida
-                pollingInterval = setInterval(async () => {
-                    const matchData = await gameService.checkQueueStatus();
-                    
-                    if (matchData && matchData.is_ready) {
-                        // ¡PARTIDA ENCONTRADA!
-                        clearInterval(pollingInterval);
+                    const channel = echo.private(`user.${userId}`);
+
+                    // Debug: Listen for internal Echo events (Subscription success/error)
+                    channel.on('pusher:subscription_succeeded', () => {
+                        console.log(`[Reverb] SUCCESS: Subscribed to private-user.${userId}`);
+                    });
+
+                    channel.on('pusher:subscription_error', (status: any) => {
+                        console.error(`[Reverb] ERROR: Subscription failed for private-user.${userId}`, status);
+                    });
+
+                    // Listen for the specific game event
+                    channel.listen('.match.found', (data: any) => {
+                        console.log("[Reverb] EVENT RECEIVED: .match.found", data);
+                        console.log("[Reverb] Full Data Received:", JSON.stringify(data, null, 2));
+
                         setIsMatchFound(true);
-                        setOpponent(matchData.opponent);
-                        //setMatchId(matchData.match_id);
 
-                        // Redirigimos a Unity después de mostrar el rival 2.5 segundos
+                        if (data.opponent) {
+                            setOpponent({
+                                id: data.opponent.id,
+                                username: data.opponent.username,
+                                avatar: data.opponent.avatar,
+                            });
+                        }
+
+
                         setTimeout(() => {
-                            navigate(`/game/${matchData.match_id}`);
+                            console.log("[Reverb] Redirecting to match:", data.match_uuid);
+                            navigate(`/game/${data.match_uuid}`);
                         }, 2500);
-                    }
-                }, 2000);
+                    });
+                } else {
+                    console.warn("[Reverb] Cannot subscribe: unity_user_id is missing in sessionStorage");
+                }
+
+                // 2. Avisamos al backend de que entramos en cola
+                console.log(`[REST] Joining queue for mode: ${mode}`);
+                const response = await gameService.joinQueue(mode);
+
+                if (!response.success) {
+                    throw new Error(response.data.message);
+                }
+                console.log("[REST] Successfully joined queue. Waiting for Reverb...");
 
             } catch (error) {
-                console.error("Error al buscar partida:", error);
-                // Si falla, volvemos al index para no quedarnos atrapados
+                console.error("[Matchmaking] Critical Error:", error);
                 navigate('/index');
             }
         };
 
         startMatchmaking();
 
-        // Limpieza: Si el usuario cierra la pestaña o sale de la vista, cancelamos la búsqueda
         return () => {
-            if (pollingInterval) clearInterval(pollingInterval);
-            gameService.leaveQueue().catch(console.error);
+            //if (userId) {
+            //    console.log(`[Reverb] Cleaning up: Leaving channel user.${userId}`);
+            //    echo.leave(`user.${userId}`);
+            //}
         };
-    }, [mode, submode, navigate]);
+    }, [mode, navigate]);
 
+    /**
+     * Handles the explicit user action to leave the queue.
+     * Uses isLeaving to prevent multiple clicks during the async process.
+     */
     const handleCancel = async () => {
-        await gameService.leaveQueue();
-        navigate('/index');
+        if (isLeaving || isMatchFound) return;
+
+        setIsLeaving(true);
+        try {
+            await gameService.leaveQueue();
+            navigate('/index');
+        } catch (error) {
+            console.error("Failed to leave queue:", error);
+            setIsLeaving(false);
+        }
     };
 
     return (
         <DashboardLayout isCentered={true}>
             <div className="max-w-3xl w-full mx-auto animate-fade-in-up">
-                
+
                 {/* Cabecera */}
                 <div className="text-center mb-10">
                     <div className="flex justify-center">{icon}</div>
                     <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">{title}</h1>
                     <p className="text-slate-400">
-                        {isMatchFound 
-                            ? "¡Partida lista! Preparando el tablero..." 
+                        {isMatchFound
+                            ? "¡Partida lista! Preparando el tablero..."
                             : isPvE ? "Cargando entorno de simulación..." : "Buscando oponente de tu nivel..."}
                     </p>
                 </div>
 
                 {/* Zona VS */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12 relative">
-                    
+
                     {/* Jugador (Tú) */}
                     <div className="glass-panel p-6 flex flex-col items-center w-48 relative z-10 border-brand-500/30 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                         <div className="w-20 h-20 rounded-full bg-brand-500/20 flex items-center justify-center border-2 border-brand-500 mb-4 overflow-hidden">
@@ -124,8 +173,8 @@ const Lobby = () => {
                     {/* Oponente */}
                     <div className={`glass-panel p-6 flex flex-col items-center w-48 relative z-10 transition-all duration-500 ${isMatchFound ? 'border-danger/30 shadow-[0_0_20px_rgba(239,68,68,0.1)]' : 'border-white/5 opacity-70'}`}>
                         <div className={`w-20 h-20 rounded-full flex items-center justify-center border-2 mb-4 overflow-hidden transition-all duration-500
-                            ${isMatchFound 
-                                ? 'bg-danger/20 border-danger text-danger' 
+                            ${isMatchFound
+                                ? 'bg-danger/20 border-danger text-danger'
                                 : 'bg-dark-900 border-white/10 text-slate-600'}`}
                         >
                             {/* Si hay rival y tiene avatar lo mostramos, si no, iconos por defecto */}
@@ -134,7 +183,7 @@ const Lobby = () => {
                             ) : isMatchFound && isPvE ? (
                                 <FaRobot size={32} />
                             ) : isMatchFound && !isPvE ? (
-                                <FaUserSecret size={32} /> 
+                                <FaUserSecret size={32} />
                             ) : (
                                 <FaCircleNotch className="animate-spin" size={28} />
                             )}
@@ -151,16 +200,23 @@ const Lobby = () => {
 
                 {/* Botón Acción */}
                 <div className="flex justify-center">
-                    <button 
+                    <button
                         onClick={handleCancel}
-                        disabled={isMatchFound}
+                        disabled={isMatchFound || isLeaving}
                         className={`btn-icon px-8 py-3 font-bold rounded-xl transition-all duration-300 flex items-center gap-2
-                            ${isMatchFound 
-                                ? 'bg-success/20 text-success border border-success/50 cursor-not-allowed' 
-                                : 'bg-dark-900 border border-danger/50 text-danger hover:bg-danger hover:text-white hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`}
+                            ${isMatchFound
+                                ? 'bg-success/20 text-success border border-success/50 cursor-not-allowed'
+                                : isLeaving
+                                    ? 'bg-dark-900 border border-slate-500 text-slate-500 cursor-wait'
+                                    : 'bg-dark-900 border border-danger/50 text-danger hover:bg-danger hover:text-white hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]'}`}
                     >
                         {isMatchFound ? (
                             <>Preparando el Tablero...</>
+                        ) : isLeaving ? (
+                            <>
+                                <FaCircleNotch className="animate-spin" />
+                                Cancelando...
+                            </>
                         ) : (
                             <>
                                 <FaTimes />

@@ -67,7 +67,7 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         </div>
 
                         <button 
-                            onClick={() => handleSelectMode('campaign')}
+                            onClick={() => handleSelectMode('CAMPAIGN_1')}
                             className="btn-primary w-full py-3 rounded-xl font-bold mt-auto"
                         >
                             {t('common.continue', 'Continue')}
@@ -86,14 +86,14 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         
                         <div className="mt-auto space-y-3">
                             <button 
-                                onClick={() => handleSelectMode('casual', 'unlimited')}
+                                onClick={() => handleSelectMode('PVP_CASUAL_UNLIMITED')}
                                 className="w-full bg-dark-900 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl font-bold text-sm transition-colors flex justify-between items-center px-4"
                             >
                                 <span>{t('game_modes.unlimited')}</span>
                                 <span className="text-xs text-slate-500 font-normal">{t('game_modes.no_cost_limit')}</span>
                             </button>
                             <button 
-                                onClick={() => handleSelectMode('casual', 'limited')}
+                                onClick={() => handleSelectMode('PVP_CASUAL_LIMITED')}
                                 className="w-full bg-dark-900 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl font-bold text-sm transition-colors flex justify-between items-center px-4"
                             >
                                 <span>{t('game_modes.limited')}</span>
@@ -130,7 +130,7 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
 
                         <button 
                             disabled={!isRankedUnlocked}
-                            onClick={() => handleSelectMode('ranked')}
+                            onClick={() => handleSelectMode('PVP_RANKED')}
                             className={`w-full py-3 rounded-xl font-bold mt-auto transition-colors ${isRankedUnlocked ? 'bg-warning hover:bg-warning/80 text-dark-900' : 'bg-dark-900 text-slate-500 border border-white/10'}`}
                         >
                             {t('game_modes.find_match')}

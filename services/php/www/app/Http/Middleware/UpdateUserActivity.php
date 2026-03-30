@@ -19,7 +19,20 @@ class UpdateUserActivity
 
             $updateData['status'] = UserStatus::ONLINE;
 
-            if (!$request->is('v1/matchmaking/*')) {
+            $safeRoutes = [
+                'v1/matchmaking/*',
+                'v1/users/*/friends',
+            ];
+
+            $isSafe = false;
+            foreach ($safeRoutes as $route) {
+                if ($request->is($route)) {
+                    $isSafe = true;
+                    break;
+                }
+            }
+
+            if (!$isSafe) {
                 app(MatchmakingController::class)->handleUserDisconnection($user);
             }
 
