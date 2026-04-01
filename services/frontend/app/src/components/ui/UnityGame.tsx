@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Unity, useUnityContext } from 'react-unity-webgl';
 import { useNavigate } from 'react-router-dom';
+import gameService from '../../services/gameService';
 
 interface UnityGameProps {
     token: string;
@@ -9,12 +10,19 @@ interface UnityGameProps {
 }
 
 const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
-
     const navigate = useNavigate();
+    const isMounted = useRef(true);
+    const hasCleanedUp = useRef(false);
 
-
-    /* Motor Unity starting */
-    const { unityProvider, sendMessage, addEventListener, removeEventListener, isLoaded, loadingProgression } = useUnityContext({
+    /* Unity Engine Configuration */
+    const {
+        unityProvider,
+        sendMessage,
+        addEventListener,
+        removeEventListener,
+        isLoaded,
+        loadingProgression
+    } = useUnityContext({
         loaderUrl: "/game/Build/NexusNineBuild.loader.js",
         dataUrl: "/game/Build/NexusNineBuild.data.gz",
         frameworkUrl: "/game/Build/NexusNineBuild.framework.js.gz",
@@ -24,8 +32,6 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
         productVersion: "0.7",
     });
 
-    const isMounted = React.useRef(true);
-
     useEffect(() => {
         isMounted.current = true;
         return () => {
@@ -33,73 +39,85 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
         };
     }, []);
 
-    /* React to Unity Handshake still Unity is ready */
+    /**
+     * Handshake: Initialize Unity Match with session data
+     */
     useEffect(() => {
         if (isLoaded && isMounted.current) {
             const initData = { token, matchId, userId };
-
-            //console.log("Unity Loaded. Sending initialization data:", initData);
-
-            /* Call to InitializeMatch with token and matchId */
             sendMessage('NetworkManager', 'InitializeMatch', JSON.stringify(initData));
         }
     }, [isLoaded, token, matchId, userId, sendMessage]);
 
-    /* Function to handle match finished event, data from Unity to React */
+    /**
+     * Listener: Handle Match Finished event from Unity
+     */
     useEffect(() => {
-        /* Function to handle match finished event */
         const handleMatchFinished = (json: string) => {
-            const results = JSON.parse(json);
-            console.log("Match Over:", results);
+            // Prevent the emergency abandon logic since the game ended legally
+            hasCleanedUp.current = true;
 
-            // Le damos 200ms al motor para que termine sus procesos internos
-            // antes de que React desmonte el canvas por completo
+            console.log("Match Over:", JSON.parse(json));
+
+            // Small delay to allow Unity to finish internal processes before unmounting
             setTimeout(() => {
                 navigate(`/index`);
             }, 200);
         };
 
-        /* Event Listener to data from Unity */
         addEventListener("GameFinished", handleMatchFinished as any);
-
-        // Cleanup al desmontar el componente (importantísimo para que no haya fugas de memoria)
         return () => {
             removeEventListener("GameFinished", handleMatchFinished as any);
         };
-    }, [addEventListener, removeEventListener]);
+    }, [addEventListener, removeEventListener, navigate]);
 
-    const hasCleanedUp = React.useRef(false);
-
-    /* React to beforeunload event to handle emergency cleanup */
+    /**
+     * Cleanup: Detects tab closure or component unmount to trigger abandonment
+     */
     useEffect(() => {
-        const handleEmergency = () => {
+        const handleAbandonment = () => {
             if (isLoaded && !hasCleanedUp.current) {
                 hasCleanedUp.current = true;
-                // Llamamos a la función centralizada en GameManager
-                sendMessage('GameManager', 'HandleEmergencyQuit');
+
+                // 1. Tell Unity to stop local logic and prepare for shutdown
+                if (isLoaded) {
+                    sendMessage('GameManager', 'HandleEmergencyQuit');
+                }
+
+                // 2. Notify Backend via sendBeacon (Safe for tab closure)
+                // This uses the formula defined in gameService (FormData + sendBeacon)
+                gameService.abandonMatchEmergency(matchId);
             }
         };
 
-        window.addEventListener("beforeunload", handleEmergency);
+        // Listen for browser-level events (F5, Tab Close, Browser Exit)
+        window.addEventListener("beforeunload", handleAbandonment);
+
         return () => {
-            handleEmergency();
-            window.removeEventListener("beforeunload", handleEmergency);
+            // Listen for React-level events (SPA Navigation)
+            window.removeEventListener("beforeunload", handleAbandonment);
+
+            if (isLoaded) {
+                handleAbandonment();
+            }
         };
-    }, [isLoaded, sendMessage]);
+    }, [isLoaded, sendMessage, matchId]);
 
     return (
         <div className="relative flex items-center justify-center w-full h-full bg-black overflow-hidden">
 
-            {/* Loading Screen */}
+            {/* Overlay Loading Screen */}
             {!isLoaded && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black">
                     <div className="w-16 h-16 border-4 border-brand-500/30 border-t-brand-500 rounded-full animate-spin mb-4"></div>
                     <p className="text-white font-bold text-xl drop-shadow-lg">Iniciando Nexus Nine...</p>
-                    <p className="text-brand-400 font-mono text-lg mt-2">{Math.round(loadingProgression * 100)}%</p>
+                    <p className="text-brand-400 font-mono text-lg mt-2">
+                        {Math.round(loadingProgression * 100)}%
+                    </p>
                 </div>
             )}
 
-            {/* Unity Canvas */}
+            {/* Main Unity Render Canvas */}
             <Unity
                 unityProvider={unityProvider}
                 style={{

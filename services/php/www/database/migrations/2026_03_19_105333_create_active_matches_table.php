@@ -42,6 +42,17 @@ return new class extends Migration
             $table->boolean('p1_ready')->default(false);
             $table->boolean('p2_ready')->default(false);
 
+            // --- DISCONNECTION & HEARTBEAT SYSTEM ---
+
+            // Permanent flags: Once true, the player cannot reconnect
+            $table->boolean('p1_disconnected')->default(false);
+            $table->boolean('p2_disconnected')->default(false);
+
+            // Timestamps to validate if a disconnection report is legitimate
+            // We use decimal(15,3) for millisecond precision matching your timeout system
+            $table->decimal('last_ping_p1', 15, 3)->nullable();
+            $table->decimal('last_ping_p2', 15, 3)->nullable();
+
             // Precise timestamp for the next timeout
             $table->decimal('next_timeout_at', 15, 3)->nullable();
 

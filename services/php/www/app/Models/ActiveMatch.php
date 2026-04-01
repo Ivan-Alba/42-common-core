@@ -28,6 +28,10 @@ class ActiveMatch extends Model
         'hands_state',
         'p1_ready',
         'p2_ready',
+        'p1_disconnected',
+        'p2_disconnected',
+        'last_ping_p1',
+        'last_ping_p2',
         'next_timeout_at',
     ];
 
@@ -38,6 +42,8 @@ class ActiveMatch extends Model
         'hands_state' => 'array',
         'p1_ready' => 'boolean',
         'p2_ready' => 'boolean',
+        'p1_disconnected' => 'boolean',
+        'p2_disconnected' => 'boolean',
     ];
 
     /**

@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 
 /* Run the activity check every minute */
 Schedule::command('users:clear-inactive')->everyMinute();
-Schedule::command('matchmaking:cleanup-pending')->everyMinute();
+Schedule::command('matches:cleanup-active')->everyMinute();

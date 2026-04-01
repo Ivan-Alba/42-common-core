@@ -10,6 +10,7 @@ use App\Http\Controllers\PlayerStatsController;
 use App\Http\Controllers\CardUserController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\MatchmakingController;
+use App\Http\Controllers\ActiveMatchController;
 use App\Http\Middleware\UpdateUserActivity;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -53,6 +54,9 @@ Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function (
         /* Matchmaking system */
         Route::post('/matchmaking/join', [MatchmakingController::class, 'join']);
         Route::post('/matchmaking/cancel', [MatchmakingController::class, 'cancel']);
+
+        /* Active matches */
+        Route::post('/match/{matchUuid}/abandon', [ActiveMatchController::class, 'abandon']);
 
         /* Friendship actions */
         Route::post('/users/{user}/friends/{friend}', [FriendshipController::class, 'sendFriendRequest']);

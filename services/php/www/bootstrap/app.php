@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/*', // This covers all routes in your api.php file
             'v1/user/force-offline', // SendBeacon route for forcing user offline
+            'v1/match/*/abandon', // SendBeacon route for abandoning matches
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
