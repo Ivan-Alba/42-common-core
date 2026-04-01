@@ -68,6 +68,68 @@ class ActiveMatchController extends Controller
         ]);
     }
 
+    /**
+     * Handle intentional abandonment (tab close, refresh, or quit button).
+     * This is a point of no return for the player.
+     *
+     * @param string $matchUuid
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function abandon(string $matchUuid)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        return DB::transaction(function () use ($matchUuid, $user) {
+            // 1. Lock the match row to prevent race conditions during abandonment
+            $match = ActiveMatch::where('match_uuid', $matchUuid)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // 2. Identify if the user is P1 or P2
+            $isP1 = (int) $user->id === (int) $match->player_1_id;
+            $isP2 = (int) $user->id === (int) $match->player_2_id;
+
+            if (!$isP1 && !$isP2) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            // 3. Identify the opponent to check for Bot status
+            $opponentId = $isP1 ? $match->player_2_id : $match->player_1_id;
+            $opponent = User::find($opponentId);
+
+            // 4. Check if the match should be deleted immediately
+            // Logic: Delete if both players disconnected OR if the remaining opponent is a Bot
+            $isOpponentBot = $opponent && $opponent->is_bot;
+
+            if ($isP1) {
+                $match->p1_disconnected = true;
+            } else {
+                $match->p2_disconnected = true;
+            }
+
+            if (($match->p1_disconnected && $match->p2_disconnected) || $isOpponentBot) {
+                $match->delete();
+                $msg = $isOpponentBot ? 'Match deleted: Human player left PvE session.' : 'Match deleted as both players left.';
+                return response()->json(['success' => true, 'message' => $msg]);
+            }
+
+            // 5. Persist the disconnection for PvP matches
+            $match->save();
+
+            // 6. Broadcast to the rival so they can activate the AI in Unity
+            // We reuse the MatchFound logic or a specific RivalAbandoned event
+            /*broadcast(new \App\Events\PlayerAbandonedEvent(
+                $matchUuid,
+                $user->id,
+            ))->toOthers();*/
+
+            return response()->json(['success' => true], 200);
+        });
+    }
 
     /**
      * Endpoint: GET /api/matches/{matchUuid}
@@ -190,7 +252,7 @@ class ActiveMatchController extends Controller
         // We use a Transaction to ensure atomicity and prevent race conditions
         return DB::transaction(function () use ($matchUuid, $targetPlayerId, $authUser, $cardIds) {
 
-            // 1. LOCK FOR UPDATE: This is the key. 
+            // 1. LOCK FOR UPDATE: This is the key.
             // Other concurrent requests for this specific UUID will wait here until this transaction finishes.
             $match = ActiveMatch::where('match_uuid', $matchUuid)
                 ->lockForUpdate()
