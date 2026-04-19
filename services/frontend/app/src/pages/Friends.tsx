@@ -55,8 +55,16 @@ const Friends = () => {
 
 	/* Fetch friends from database */
 	useEffect(() => {
-		fetchFriendsData();
-	}, [authUser]);
+        fetchFriendsData();
+
+		/* Global event listener to update friends list when we accept/decline from friends page or receive new request */
+        window.addEventListener('updateFriendNotifications', fetchFriendsData);
+
+		/* Cleanup the listener when we leave the page */
+        return () => {
+            window.removeEventListener('updateFriendNotifications', fetchFriendsData);
+        };
+    }, [authUser]);
 
 	const fetchFriendsData = async () => {
 		if (!authUser) return;

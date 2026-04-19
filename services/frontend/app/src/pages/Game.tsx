@@ -44,7 +44,7 @@ const Game = () => {
             </button>
 
             {/* Game Component */}
-            <UnityGame token={token} matchId={matchId} userId={userId} />
+			<UnityGame token={token} matchId={matchId} userId={Number(userId)} />
             
         </div>
     );

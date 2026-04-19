@@ -7,8 +7,9 @@ import { MdLogout } from "react-icons/md";
 import Logo from './Logo';
 import LanguageSelector from './LanguageSelector';
 import { useAuth } from '../context/AuthContext';
-import i18n from '../i18n';
+//import i18n from '../i18n';
 import userService from '../services/userService';
+import { useSocket } from '../context/SocketContext';
 
 const Navbar = () => {
 	const { t } = useTranslation();
@@ -22,38 +23,70 @@ const Navbar = () => {
 	const navigate = useNavigate();
 	const { user, logout } = useAuth();
 
+	/* Socket for real-time updates on pending friend requests */
+	const echo = useSocket();
+
 	/* Check pending friend requests on mount and when user or url changes (to update count when we go to friends page) */
 	useEffect(() => {
-		const checkPendingRequests = async () => {
-			if (!user || !localStorage.getItem('is_logged_in'))
-				return;
-			try {
-				const data = await userService.getFriends(user.id);
+        const checkPendingRequests = async () => {
+            if (!user || !localStorage.getItem('is_logged_in'))
+                return;
+            try {
+                const data = await userService.getFriends(user.id);
 
-				/* Filter pending requests */
-				const pending = data.filter((f: any) => {
-					const status = f.friendship_status || f.pivot?.status;
-					const requesterId = Number(f.pivot?.requester_id);
-					const myId = Number(user.id);
+                /* Filter pending requests */
+                const pending = data.filter((f: any) => {
+                    const status = f.friendship_status || f.pivot?.status;
+                    const requesterId = Number(f.pivot?.requester_id);
+                    const myId = Number(user.id);
 
-					return status === 'pending' && requesterId !== myId;
-				});
+                    return status === 'pending' && requesterId !== myId;
+                });
 
-				setPendingCount(pending.length);
-			} catch (error) {
-				// Silent
-			}
-		};
+                setPendingCount(pending.length);
+            } catch (error) {
+                // Silent
+            }
+        };
 
-		checkPendingRequests();
+        checkPendingRequests();
 
 		/* Global event listener to update pending requests count when we accept/decline from friends page */
 		window.addEventListener('updateFriendNotifications', checkPendingRequests);
-		return () => {
-			window.removeEventListener('updateFriendNotifications', checkPendingRequests);
-		};
+        return () => {
+            window.removeEventListener('updateFriendNotifications', checkPendingRequests);
+        };
 
-	}, [user, url.pathname]);
+    }, [user, url.pathname]);
+
+	/* Real-time updates with Laravel Echo and Pusher */
+	useEffect(() => {
+        if (user && echo) {
+            // Preguntar Iván el nombre exacto del canal.
+            const channelName = `user.${user.id}`;
+            
+            const channel = echo.private(channelName);
+
+			/* Listen event for incoming friend requests. When received, we trigger the same event that we dispatch in the friends page when accepting/declining, so the count updates no matter where we are in the app. */
+            channel.listen('.FriendRequestReceived', (eventData: any) => {
+                console.log("¡Notificación en tiempo real recibida!", eventData);
+                
+				/* Throw the same event that we dispatch in the friends page when accepting/declining, so the count updates no matter where we are in the app. */
+                window.dispatchEvent(new Event('updateFriendNotifications'));
+            });
+
+			channel.listen('.FriendRequestAccepted', (eventData: any) => {
+				console.log("¡Notificación de aceptación de amistad recibida!", eventData);
+				/* We can also trigger the same event to update the pending count, but we could also show a toast or something to notify the user that their request was accepted. */
+				window.dispatchEvent(new Event('updateFriendNotifications'));
+			});
+
+			/* Cleanup the connection if the component unmounts */
+            return () => {
+                echo.leave(channelName);
+            };
+        }
+    }, [user, echo]);
 
 	const getDesktopClass = (path: string) =>
 		url.pathname === path ? "nav-link-desktop-active" : "nav-link-desktop";

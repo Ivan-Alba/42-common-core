@@ -1,8 +1,8 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
-window.Pusher = Pusher as any;
-
+(window as any).Pusher = Pusher;
+Pusher.logToConsole = true;
 const echo = new Echo({
     broadcaster: 'reverb',
     key: import.meta.env.VITE_REVERB_APP_KEY,

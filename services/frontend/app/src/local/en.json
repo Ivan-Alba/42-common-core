@@ -164,6 +164,11 @@
     "opponent": "Opponent",
     "score": "Score",
     "date": "Date",
+	"match_results": {
+		"win": "Win",
+		"loss": "Loss",
+		"draw": "Draw"
+	},	
     "no_history": "No match history available.",
     "error_loading": "Error loading profile data.",
     "error_msg": "There was an error loading the profile or network issue.",
@@ -198,7 +203,12 @@
     "no_ranking": "No ranking data available.",
     "position": "Position",
     "trend": "Trend",
-    "points": "Points"
+    "points": "Points",
+	"stats_initials": {
+		"win": "W",
+		"loss": "L",
+		"draw": "D"
+	}
   },
   "privacy": {
     "1": "Introduction",

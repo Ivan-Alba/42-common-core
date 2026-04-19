@@ -37,7 +37,7 @@ const Lobby = () => {
         const userId = sessionStorage.getItem('unity_user_id');
 
         // 1. If infrastructure is not ready, we stop here.
-        if (!echo || !userId || !user) return;
+    	if (!echo || !userId || !user) return;
 
         let isMounted = true;
         const privateChannel = `user.${userId}`;
