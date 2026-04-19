@@ -104,7 +104,8 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
     }, [isLoaded, sendMessage, matchId]);
 
     return (
-        <div className="relative flex items-center justify-center w-full h-full bg-black overflow-hidden">
+        // Aquí le damos el alto completo a la pantalla (ajustado si tienes navbar)
+        <div className="relative flex items-center justify-center w-full h-[calc(100vh-80px)] bg-black overflow-hidden">
 
             {/* Overlay Loading Screen */}
             {!isLoaded && (
@@ -121,12 +122,9 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
             <Unity
                 unityProvider={unityProvider}
                 style={{
+                    width: '100%',
+                    height: '100%',
                     aspectRatio: '16/9',
-                    width: '100% !important',
-                    height: '100% !important',
-                    maxWidth: '100vw',
-                    maxHeight: '100vh',
-                    objectFit: 'contain',
                     background: '#000000',
                     boxShadow: '0 0 30px rgba(0,0,0,0.7)'
                 }}
