@@ -208,6 +208,11 @@
 		"draw": "E"
 	}
   },
+  "game": {
+	"loading": "Iniciando Nexus Nine...",
+	"rotate_device": "Gira tu dispositivo",
+	"landscape_required": "Nexus Nine está diseñado para jugarse en modo horizontal."
+  },
   "privacy": {
     "1": "Introducción",
     "1text": "En Nexus Nine, respetamos la privacidad de nuestros usuarios...",

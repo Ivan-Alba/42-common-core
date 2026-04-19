@@ -210,6 +210,11 @@
 		"draw": "D"
 	}
   },
+  "game": {
+	"loading": "Starting Nexus Nine...",
+	"rotate_device": "Rotate your device.",
+	"landscape_required": "Nexus Nine is designed to be played in landscape mode."
+  },
   "privacy": {
     "1": "Introduction",
     "1text": "At Nexus Nine, we respect our users' privacy...",
