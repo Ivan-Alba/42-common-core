@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Services\MatchmakingService;
 use App\Enums\GameMode;
@@ -35,7 +36,21 @@ class MatchmakingController extends Controller
             $mode = GameMode::from($request->game_mode);
             $user = $request->user();
 
+            if ($user->penalty_until && $user->penalty_until->isFuture()) {
+                $secondsLeft = $user->penalty_until->diffInSeconds(now());
+
+                return response()->json([
+                    'success' => false,
+                    'error' => 'You are temporarily banned from matchmaking.',
+                    'seconds_remaining' => $secondsLeft,
+                    'penalty_until' => $user->penalty_until->toIso8601String()
+                ], 403);
+            }
+
             $match = $this->matchmaking->findOrCreateMatch($user, $mode);
+
+            //$user->update(['status' => UserStatus::QUEUEING]);
+
 
             // If $match is null, it means the user has been added to the queue
             if (!$match) {

@@ -138,6 +138,7 @@
     "offline": "Offline",
     "playing": "Jugando",
     "away": "Ausente",
+    "queueing": "En cola",
     "invite": "Invitar a jugar",
     "not_available": "No disponible"
   },

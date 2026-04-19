@@ -21,7 +21,8 @@ const FriendCard = ({ name, icon, avatar, status = 'offline', onProfileClick, on
         online: { ring: "border-success shadow-[0_0_10px_rgba(34,197,94,0.4)]", text: "text-success", label: t('friends.online') },
         offline: { ring: "border-slate-600", text: "text-slate-500", label: t('friends.offline') },
         playing: { ring: "border-brand-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]", text: "text-brand-400", label: t('friends.playing') },
-        away: { ring: "border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]", text: "text-yellow-500", label: t('friends.away') }
+        away: { ring: "border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.4)]", text: "text-yellow-500", label: t('friends.away') },
+        queueing: { ring: "border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.4)]", text: "text-blue-400", label: t('friends.queueing') },
 
     };
 

@@ -117,6 +117,11 @@ class ActiveMatchController extends Controller
                 return response()->json(['success' => true, 'message' => $msg]);
             }
 
+            $penaltyMinutes = 2;
+            $user->update([
+                'penalty_until' => now()->addMinutes($penaltyMinutes)
+            ]);
+
             // 5. Persist the disconnection for PvP matches
             $match->save();
 

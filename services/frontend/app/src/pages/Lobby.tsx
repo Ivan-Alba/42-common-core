@@ -2,26 +2,25 @@ import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import { FaRobot, FaUserSecret, FaTimes, FaCircleNotch, FaTrophy, FaUsers } from 'react-icons/fa';
 import gameService, { type MatchData } from '../services/gameService';
-import echo from '../utils/echo';
 
 const Lobby = () => {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const echo = useSocket();
 
     const mode = searchParams.get('mode') || 'unknown';
-    const submode = searchParams.get('submode');
-
     const [isMatchFound, setIsMatchFound] = useState(false);
     const [isLeaving, setIsLeaving] = useState(false);
     const [opponent, setOpponent] = useState<MatchData['opponent'] | null>(null);
-    //const [matchId, setMatchId] = useState<number | null>(null);
 
-    const isInitialMount = useRef(true);
+    // Ref to prevent double execution of the REST call
+    const matchmakingStarted = useRef(false);
 
     const getModeDetails = () => {
         if (mode === 'campaign') return { title: 'Campaign PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
@@ -34,88 +33,77 @@ const Lobby = () => {
     const { title, icon } = getModeDetails();
     const isPvE = mode === 'campaign';
 
-    // LÓGICA DE MATCHMAKING REAL
     useEffect(() => {
-        if (!isInitialMount.current) return;
-        isInitialMount.current = false;
-
         const userId = sessionStorage.getItem('unity_user_id');
-        console.log(`[Reverb] Initializing for User ID: ${userId}`);
 
-        const startMatchmaking = async () => {
+        // 1. If infrastructure is not ready, we stop here.
+        if (!echo || !userId || !user) return;
+
+        let isMounted = true;
+        const privateChannel = `user.${userId}`;
+        const channel = echo.private(privateChannel);
+
+        // 2. REGISTER LISTENER IMMEDIATELY
+        console.log(`[Lobby] Registering listener for .match.found on ${privateChannel}`);
+        channel.listen('.match.found', (data: any) => {
+            if (!isMounted) return;
+
+            console.log("[Lobby] EVENT RECEIVED: .match.found", data);
+            setIsMatchFound(true);
+
+            if (data.opponent) {
+                setOpponent({
+                    id: data.opponent.id,
+                    username: data.opponent.username,
+                    avatar: data.opponent.avatar,
+                });
+            }
+
+            setTimeout(() => {
+                if (isMounted) navigate(`/game/${data.match_uuid}`);
+            }, 2500);
+        });
+
+        // 3. JOIN QUEUE
+        const startQueue = async () => {
+            // Guard to ensure we only call joinQueue once per session
+            if (matchmakingStarted.current) return;
+            matchmakingStarted.current = true;
+
             try {
-                // 1. Subscribe to Reverb BEFORE joining the queue
-                if (userId) {
-                    console.log(`[Reverb] Attempting to subscribe to private channel: user.${userId}`);
-
-                    const channel = echo.private(`user.${userId}`);
-
-                    // Debug: Listen for internal Echo events (Subscription success/error)
-                    channel.on('pusher:subscription_succeeded', () => {
-                        console.log(`[Reverb] SUCCESS: Subscribed to private-user.${userId}`);
-                    });
-
-                    channel.on('pusher:subscription_error', (status: any) => {
-                        console.error(`[Reverb] ERROR: Subscription failed for private-user.${userId}`, status);
-                    });
-
-                    // Listen for the specific game event
-                    channel.listen('.match.found', (data: any) => {
-                        console.log("[Reverb] EVENT RECEIVED: .match.found", data);
-                        console.log("[Reverb] Full Data Received:", JSON.stringify(data, null, 2));
-
-                        setIsMatchFound(true);
-
-                        if (data.opponent) {
-                            setOpponent({
-                                id: data.opponent.id,
-                                username: data.opponent.username,
-                                avatar: data.opponent.avatar,
-                            });
-                        }
-
-
-                        setTimeout(() => {
-                            console.log("[Reverb] Redirecting to match:", data.match_uuid);
-                            navigate(`/game/${data.match_uuid}`);
-                        }, 2500);
-                    });
-                } else {
-                    console.warn("[Reverb] Cannot subscribe: unity_user_id is missing in sessionStorage");
-                }
-
-                // 2. Avisamos al backend de que entramos en cola
                 console.log(`[REST] Joining queue for mode: ${mode}`);
-                const response = await gameService.joinQueue(mode);
-
-                if (!response.success) {
-                    throw new Error(response.data.message);
+                await gameService.joinQueue(mode);
+                console.log("[REST] Successfully in queue.");
+            } catch (error: any) {
+                // IMPORTANT: If we get a 403 (penalty), we MUST navigate back
+                // regardless of isMounted if we want the user to be redirected out of the lobby.
+                // However, since navigate only works if the component is in the tree, 
+                // we check isMounted but we handle the error priority.
+                if (error.response?.status === 403) {
+                    console.warn("[Lobby] Access forbidden: User is likely penalized.");
+                    navigate('/index');
+                    return;
                 }
-                console.log("[REST] Successfully joined queue. Waiting for Reverb...");
 
-            } catch (error) {
-                console.error("[Matchmaking] Critical Error:", error);
-                navigate('/index');
+                if (isMounted) {
+                    console.error("[Lobby] Unexpected Queue Error:", error);
+                    navigate('/index');
+                }
             }
         };
 
-        startMatchmaking();
+        startQueue();
 
+        // CLEANUP
         return () => {
-            //if (userId) {
-            //    console.log(`[Reverb] Cleaning up: Leaving channel user.${userId}`);
-            //    echo.leave(`user.${userId}`);
-            //}
+            isMounted = false;
+            console.log(`[Lobby] Stopping listener on ${privateChannel}`);
+            channel.stopListening('.match.found');
         };
-    }, [mode, navigate]);
+    }, [echo, mode, navigate, user]);
 
-    /**
-     * Handles the explicit user action to leave the queue.
-     * Uses isLeaving to prevent multiple clicks during the async process.
-     */
     const handleCancel = async () => {
         if (isLeaving || isMatchFound) return;
-
         setIsLeaving(true);
         try {
             await gameService.leaveQueue();
@@ -126,11 +114,22 @@ const Lobby = () => {
         }
     };
 
+    // Render Guard: To avoid the "double flash", we return a consistent loading state
+    // if Echo isn't ready. This ensures the rest of the component only renders once.
+    if (!echo) {
+        return (
+            <DashboardLayout isCentered={true}>
+                <div className="flex flex-col items-center">
+                    <FaCircleNotch className="animate-spin text-brand-500 text-4xl mb-4" />
+                    <p className="text-slate-400">Connecting to game server...</p>
+                </div>
+            </DashboardLayout>
+        );
+    }
+
     return (
         <DashboardLayout isCentered={true}>
             <div className="max-w-3xl w-full mx-auto animate-fade-in-up">
-
-                {/* Cabecera */}
                 <div className="text-center mb-10">
                     <div className="flex justify-center">{icon}</div>
                     <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">{title}</h1>
@@ -141,10 +140,8 @@ const Lobby = () => {
                     </p>
                 </div>
 
-                {/* Zona VS */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12 relative">
-
-                    {/* Jugador (Tú) */}
+                    {/* User Profile Card */}
                     <div className="glass-panel p-6 flex flex-col items-center w-48 relative z-10 border-brand-500/30 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                         <div className="w-20 h-20 rounded-full bg-brand-500/20 flex items-center justify-center border-2 border-brand-500 mb-4 overflow-hidden">
                             {user?.avatar ? (
@@ -157,7 +154,6 @@ const Lobby = () => {
                         <span className="text-xs text-brand-400 font-medium bg-brand-500/10 px-3 py-1 rounded-full mt-2">Ready</span>
                     </div>
 
-                    {/* Animación VS */}
                     <div className="flex flex-col items-center justify-center z-10">
                         <div className="w-16 h-16 rounded-full bg-dark-900 border border-white/10 flex items-center justify-center shadow-lg relative">
                             {!isMatchFound && (
@@ -170,14 +166,13 @@ const Lobby = () => {
                         </div>
                     </div>
 
-                    {/* Oponente */}
+                    {/* Opponent Profile Card */}
                     <div className={`glass-panel p-6 flex flex-col items-center w-48 relative z-10 transition-all duration-500 ${isMatchFound ? 'border-danger/30 shadow-[0_0_20px_rgba(239,68,68,0.1)]' : 'border-white/5 opacity-70'}`}>
                         <div className={`w-20 h-20 rounded-full flex items-center justify-center border-2 mb-4 overflow-hidden transition-all duration-500
                             ${isMatchFound
                                 ? 'bg-danger/20 border-danger text-danger'
                                 : 'bg-dark-900 border-white/10 text-slate-600'}`}
                         >
-                            {/* Si hay rival y tiene avatar lo mostramos, si no, iconos por defecto */}
                             {isMatchFound && opponent?.avatar ? (
                                 <img src={opponent.avatar} alt={opponent.username} className="w-full h-full object-cover" />
                             ) : isMatchFound && isPvE ? (
@@ -198,7 +193,6 @@ const Lobby = () => {
                     </div>
                 </div>
 
-                {/* Botón Acción */}
                 <div className="flex justify-center">
                     <button
                         onClick={handleCancel}

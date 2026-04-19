@@ -140,6 +140,7 @@
     "offline": "Offline",
     "playing": "Playing",
     "away": "Away",
+    "queueing": "Queueing",
     "invite": "Invite to Play",
     "not_available": "Not Available"
   },

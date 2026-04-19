@@ -39,6 +39,7 @@ class User extends Authenticatable
         'language',
         'status',
         'last_activity',
+        'penalty_until',
         'is_bot'
     ];
 
@@ -64,7 +65,8 @@ class User extends Authenticatable
             'password' => 'hashed',
             'language' => Language::class,
             'status' => UserStatus::class,
-            'is_bot' => 'boolean'
+            'is_bot' => 'boolean',
+            'penalty_until' => 'datetime', 
         ];
     }
 
