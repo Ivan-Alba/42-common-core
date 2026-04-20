@@ -16,8 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Models\PlayerStat;
 use App\Models\Card;
-
-
+use App\Events\UserStatusChangedEvent;
 
 class User extends Authenticatable
 {
@@ -123,5 +122,21 @@ class User extends Authenticatable
     public function cards(): BelongsToMany
     {
         return $this->belongsToMany(Card::class, 'card_user', 'user_id', 'card_id');
+    }
+
+	// MIRIAM
+	protected static function booted()
+    {
+        static::updated(function ($user) {
+			// Check if the 'status' column was changed in this update
+            if ($user->wasChanged('status')) {
+				// If it has changed, we dispatch the event to Reverb with the new status
+				$statusText = $user->status instanceof \App\Enums\UserStatus 
+                                ? $user->status->value 
+                                : $user->status;
+
+                UserStatusChangedEvent::dispatch($user->id, $statusText);
+            }
+        });
     }
 }

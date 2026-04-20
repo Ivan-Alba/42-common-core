@@ -127,6 +127,7 @@
     "title": "Friends",
     "subtitle": "Your friends list",
     "search_placeholder": "Enter username",
+	"player_not_found": "Player not found.",
     "no_friends": "You have no friends added yet.",
     "already_friend": "Friend",
     "pending": "Pending",

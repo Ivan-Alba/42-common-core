@@ -125,6 +125,7 @@
     "title": "Amigos",
     "subtitle": "Tu lista de amigos",
     "search_placeholder": "Introduce el nombre de usuario",
+	"player_not_found": "Jugador no encontrado.",
     "no_friends": "Aún no tienes amigos agregados.",
     "already_friend": "Amigo",
     "pending": "Pendiente",
