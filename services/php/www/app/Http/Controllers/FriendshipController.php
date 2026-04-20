@@ -49,7 +49,7 @@ class FriendshipController
         }
 
 		// If the action is reject, we delete the friendship instead of updating it to rejected, since it doesn't make sense to keep a rejected request in the database. This also simplifies the logic when sending a new request later, since we won't have to check for existing rejected requests.
-		if ($request->action === 'reject' || (isset(FriendshipHttpAction::REJECT) && $request->action === FriendshipHttpAction::REJECT->value)) {
+		if ($request->action === 'reject' || $request->action === FriendshipHttpAction::REJECT->value) {
             
             $service->deleteFriendship($user, $friend);
             

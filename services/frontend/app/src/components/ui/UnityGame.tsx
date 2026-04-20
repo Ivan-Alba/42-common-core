@@ -128,10 +128,13 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId, onGameLoa
             <Unity
                 unityProvider={unityProvider}
                 style={{
-                    width: '100%',
-                    height: '100%',
-                    aspectRatio: '16/9',
-                    background: '#000000',
+                    aspectRatio: "16 / 9",
+                    width: "100%",
+                    height: "auto",
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                    background: "#000000",
                     boxShadow: '0 0 30px rgba(0,0,0,0.7)'
                 }}
                 devicePixelRatio={window.devicePixelRatio || 1}
