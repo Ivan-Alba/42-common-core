@@ -140,6 +140,7 @@
     "offline": "Offline",
     "playing": "Playing",
     "away": "Away",
+    "queueing": "Queueing",
     "invite": "Invite to Play",
     "not_available": "Not Available"
   },
@@ -163,6 +164,11 @@
     "opponent": "Opponent",
     "score": "Score",
     "date": "Date",
+	"match_results": {
+		"win": "Win",
+		"loss": "Loss",
+		"draw": "Draw"
+	},	
     "no_history": "No match history available.",
     "error_loading": "Error loading profile data.",
     "error_msg": "There was an error loading the profile or network issue.",
@@ -197,7 +203,17 @@
     "no_ranking": "No ranking data available.",
     "position": "Position",
     "trend": "Trend",
-    "points": "Points"
+    "points": "Points",
+	"stats_initials": {
+		"win": "W",
+		"loss": "L",
+		"draw": "D"
+	}
+  },
+  "game": {
+	"loading": "Starting Nexus Nine...",
+	"rotate_device": "Rotate your device.",
+	"landscape_required": "Nexus Nine is designed to be played in landscape mode."
   },
   "privacy": {
     "1": "Introduction",

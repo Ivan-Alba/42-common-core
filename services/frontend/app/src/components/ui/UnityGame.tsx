@@ -2,15 +2,18 @@ import React, { useEffect, useRef } from 'react';
 import { Unity, useUnityContext } from 'react-unity-webgl';
 import { useNavigate } from 'react-router-dom';
 import gameService from '../../services/gameService';
+import { useTranslation } from 'react-i18next';
 
 interface UnityGameProps {
     token: string;
     matchId: string;
     userId: number;
+	onGameLoaded?: () => void;
 }
 
-const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
+const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId, onGameLoaded }) => {
     const navigate = useNavigate();
+	const { t } = useTranslation();
     const isMounted = useRef(true);
     const hasCleanedUp = useRef(false);
 
@@ -44,10 +47,13 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
      */
     useEffect(() => {
         if (isLoaded && isMounted.current) {
+			if (onGameLoaded) {
+                onGameLoaded();
+            }
             const initData = { token, matchId, userId };
             sendMessage('NetworkManager', 'InitializeMatch', JSON.stringify(initData));
         }
-    }, [isLoaded, token, matchId, userId, sendMessage]);
+    }, [isLoaded, token, matchId, userId, sendMessage, onGameLoaded]);
 
     /**
      * Listener: Handle Match Finished event from Unity
@@ -104,13 +110,14 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
     }, [isLoaded, sendMessage, matchId]);
 
     return (
-        <div className="relative flex items-center justify-center w-full h-full bg-black overflow-hidden">
+        // Aquí le damos el alto completo a la pantalla (ajustado si tienes navbar)
+        <div className="relative flex items-center justify-center w-full h-[calc(100vh-80px)] bg-black overflow-hidden">
 
             {/* Overlay Loading Screen */}
             {!isLoaded && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black">
                     <div className="w-16 h-16 border-4 border-brand-500/30 border-t-brand-500 rounded-full animate-spin mb-4"></div>
-                    <p className="text-white font-bold text-xl drop-shadow-lg">Iniciando Nexus Nine...</p>
+					<p className="text-white font-bold text-xl drop-shadow-lg">{t('game.loading')}</p>
                     <p className="text-brand-400 font-mono text-lg mt-2">
                         {Math.round(loadingProgression * 100)}%
                     </p>
@@ -121,13 +128,13 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId }) => {
             <Unity
                 unityProvider={unityProvider}
                 style={{
-                    aspectRatio: '16/9',
-                    width: '100% !important',
-                    height: '100% !important',
-                    maxWidth: '100vw',
-                    maxHeight: '100vh',
-                    objectFit: 'contain',
-                    background: '#000000',
+                    aspectRatio: "16 / 9",
+                    width: "100%",
+                    height: "auto",
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                    background: "#000000",
                     boxShadow: '0 0 30px rgba(0,0,0,0.7)'
                 }}
                 devicePixelRatio={window.devicePixelRatio || 1}

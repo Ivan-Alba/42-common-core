@@ -33,13 +33,11 @@ Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function (
 
         /* Own user management */
         Route::get('/user', [UserController::class, 'getOwnUser']);
-        Route::patch('/user/update', [UserController::class, 'updateUser']);
         Route::put('/user/password/update', [UserController::class, 'updateOwnPassword']);
 
         /* User directory & Friends */
         Route::get('/users', [UserController::class, 'getUsers']);
         Route::get('/users/{user}', [UserController::class, 'getUser']);
-        Route::get('/users/{user}/friends', [UserController::class, 'getFriends']);
 
         /* Player statistics */
         Route::get('/user/{user}/stats', [PlayerStatsController::class, 'getUserStats']);
@@ -52,7 +50,6 @@ Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function (
         Route::get('/ranking', [UserController::class, 'getRanking']);
 
         /* Matchmaking system */
-        Route::post('/matchmaking/join', [MatchmakingController::class, 'join']);
         Route::post('/matchmaking/cancel', [MatchmakingController::class, 'cancel']);
 
         /* Active matches */
@@ -84,10 +81,14 @@ Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function (
 */
 Route::middleware(['auth:sanctum'])->prefix('/v1')->group(function () {
 
-    // Corregido: Quitamos el /v1 interno ya que está en el prefijo del grupo
     Route::post('/user/force-offline', [UserController::class, 'forceOffline']);
 
-    /* Matchmaking Confirmation */
+    Route::patch('/user/update', [UserController::class, 'updateUser']);
+
+    Route::get('/users/{user}/friends', [UserController::class, 'getFriends']);
+
+    /* Matchmaking */
+    Route::post('/matchmaking/join', [MatchmakingController::class, 'join']);
     Route::post('/matchmaking/confirm/{uuid}', [MatchmakingController::class, 'confirm']);
 });
 

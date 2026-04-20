@@ -118,7 +118,13 @@ const Ranking = () => {
                                 {/* Line 2: Data */}
                                 <div className="flex justify-between items-center px-2">
                                     <div className="flex items-center gap-2 text-xs text-slate-400">
-                                        <span>{t('profile.wins')}: <span className="text-white font-bold">{player.stats.wins}</span></span>
+                                        <div className="flex items-center gap-1.5 font-bold tracking-wider text-[10px] md:text-xs">
+											<span className="text-success">{t('ranking.stats_initials.win')}: {player.stats.wins || 0}</span>
+											<span className="text-slate-600">|</span>
+											<span className="text-danger">{t('ranking.stats_initials.loss')}: {player.stats.losses || 0}</span>
+											<span className="text-slate-600">|</span>
+											<span className="text-warning">{t('ranking.stats_initials.draw')}: {player.stats.draws || 0}</span>
+										</div>
 
                                         <div className="flex items-center justify-center gap-1 ml-2 bg-black/20 px-2 py-1 rounded">
                                             {player.stats.last_rank_pos != null && player.stats.last_rank_pos > index + 4 && <HiTrendingUp className="text-success text-base" />}
@@ -147,7 +153,7 @@ const Ranking = () => {
                                 <th className="px-6 py-4 text-center w-16">#</th>
                                 <th className="px-6 py-4 text-center">{t('common.name')}</th>
                                 <th className="px-6 py-4 text-center w-44">{t('ranking.trend')}</th>
-                                <th className="px-6 py-4 text-center w-44">{t('profile.wins')}</th>
+                                <th className="px-6 py-4 text-center w-56">{t('profile.stats')}</th>
                                 <th className="px-6 py-4 text-right w-48">{t('ranking.points')}</th>
                             </tr>
                         </thead>
@@ -174,7 +180,13 @@ const Ranking = () => {
                                                 {player.stats.last_rank_pos != null && player.stats.last_rank_pos === index + 4 && <FaMinus className="text-slate-500 text-sm" />}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-center text-slate-300 font-bold">{player.stats.wins}</td>
+                                        <td className="px-6 py-4 text-center text-xs font-bold tracking-wider">
+											<span className="text-success">{t('ranking.stats_initials.win')}: {player.stats.wins || 0}</span>
+											<span className="text-slate-600 mx-1.5">|</span>
+											<span className="text-danger">{t('ranking.stats_initials.loss')}: {player.stats.losses || 0}</span>
+											<span className="text-slate-600 mx-1.5">|</span>
+											<span className="text-warning">{t('ranking.stats_initials.draw')}: {player.stats.draws || 0}</span>
+										</td>
                                         <td className="px-6 py-4 text-right font-mono font-bold text-white tracking-wider text-base">{player.stats.ranked_points}</td>
                                     </tr>
                                 );

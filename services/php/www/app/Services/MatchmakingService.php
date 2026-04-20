@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\ActiveMatch;
 use App\Models\MatchmakingQueue;
 use App\Enums\GameMode;
-use App\Enums\MatchStatus;
+use App\Enums\UserStatus;
 use App\Http\Controllers\ActiveMatchController;
 use App\Events\MatchFound;
 use Illuminate\Support\Facades\DB;
@@ -99,7 +99,7 @@ class MatchmakingService
 
         $match = $controller->createMatch($user->id, $bot->id, $mode);
 
-        $match->p2_ready = true; //TODO WHEN PENDING/LOADING STATE IMPLEMENTED, SET BOT AS READY AUTOMATICALLY
+        $match->p2_ready = true;
         $match->save();
 
         broadcast(new MatchFound($user->id, $bot, $match->match_uuid));

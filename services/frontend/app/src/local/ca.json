@@ -138,6 +138,7 @@
     "offline": "Offline",
     "playing": "Jugant",
     "away": "Absent",
+    "queueing": "En cua",
     "invite": "Convidar a jugar",
     "not_available": "No disponible"
   },
@@ -161,6 +162,11 @@
     "opponent": "Oponent",
     "score": "Puntuació",
     "date": "Data",
+	"match_results": {
+		"win": "Victòria",
+		"loss": "Derrota",
+		"draw": "Empat"
+	},
     "no_history": "No hi ha historial de partides disponible.",
     "error_loading": "Error en carregar les dades del perfil.",
     "error_msg": "Hi ha hagut un error en carregar el perfil o un problema de xarxa.",
@@ -194,7 +200,17 @@
     "no_ranking": "No hi ha dades de rànquing disponibles.",
     "position": "Posició",
     "trend": "Tendència",
-    "points": "Punts"
+    "points": "Punts",
+	"stats_initials": {
+		"win": "V",
+		"loss": "D",
+		"draw": "E"
+	}
+  },
+  "game": {
+	"loading": "Iniciant Nexus Nine...",
+	"rotate_device": "Gira el teu dispositu",
+	"landscape_required": "Nexus Nine està dissenyat per jugar-se en mode horitzontal."
   },
   "privacy": {
     "1": "Introducció",

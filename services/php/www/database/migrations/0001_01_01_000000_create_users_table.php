@@ -31,12 +31,15 @@ return new class extends Migration
             $table->enum('status', [
                 UserStatus::OFFLINE->value,
                 UserStatus::ONLINE->value,
+                UserStatus::QUEUEING->value,
                 UserStatus::PLAYING->value,
                 UserStatus::AWAY->value,
             ])->default(UserStatus::OFFLINE->value);
 
             /* Track the last time the user interacted with the API */
             $table->timestamp('last_activity')->nullable();
+            /* If the user is currently penalized (e.g. for abandoning matches) */
+            $table->timestamp('penalty_until')->nullable();
 
             $table->boolean('is_bot')->default(false);
 

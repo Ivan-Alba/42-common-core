@@ -30,6 +30,12 @@ const Profile = () => {
 	const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing'>('none');
 
 	const getMatchStyles = (result: 'win' | 'loss' | 'draw') => {
+		if (result === 'draw') {
+            return {
+                border: 'bg-warning',
+                badge: 'bg-warning/10 text-warning border border-warning/20'
+            };
+        }
 		const isWin = result === 'win';
 		return {
 			border: isWin ? 'bg-success' : 'bg-danger',
@@ -88,7 +94,8 @@ const Profile = () => {
 	const formattedHistory = profileData?.match_history?.map(match => {
         const isPlayer1 = match.player_1_id === profileData?.id;
         const isWin = match.winner_id === profileData?.id;
-        const resultString = isWin ? 'win' : 'loss';
+		const resultString = match.winner_id === null ? 'draw' : (isWin ? 'win' : 'loss');
+		const translatedResult = t(`profile.match_results.${resultString}`);
         const opponentName = isPlayer1 ? match.player_2_name : match.player_1_name;
         const rawAvatar = isPlayer1 ? match.player_2_avatar : match.player_1_avatar;
         const opponentAvatar = rawAvatar === null ? undefined : rawAvatar;
@@ -100,6 +107,7 @@ const Profile = () => {
         return {
             ...match,
             resultString,
+			translatedResult,
             opponentName,
             opponentAvatar,
             scoreFormatted,
@@ -176,7 +184,7 @@ const Profile = () => {
                                             <div className="h-px bg-white/5 w-full mb-3 ml-3"></div>
                                             <div className="flex justify-between items-center pl-3">
                                                 <span className={`px-3 py-1 rounded text-xs font-black uppercase tracking-widest ${match.styles.badge}`}>
-                                                    {match.resultString}
+                                                    {match.translatedResult.toUpperCase()}
                                                 </span>
                                                 <span className="text-2xl font-mono font-bold text-white tracking-widest">
                                                     {match.scoreFormatted}
@@ -204,7 +212,7 @@ const Profile = () => {
                                                     <td className={`absolute left-0 top-0 bottom-0 w-1 transition-all group-hover:w-1.5 ${match.styles.border}`}></td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2 py-1 rounded text-xs font-bold ${match.styles.badge}`}>
-                                                            {match.resultString.toUpperCase()}
+                                                            {match.translatedResult.toUpperCase()}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4">

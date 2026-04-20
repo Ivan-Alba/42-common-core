@@ -111,10 +111,19 @@ const PodiumCard = ({ player, place, isWinner = false, delay = "0s" }: PodiumCar
                     </div>
                 </div>
 
-                <div className="flex gap-4 text-xs text-slate-400 bg-black/20 px-3 py-1 rounded-full">
-                    <span>W: <span className="text-success">{player.stats.wins}</span></span>
-                    <span>L: <span className="text-danger">{player.stats.losses}</span></span>
-                </div>
+                <div className="flex items-center gap-3 text-[10px] md:text-xs text-slate-400 bg-black/20 px-3 py-1.5 rounded-full font-bold tracking-wider">
+					<span className="flex items-center gap-1">
+						{t('ranking.stats_initials.win')}: <span className="text-success">{player.stats.wins || 0}</span>
+					</span>
+					<span className="text-slate-600/50">|</span>
+					<span className="flex items-center gap-1">
+						{t('ranking.stats_initials.loss')}: <span className="text-danger">{player.stats.losses || 0}</span>
+					</span>
+					<span className="text-slate-600/50">|</span>
+					<span className="flex items-center gap-1">
+						{t('ranking.stats_initials.draw')}: <span className="text-warning">{player.stats.draws || 0}</span>
+					</span>
+				</div>
             </div>
 
             {/* Glow effect */}
