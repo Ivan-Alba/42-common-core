@@ -7,6 +7,7 @@ use App\Enums\FriendshipStatus;
 use App\Models\Friendship;
 use App\Models\User;
 use App\Services\FriendshipService;
+use App\Services\AchievementService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,10 @@ class FriendshipController
 		if ($friendship->status === 'accepted') {
 			// Throw event passing the user who accepted ($user) and the ID of the original sender
             FriendRequestAccepted::dispatch($user, $friendship->requester_id);
+
+            $achievementService = app(AchievementService::class);
+            $achievementService->addProgress($user, 'SOCIAL_BUTTERFLY', 1);
+            $achievementService->addProgress($friend, 'SOCIAL_BUTTERFLY', 1);
         }
 
         return response()->json([
@@ -82,6 +87,10 @@ class FriendshipController
         }
 
         $service->deleteFriendship($user, $friend);
+
+        $achievementService = app(AchievementService::class);
+        $achievementService->addProgress($user, 'SOCIAL_BUTTERFLY', -1);
+        $achievementService->addProgress($friend, 'SOCIAL_BUTTERFLY', -1);
 
         return response()->json([], 204);
     }

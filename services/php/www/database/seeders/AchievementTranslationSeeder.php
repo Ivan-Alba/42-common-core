@@ -31,9 +31,9 @@ class AchievementTranslationSeeder extends Seeder
                 Language::CATALAN->value => ['title' => 'Petit Col·leccionista', 'description' => 'Aconsegueix 10 cartes diferents per al teu mall.']
             ],
             'PERFECT_MATCH' => [
-                Language::SPANISH->value => ['title' => 'Victoria Impecable', 'description' => 'Gana una partida sin recibir ni un solo punto de daño.'],
-                Language::ENGLISH->value => ['title' => 'Flawless Victory', 'description' => 'Win a match without taking a single point of damage.'],
-                Language::CATALAN->value => ['title' => 'Victòria Impecable', 'description' => 'Guanya una partida sense rebre ni un sol punt de dany.']
+                Language::SPANISH->value => ['title' => 'Nexus Nine', 'description' => 'Gana una partida con una puntuación de 9.'],
+                Language::ENGLISH->value => ['title' => 'Nexus Nine', 'description' => 'Win a match with a score of 9.'],
+                Language::CATALAN->value => ['title' => 'Nexus Nine', 'description' => 'Guanya una partida amb una puntuació de 9.']
             ],
             'SOCIAL_BUTTERFLY' => [
                 Language::SPANISH->value => ['title' => 'Camarada', 'description' => 'Haz tus primeros 5 amigos en la plataforma.'],
@@ -46,9 +46,9 @@ class AchievementTranslationSeeder extends Seeder
                 Language::CATALAN->value => ['title' => 'Llegenda del Tauler', 'description' => 'Juga un total de 100 partides.']
             ],
             'STREAK_3' => [
-                Language::SPANISH->value => ['title' => 'Imparable', 'description' => 'Gana 3 partidas consecutivas.'],
-                Language::ENGLISH->value => ['title' => 'Unstoppable', 'description' => 'Win 3 matches in a row.'],
-                Language::CATALAN->value => ['title' => 'Imparable', 'description' => 'Guanya 3 partides consecutives.']
+                Language::SPANISH->value => ['title' => 'Imparable', 'description' => 'Gana 3 partidas online consecutivas.'],
+                Language::ENGLISH->value => ['title' => 'Unstoppable', 'description' => 'Win 3 online matches in a row.'],
+                Language::CATALAN->value => ['title' => 'Imparable', 'description' => 'Guanya 3 partides online consecutives.']
             ],
             'LEVEL_10' => [
                 Language::SPANISH->value => ['title' => 'Ascenso de Poder', 'description' => 'Alcanza el nivel de cuenta 10.'],
@@ -56,9 +56,9 @@ class AchievementTranslationSeeder extends Seeder
                 Language::CATALAN->value => ['title' => 'Ascens de Poder', 'description' => 'Arriba al nivell de compte 10.']
             ],
             'DESTRUCTOR' => [
-                Language::SPANISH->value => ['title' => 'Aniquilador', 'description' => 'Destruye 50 cartas de tus oponentes.'],
-                Language::ENGLISH->value => ['title' => 'Annihilator', 'description' => 'Destroy 50 of your opponents\' cards.'],
-                Language::CATALAN->value => ['title' => 'Aniquilador', 'description' => 'Destrueix 50 cartes dels teus oponents.']
+                Language::SPANISH->value => ['title' => 'Aniquilador', 'description' => 'Gira un total de 50 cartas de tus oponentes.'],
+                Language::ENGLISH->value => ['title' => 'Annihilator', 'description' => 'Turn a total of 50 cards of your opponents.'],
+                Language::CATALAN->value => ['title' => 'Aniquilador', 'description' => 'Gira un total de 50 cartes dels teus oponents.']
             ],
             'NIGHT_OWL' => [
                 Language::SPANISH->value => ['title' => 'Ave Nocturna', 'description' => 'Gana una partida durante la madrugada.'],

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\User;
+use App\Services\AchievementService;
 
 class UserObserver
 {
@@ -25,7 +26,10 @@ class UserObserver
             // 'campaign'      => 1,
         ]);
     
-    $user->cards()->attach([1, 2, 7, 8, 9]);
+    $user->cards()->attach([2, 4, 9, 13, 21]);
+    $achievementService = app(AchievementService::class);
+    $achievementService->addProgress($user, 'COLLECTOR_10', 5);
+
 }
 
     /**
