@@ -49,7 +49,7 @@ const Navbar = () => {
 		/* Event Listeners */
 		/* When an incoming friend request is received */
 		const handleIncomingRequest = () => {
-			setPendingCount(prev => prev + 1);
+			setPendingCount((prevCount) => prevCount + 1);
 		};
 
 		/* When we accept or decline a request in Friends.tsx */
@@ -71,33 +71,26 @@ const Navbar = () => {
 	}, [user]);
 
 	/* Real-time updates with Laravel Echo and Pusher */
-	useEffect(() => {
-		if (user && echo) {
-			// Preguntar Iván el nombre exacto del canal.
-			const channelName = `user.${user.id}`;
+	// useEffect(() => {
+	// 	if (user && echo) {
+	// 		const channelName = `user.${user.id}`;
+	// 		const channel = echo.private(channelName);
 
-			const channel = echo.private(channelName);
+	// 		channel.listen('.FriendRequestReceived', (eventData: any) => {
+	// 			console.log("¡Notificación en tiempo real recibida!", eventData);
+	// 			window.dispatchEvent(new Event('updateFriendNotifications'));
+	// 		});
 
-			/* Listen event for incoming friend requests. When received, we trigger the same event that we dispatch in the friends page when accepting/declining, so the count updates no matter where we are in the app. */
-			channel.listen('.FriendRequestReceived', (eventData: any) => {
-				console.log("¡Notificación en tiempo real recibida!", eventData);
+	// 		channel.listen('.FriendRequestAccepted', (eventData: any) => {
+	// 			console.log("¡Notificación de aceptación de amistad recibida!", eventData);
+	// 			window.dispatchEvent(new Event('updateFriendNotifications'));
+	// 		});
 
-				/* Throw the same event that we dispatch in the friends page when accepting/declining, so the count updates no matter where we are in the app. */
-				window.dispatchEvent(new Event('updateFriendNotifications'));
-			});
-
-			channel.listen('.FriendRequestAccepted', (eventData: any) => {
-				console.log("¡Notificación de aceptación de amistad recibida!", eventData);
-				/* We can also trigger the same event to update the pending count, but we could also show a toast or something to notify the user that their request was accepted. */
-				window.dispatchEvent(new Event('updateFriendNotifications'));
-			});
-
-			/* Cleanup the connection if the component unmounts */
-			return () => {
-				echo.leave(channelName);
-			};
-		}
-	}, [user, echo]);
+	// 		return () => {
+	// 			echo.leave(channelName);
+	// 		};
+	// 	}
+	// }, [user, echo]);
 
 	const getDesktopClass = (path: string) =>
 		url.pathname === path ? "nav-link-desktop-active" : "nav-link-desktop";

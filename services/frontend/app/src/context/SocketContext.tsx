@@ -47,7 +47,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 				}));
 			});
 
-			
+			channel.listen('.FriendRequestReceived', (_data: any) => {
+                console.log(`Reverb: ¡Petición de amistad recibida!`);
+                
+				/* Throw event to the entire React window to show red badge notification */
+                window.dispatchEvent(new CustomEvent('friendRequestReceived'));
+            });
 
 			setIsReady(true);
 		} else {
@@ -69,7 +74,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 		// Dependency on isAuthenticated and user ensures this runs 
 		// immediately after the AuthContext updates its state.
-	}, [isAuthenticated, user, isReady]);
+	}, [isAuthenticated, user]);
 
 	return (
 		// Provide the echo instance only when the connection is established and ready
