@@ -37,7 +37,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 			 * 1. We subscribe to OUR own channel (because friends notify us there) */
 			const channel = echo.private(`user.${userId}`);
 
-			/* 2. We listen for the event and dispatch a custom event to the React window so that any component can listen to friend status changes without needing Echo directly. */
+			/* Listen for friend status changes (online/offline) */
 			channel.listen('.UserStatusChanged', (data: { userId: number, newStatus: string }) => {
 				console.log(`Reverb: El amigo ${data.userId} ha cambiado a ${data.newStatus}`);
 
@@ -47,11 +47,22 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 				}));
 			});
 
+			/* Listen for incoming friend requests */
 			channel.listen('.FriendRequestReceived', (_data: any) => {
                 console.log(`Reverb: ¡Petición de amistad recibida!`);
                 
 				/* Throw event to the entire React window to show red badge notification */
                 window.dispatchEvent(new CustomEvent('friendRequestReceived'));
+
+				window.dispatchEvent(new Event('updateFriendNotifications'));
+            });
+
+			/* Listen for friend request accepted events */
+			channel.listen('.FriendRequestAccepted', (_data: any) => {
+                console.log(`Reverb: ¡Alguien aceptó tu petición de amistad!`);
+                
+				/* Throw event to the entire React window to show red badge notification */
+                window.dispatchEvent(new Event('updateFriendNotifications'));
             });
 
 			setIsReady(true);

@@ -22,5 +22,6 @@ export interface UserProfile {
 	stats: UserStats;
 	bio?: string;
     language?: 'en' | 'es' | 'ca';
-	match_history?: MatchHistory[]; 
+	match_history?: MatchHistory[];
+	friendship_status?: 'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected';
 }

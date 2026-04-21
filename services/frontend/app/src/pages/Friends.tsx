@@ -72,7 +72,7 @@ const Friends = () => {
 		try {
 			const data = await userService.getFriends(authUser.id);
 
-			//console.log("DATOS DEL BACKEND /friends:", data);
+			console.log("DATOS DEL BACKEND /friends:", data);
 
 			const myId = Number(authUser.id);
 
