@@ -110,8 +110,7 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId, onGameLoa
     }, [isLoaded, sendMessage, matchId]);
 
     return (
-        // Aquí le damos el alto completo a la pantalla (ajustado si tienes navbar)
-        <div className="relative flex items-center justify-center w-full h-[calc(100vh-80px)] bg-black overflow-hidden">
+        <div className="relative flex items-center justify-center w-full h-screen bg-black overflow-hidden">
 
             {/* Overlay Loading Screen */}
             {!isLoaded && (
@@ -128,12 +127,9 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId, onGameLoa
             <Unity
                 unityProvider={unityProvider}
                 style={{
-                    aspectRatio: "16 / 9",
-                    width: "100%",
-                    height: "auto",
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    objectFit: "contain",
+                    /* width and height logic to maintain 16:9 aspect ratio while fitting within the viewport */
+                    width: "min(100vw, 100vh * (16 / 9))",
+                    height: "min(100vh, 100vw * (9 / 16))",
                     background: "#000000",
                     boxShadow: '0 0 30px rgba(0,0,0,0.7)'
                 }}
