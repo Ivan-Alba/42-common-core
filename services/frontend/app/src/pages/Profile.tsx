@@ -27,7 +27,7 @@ const Profile = () => {
 	const [isLoading, setIsLoading] = useState(true);
 
 	/* Handle to manage friendship status */
-	const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing'>('none');
+	const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected'>('none');
 
 	const getMatchStyles = (result: 'win' | 'loss' | 'draw') => {
 		if (result === 'draw') {
@@ -59,7 +59,7 @@ const Profile = () => {
 				setProfileData(data);
 
 				// IMPORTANTE: Cuando el backend esté listo y devuelva el status de la amistad en el profile ajeno, lo seteamos aquí
-				// setRelationStatus(data.friendship_status || 'none');
+				setRelationStatus(data.friendship_status || 'none');
 
 			} catch (error: any) {
 				console.error("Error al obtener los datos de la base de datos:", error);
@@ -129,7 +129,7 @@ const Profile = () => {
 								experience: profileData.stats?.experience || 0,
 								level: profileData.stats?.level || 1,
 							}}
-							isOwnProfile={true}
+							isOwnProfile={isOwnProfile}
 							friendshipStatus={relationStatus}
 							onAddFriend={handleAddFriend}
 						/>

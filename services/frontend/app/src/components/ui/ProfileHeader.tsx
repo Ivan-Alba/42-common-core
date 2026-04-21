@@ -14,7 +14,7 @@ interface ProfileHeaderProps {
         level?: number;
     };
     isOwnProfile: boolean;
-    friendshipStatus?: 'none' | 'pending' | 'accepted' | 'outgoing';
+    friendshipStatus?: 'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected';
     onAddFriend?: (id: number | string) => void;
 }
 

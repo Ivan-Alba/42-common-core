@@ -7,9 +7,7 @@ import { MdLogout } from "react-icons/md";
 import Logo from './Logo';
 import LanguageSelector from './LanguageSelector';
 import { useAuth } from '../context/AuthContext';
-//import i18n from '../i18n';
 import userService from '../services/userService';
-import { useSocket } from '../context/SocketContext';
 
 const Navbar = () => {
 	const { t } = useTranslation();
@@ -22,9 +20,6 @@ const Navbar = () => {
 	/* Hooks to redirect and context */
 	const navigate = useNavigate();
 	const { user, logout } = useAuth();
-
-	/* Socket for real-time updates on pending friend requests */
-	const echo = useSocket();
 
 	/* Check pending friend requests on mount and when user or url changes (to update count when we go to friends page) */
 	useEffect(() => {
