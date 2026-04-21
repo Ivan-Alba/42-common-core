@@ -11,7 +11,7 @@ use App\Http\Resources\UserResource;
 use App\Models\OAuthExchange;
 use App\Models\User;
 use App\Models\UserMatch;
-use App\Models\PlayerStat;
+use App\Models\Achievement;
 use App\Http\Controllers\MatchmakingController;
 use App\OAuth\Contracts\OAuthServer;
 use App\OAuth\Factories\OAuthServerFactory;
@@ -31,6 +31,17 @@ class UserController
         // Add PlayerStatsResource to UserResource
         $user->load('stats');
 
+        // All achievements with translations + progress for THIS user
+        $allAchievements = Achievement::with([
+            'translations',
+            'users' => function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            }
+        ])->get();
+
+        // Inject relation
+        $user->setRelation('all_achievements_with_progress', $allAchievements);
+
         // Add match history
         $history = UserMatch::where('player_1_id', $user->id)
             ->orWhere('player_2_id', $user->id)
@@ -41,7 +52,18 @@ class UserController
 
         $user->setRelation('match_history', $history);
 
-        return response()->json($user->toResource(), 200);
+        $userData = $user->toResource()->toArray($request);
+
+        if (Auth::id() === $user->id) {
+            $penaltyWaitTime = ($user->penalty_until && $user->penalty_until->isFuture())
+                ? now()->diffInSeconds($user->penalty_until)
+                : null;
+
+            // Ahora sí, $userData es un array y puedes inyectar la clave
+            $userData['penalty_remaining_seconds'] = $penaltyWaitTime;
+        }
+
+        return response()->json($userData, 200);
     }
 
     public function getUsers(Request $request)
@@ -117,7 +139,7 @@ class UserController
             ->orWhere('player_2_id', $user->id)
             ->with(['player1', 'player2'])
             ->orderBy('created_at', 'desc')
-            ->take(10)
+            ->take(15)
             ->get();
 
         $user->setRelation('match_history', $history);
