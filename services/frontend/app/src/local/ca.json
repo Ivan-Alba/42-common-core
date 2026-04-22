@@ -236,7 +236,9 @@
   "game": {
 	"loading": "Iniciant Nexus Nine...",
 	"rotate_device": "Gira el teu dispositu",
-	"landscape_required": "Nexus Nine està dissenyat per jugar-se en mode horitzontal."
+	"landscape_required": "Nexus Nine està dissenyat per jugar-se en mode horitzontal.",
+	"penalized": "No pots jugar",
+	"time_remaining": "Temps restant: "
   },
   "privacy": {
     "1": "Introducció",

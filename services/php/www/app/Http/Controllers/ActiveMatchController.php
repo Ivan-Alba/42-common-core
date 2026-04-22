@@ -124,7 +124,7 @@ class ActiveMatchController extends Controller
             ]);
 
             $achievementService = app(AchievementService::class);
-            $achievementService->resetProgress($user, 'STREAK_3');
+            $achievementService->resetProgress($user->id, 'STREAK_3');
 
             // 5. Persist the disconnection for PvP matches
             $match->save();

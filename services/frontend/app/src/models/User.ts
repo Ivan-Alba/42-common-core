@@ -76,4 +76,5 @@ export interface UserProfile {
     match_history?: MatchHistory[];
     friendship_status?: 'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected';
 	achievements?: Achievement[];
+	penalty_remaining_seconds?: number | null;
 }

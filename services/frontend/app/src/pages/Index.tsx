@@ -14,65 +14,66 @@ import userService from '../services/userService';
 
 //ivan
 import GameLauncher from '../components/GameLauncher';
+import { useCountdown } from '../utils/useCountdown';
 
 const Index = () => {
-	const { t } = useTranslation();
-	const navigate = useNavigate();
-	const { user: authUser, isLoading: isAuthLoading } = useAuth();
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { user: authUser, isLoading: isAuthLoading } = useAuth();
 
-	/* States to save friend list, profile data and mode selector visibility */
-	const [profileData, setProfileData] = useState<UserProfile | null>(null);
-	const [friendsList, setFriendsList] = useState<UserProfile[]>([]);
-	const [showModeSelector, setShowModeSelector] = useState(false);
-	const [isLoading, setIsLoading] = useState(true);
-	
+    /* States to save friend list, profile data and mode selector visibility */
+    const [profileData, setProfileData] = useState<UserProfile | null>(null);
+    const [friendsList, setFriendsList] = useState<UserProfile[]>([]);
+    const [showModeSelector, setShowModeSelector] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [penaltyTargetDate, setPenaltyTargetDate] = useState<string | null>(null);
 
-	/* Fetch user profile data on mount and when authUser changes */
-	useEffect(() => {
-		const fetchCurrentUserInfo = async () => {
-			if (!authUser?.id) return;
+    /* Fetch user profile data on mount and when authUser changes */
+    useEffect(() => {
+        const fetchCurrentUserInfo = async () => {
+            if (!authUser?.id) return;
 
-			try {
-				// Pedimos los datos frescos a la BBDD (incluyendo el nuevo avatar en /media/)
-				const data = await userService.getProfile(authUser.id);
-				setProfileData(data);
-			} catch (error) {
-				console.error("Error actualizando datos de usuario en Index:", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+            try {
+				/* Asking for fresh data from the DB (including the new avatar in /media/) */
+                const data = await userService.getProfile(authUser.id);
+                setProfileData(data);
+            } catch (error) {
+                console.error("Error: ", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-		fetchCurrentUserInfo();
-	}, [authUser?.id]);
+        fetchCurrentUserInfo();
+    }, [authUser?.id]);
 
-	/* Real fetch to get friends from database */
-	useEffect(() => {
-		const fetchFriends = async () => {
-			if (!authUser?.id)
-				return;
-			try {
-				const response = await userService.getFriends(authUser.id);
+    /* Real fetch to get friends from database */
+    useEffect(() => {
+        const fetchFriends = async () => {
+            if (!authUser?.id)
+                return;
+            try {
+                const response = await userService.getFriends(authUser.id);
 
-				const friendList = response.filter((f: any) =>
-					f.pivot?.status === 'accepted'
-				);
+                const friendList = response.filter((f: any) =>
+                    f.pivot?.status === 'accepted'
+                );
 
-				setFriendsList(friendList);
-			} catch (error) {
-				console.error("Error:", error);
-				setFriendsList([]);
-			}
-		};
-		fetchFriends();
-	}, [authUser?.id]);
+                setFriendsList(friendList);
+            } catch (error) {
+                console.error("Error:", error);
+                setFriendsList([]);
+            }
+        };
+        fetchFriends();
+    }, [authUser?.id]);
 
-	/* Event Listener to handle friend status changes (Reverb)*/
+    /* Event Listener to handle friend status changes (Reverb)*/
     useEffect(() => {
         const handleStatusChange = (e: any) => {
             const { userId, newStatus } = e.detail;
 
-			/* Update friends list when status changes */
+            /* Update friends list when status changes */
             setFriendsList((prevFriends) => 
                 prevFriends.map((friend) => 
                     Number(friend.id) === Number(userId) 
@@ -89,81 +90,101 @@ const Index = () => {
         };
     }, []);
 
-	/* Calculate online friends count */
+	/* Calculate penalty target date based on remaining seconds */
+    useEffect(() => {
+        if (profileData?.penalty_remaining_seconds && profileData.penalty_remaining_seconds > 0) {
+            // Fecha actual + (segundos de penalización * 1000 milisegundos)
+            const targetTime = new Date(Date.now() + profileData.penalty_remaining_seconds * 1000);
+            setPenaltyTargetDate(targetTime.toISOString());
+        } else {
+            setPenaltyTargetDate(null);
+        }
+    }, [profileData?.penalty_remaining_seconds]);
+
+	/* Send penalty target date to countdown hook to get time left and if it's finished */
+    const { timeLeft, isFinished } = useCountdown(penaltyTargetDate);
+
+	/* If there's time left and the penalty isn't finished, the user is penalized */
+    const isPenalized = timeLeft !== null && !isFinished;
+
+    /* Calculate online friends count */
     const onlineFriendsCount = friendsList.filter(f => f.status === 'online' || f.status === 'playing').length;
 
     if (isAuthLoading || isLoading)
         return <LoadingState />;
 
-	if (!authUser || !profileData)
-		return null;
-	
-	return (
-		<DashboardLayout isCentered={false}>
-			<div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-10">
+    if (!authUser || !profileData)
+        return null;
+    
+    return (
+        <DashboardLayout isCentered={false}>
+            <div className="max-w-5xl mx-auto w-full animate-fade-in-up pb-10">
 
-				{/* Header with user info */}
-				<ProfileHeader
-					userData={{
-						...profileData,
-						email: profileData.email || "",
-						experience: profileData.stats?.experience || 0,
-						level: profileData.stats?.level || 1,
+                {/* Header with user info */}
+                <ProfileHeader
+                    userData={{
+                        ...profileData,
+                        email: profileData.email || "",
+                        experience: profileData.stats?.experience || 0,
+                        level: profileData.stats?.level || 1,
                         achievement_points: profileData.stats?.achievement_points || 0,
-						
-					}}
-					isOwnProfile={true}
-				/>
+                        
+                    }}
+                    isOwnProfile={true}
+                />
 
-				<GameLauncher />
+                <GameLauncher />
 
-				{/* Grid Container */}
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 animate-fade-in-up">
+                {/* Grid Container */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 animate-fade-in-up">
 
-					{/* Play Card (Primary) - Open Modal */}
-					<DashboardCard
-						title={t('dashboard.play')}
-						subtitle={t('dashboard.select_mode')}
-						icon={<GiCardPlay />}
-						variant="primary"
-						onClick={() => setShowModeSelector(true)}
-					/>
+                    {/* Play Card (Primary) - Open Modal */}
+                    <DashboardCard
+                        /* If penalized, if not PlayNow" */
+                        title={isPenalized ? t('game.penalized') : t('dashboard.play')}
+                        /* If penalized, show time left, otherwise show select mode text */
+                        subtitle={isPenalized ? t('game.time_remaining') + (timeLeft || "") : t('dashboard.select_mode')}
+                        icon={<GiCardPlay />}
+                        variant="primary"
+                        onClick={() => setShowModeSelector(true)}
+                        disabled={isPenalized} 
+                    />
 
-					{/* Friends Card */}
-					<DashboardCard
-						title={t('dashboard.friends') + ` (${friendsList.length})`}
-						subtitle={`Online: ${onlineFriendsCount}`}
-						icon={<FaUserFriends />}
-						onClick={() => navigate("/friends")}
-					/>
+                    {/* Friends Card */}
+                    <DashboardCard
+                        title={t('dashboard.friends') + ` (${friendsList.length})`}
+                        subtitle={`Online: ${onlineFriendsCount}`}
+                        icon={<FaUserFriends />}
+                        onClick={() => navigate("/friends")}
+                    />
 
-					{/* Ranking Card */}
-					<DashboardCard
-						title={t('dashboard.ranking')}
-						subtitle={t('dashboard.ranking_info')}
-						icon={<FaTrophy />}
-						onClick={() => navigate("/ranking")}
-					/>
+                    {/* Ranking Card */}
+                    <DashboardCard
+                        title={t('dashboard.ranking')}
+                        subtitle={t('dashboard.ranking_info')}
+                        icon={<FaTrophy />}
+                        onClick={() => navigate("/ranking")}
+                    />
 
-					{/* Collection Card */}
-					<DashboardCard
-						title={t('dashboard.collection')}
-						subtitle={t('dashboard.collection_info')}
-						icon={<FaImages />}
-						onClick={() => navigate("/collection")}
-					/>
-				</div>
+                    {/* Collection Card */}
+                    <DashboardCard
+                        title={t('dashboard.collection')}
+                        subtitle={t('dashboard.collection_info')}
+                        icon={<FaImages />}
+                        onClick={() => navigate("/collection")}
+                    />
+                </div>
 
-			</div>
+            </div>
 
-			{/* Game Mode Modal */}
-			<GameModeModal
-				isOpen={showModeSelector}
-				onClose={() => setShowModeSelector(false)}
-			/>
+            {/* Game Mode Modal */}
+            <GameModeModal
+                isOpen={showModeSelector}
+                onClose={() => setShowModeSelector(false)}
+            />
 
-		</DashboardLayout>
-	);
+        </DashboardLayout>
+    );
 };
 
 export default Index;

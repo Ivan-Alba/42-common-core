@@ -237,7 +237,9 @@
   "game": {
 	"loading": "Iniciando Nexus Nine...",
 	"rotate_device": "Gira tu dispositivo",
-	"landscape_required": "Nexus Nine está diseñado para jugarse en modo horizontal."
+	"landscape_required": "Nexus Nine está diseñado para jugarse en modo horizontal.",
+	"penalized": "No puedes jugar",
+	"time_remaining": "Tiempo restante: "
   },
   "privacy": {
     "1": "Introducción",

@@ -355,9 +355,11 @@ const Profile = () => {
 												<tr key={match.id} className="hover:bg-white/5 transition-colors text-center relative group">
 													<td className={`absolute left-0 top-0 bottom-0 w-1 transition-all group-hover:w-1.5 ${match.styles.border}`}></td>
 													<td className="px-6 py-4"><span className={`px-2 py-1 rounded text-xs font-bold ${match.styles.badge}`}>{match.translatedResult.toUpperCase()}</span></td>
-													<Link to={`/profile/${match.opponentId}`}>
-														<td className="px-6 py-4"><div className="flex justify-center"><PlayerBadge avatar={match.opponentAvatar} name={match.opponentName} /></div></td>
-													</Link>
+													<td className="px-6 py-4">
+														<Link to={`/profile/${match.opponentId}`} className="flex justify-center hover:opacity-80 transition-opacity">
+															<PlayerBadge avatar={match.opponentAvatar} name={match.opponentName} />
+														</Link>
+													</td>
 													<td className="px-6 py-4 font-mono text-white font-bold tracking-widest">{match.scoreFormatted}</td>
 													<td className="px-6 py-4">{match.dateFormatted}</td>
 												</tr>
