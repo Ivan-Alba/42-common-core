@@ -24,7 +24,7 @@ fi
 
 # 3. Ejecutar migraciones
 echo "Running migrations..."
-php artisan migrate --force
+php artisan migrate --seed --force
 
 # 4. Asegurar permisos (Fundamental para que Unity pueda leer los Avatares)
 echo "Setting permissions..."

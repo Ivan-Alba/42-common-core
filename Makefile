@@ -1,12 +1,13 @@
-all: up
+all: build
 
-up:
+build:
 	mkdir -p $(CURDIR)/database
 	mkdir -p $(CURDIR)/certs
 	mkdir -p $(CURDIR)/private
 	mkdir -p $(CURDIR)/services/redis/data
 	docker compose up -d --build #-d to run docker as a background process
-
+up:
+	docker compose up -d
 down: 
 	docker compose down
 clean: down
