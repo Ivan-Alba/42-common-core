@@ -6,20 +6,15 @@ use App\Enums\Language;
 use App\Enums\OrderDirection;
 use App\Enums\UserStatus;
 use App\Http\Resources\FriendResource;
-use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
-use App\Models\OAuthExchange;
 use App\Models\User;
 use App\Models\UserMatch;
-use App\Models\PlayerStat;
+use App\Models\Achievement;
+use App\Services\AchievementService;
 use App\Http\Controllers\MatchmakingController;
-use App\OAuth\Contracts\OAuthServer;
-use App\OAuth\Factories\OAuthServerFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -31,6 +26,17 @@ class UserController
         // Add PlayerStatsResource to UserResource
         $user->load('stats');
 
+        // All achievements with translations + progress for THIS user
+        $allAchievements = Achievement::with([
+            'translations',
+            'users' => function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            }
+        ])->get();
+
+        // Inject relation
+        $user->setRelation('all_achievements_with_progress', $allAchievements);
+
         // Add match history
         $history = UserMatch::where('player_1_id', $user->id)
             ->orWhere('player_2_id', $user->id)
@@ -41,7 +47,18 @@ class UserController
 
         $user->setRelation('match_history', $history);
 
-        return response()->json($user->toResource(), 200);
+        $userData = $user->toResource()->toArray($request);
+
+        if (Auth::id() === $user->id) {
+            $penaltyWaitTime = ($user->penalty_until && $user->penalty_until->isFuture())
+                ? now()->diffInSeconds($user->penalty_until)
+                : null;
+
+            // Ahora sí, $userData es un array y puedes inyectar la clave
+            $userData['penalty_remaining_seconds'] = $penaltyWaitTime;
+        }
+
+        return response()->json($userData, 200);
     }
 
     public function getUsers(Request $request)
@@ -117,7 +134,7 @@ class UserController
             ->orWhere('player_2_id', $user->id)
             ->with(['player1', 'player2'])
             ->orderBy('created_at', 'desc')
-            ->take(10)
+            ->take(15)
             ->get();
 
         $user->setRelation('match_history', $history);
@@ -180,31 +197,25 @@ class UserController
         return response()->json(auth()->user()->toResource(), 200);
     }
 
-    // public function getFriends(User $user, Request $request)
-    // {
-    // 	if ($user->id != auth()->user()->id) {
-    // 		abort(403);
-    // 	}
+    public function claimAchievementReward(Request $request, int $achievementId)
+    {
+        /** @var User $user */
+        $user = $request->user();
 
-    // 	$validated = $request->validate([
-    // 		'page_size' => ['sometimes', 'integer', 'min:1', 'max:' . config('social.max_page_size')],
-    // 		'page' => ['sometimes', 'integer', 'min:1'],
-    // 		'sort_order' => ['sometimes', Rule::enum(OrderDirection::class)],
-    // 		'name' => ['sometimes', 'string', 'max:255'],
-    // 	]);
+        // Inyectamos el servicio (o lo pides en el constructor)
+        $achievementService = app(AchievementService::class);
 
-    // 	$pageSize = $request->integer('page_size', config('social.default_page_size'));
-    // 	$page = $request->integer('page', 1);
-    // 	$sortOrder =  $request->enum('sort_order', OrderDirection::class, OrderDirection::DESC);
-    // 	$name = $request->string('name') ?? "";
+        $result = $achievementService->claimReward($user, $achievementId);
 
-    // 	$friends = $user->friendsOfMine()
-    // 		->orderBy('created_at', $sortOrder->value)
-    // 		->when(!empty($name), fn($query) => $query->where('name', 'like', '%' . $name . '%'))
-    // 		->paginate($pageSize, ['*'], 'page', $page);
+        if (!$result['success']) {
+            return response()->json(['error' => $result['message']], 400);
+        }
 
-    // 	return FriendResource::collection($friends);
-    // }
+        return response()->json([
+            'message' => $result['message'],
+            'points_awarded' => $result['points']
+        ], 200);
+    }
 
     public function getFriends(User $user, Request $request)
     {

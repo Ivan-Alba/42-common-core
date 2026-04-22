@@ -25,6 +25,7 @@ const Index = () => {
 	const [friendsList, setFriendsList] = useState<UserProfile[]>([]);
 	const [showModeSelector, setShowModeSelector] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
+	
 
 	/* Fetch user profile data on mount and when authUser changes */
 	useEffect(() => {
@@ -66,8 +67,33 @@ const Index = () => {
 		fetchFriends();
 	}, [authUser?.id]);
 
-	if (isAuthLoading || isLoading)
-		return <LoadingState />;
+	/* Event Listener to handle friend status changes (Reverb)*/
+    useEffect(() => {
+        const handleStatusChange = (e: any) => {
+            const { userId, newStatus } = e.detail;
+
+			/* Update friends list when status changes */
+            setFriendsList((prevFriends) => 
+                prevFriends.map((friend) => 
+                    Number(friend.id) === Number(userId) 
+                        ? { ...friend, status: newStatus } 
+                        : friend
+                )
+            );
+        };
+
+        window.addEventListener('friendStatusChanged', handleStatusChange);
+        
+        return () => {
+            window.removeEventListener('friendStatusChanged', handleStatusChange);
+        };
+    }, []);
+
+	/* Calculate online friends count */
+    const onlineFriendsCount = friendsList.filter(f => f.status === 'online' || f.status === 'playing').length;
+
+    if (isAuthLoading || isLoading)
+        return <LoadingState />;
 
 	if (!authUser || !profileData)
 		return null;
@@ -82,7 +108,8 @@ const Index = () => {
 						...profileData,
 						email: profileData.email || "",
 						experience: profileData.stats?.experience || 0,
-                        level: profileData.stats?.level || 1,
+						level: profileData.stats?.level || 1,
+                        achievement_points: profileData.stats?.achievement_points || 0,
 					}}
 					isOwnProfile={true}
 				/>
@@ -104,7 +131,7 @@ const Index = () => {
 					{/* Friends Card */}
 					<DashboardCard
 						title={t('dashboard.friends') + ` (${friendsList.length})`}
-						subtitle={`Online: ${friendsList.filter(f => f.status === 'online').length + friendsList.filter(f => f.status === 'playing').length}`}
+						subtitle={`Online: ${onlineFriendsCount}`}
 						icon={<FaUserFriends />}
 						onClick={() => navigate("/friends")}
 					/>

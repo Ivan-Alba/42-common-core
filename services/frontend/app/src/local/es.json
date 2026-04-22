@@ -17,7 +17,9 @@
     "all": "Todas",
     "player": "Jugador",
     "opponent": "Oponente",
-    "exit": "Salir"
+    "exit": "Salir",
+    "show_all": "Mostrar todo",
+    "show_less": "Mostrar menos"
   },
   "validation": {
     "required": "Este campo es obligatorio.",
@@ -125,6 +127,7 @@
     "title": "Amigos",
     "subtitle": "Tu lista de amigos",
     "search_placeholder": "Introduce el nombre de usuario",
+	"player_not_found": "Jugador no encontrado.",
     "no_friends": "Aún no tienes amigos agregados.",
     "already_friend": "Amigo",
     "pending": "Pendiente",
@@ -162,11 +165,16 @@
     "opponent": "Oponente",
     "score": "Puntuación",
     "date": "Fecha",
-	"match_results": {
-		"win": "Victoria",
-		"loss": "Derrota",
-		"draw": "Empate"
-	},
+    "achievements": "Logros",
+    "unlocked_on": "Desbloqueado el:",
+    "progress": "Progreso",
+    "challenge_locked": "No logrado",
+    "claim_reward": "Reclamar recompensa",
+    "match_results": {
+      "win": "Victoria",
+      "loss": "Derrota",
+      "draw": "Empate"
+    },
     "no_history": "No hay historial de partidas disponible.",
     "error_loading": "Error al cargar los datos del perfil.",
     "error_msg": "Hubo un error al cargar el perfil o un problema de red.",

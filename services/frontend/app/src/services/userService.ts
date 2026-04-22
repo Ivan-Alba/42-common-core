@@ -86,6 +86,12 @@ const userService = {
 		return response.data;
 	},
 
+	/*Claim achievement*/
+	claimAchievement: async (achievementId: string | number): Promise<any> => {
+		const response = await api.post(`/v1/achievements/${achievementId}/claim`);
+		return response.data;
+	},
+
 	/* Get ALL cards */
 	/* Save language preference in the header and force to refresh to avoid cache errors */
     getAllCards: async (lang: string = 'es'): Promise<any[]> => {

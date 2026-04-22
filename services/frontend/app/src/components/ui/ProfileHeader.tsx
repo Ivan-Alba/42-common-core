@@ -1,4 +1,4 @@
-import { FaUser, FaEdit, FaUserPlus, FaCheck, FaHourglassHalf } from "react-icons/fa";
+import { FaUser, FaEdit, FaUserPlus, FaCheck, FaHourglassHalf, FaTrophy } from "react-icons/fa"; // Añadido FaTrophy
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import userService from "../../services/userService";
@@ -12,9 +12,10 @@ interface ProfileHeaderProps {
         bio?: string | null;
         experience?: number;
         level?: number;
+        achievement_points?: number;
     };
     isOwnProfile: boolean;
-    friendshipStatus?: 'none' | 'pending' | 'accepted' | 'outgoing';
+    friendshipStatus?: 'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected';
     onAddFriend?: (id: number | string) => void;
 }
 
@@ -22,15 +23,15 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
     const { t } = useTranslation();
     const avatarUrl = userService.getFullAvatarUrl(userData.avatar);
 
-	/* Level calculation based on experience points */
-	/*XP required=100×(Actual Level)1.5*/
-	const totalXp = userData.experience || 0;
-	const nextLevelXp = Math.floor(100 * Math.pow((userData.level || 1), 1.5));
+    /* Level calculation based on experience points */
+    const totalXp = userData.experience || 0;
+    const nextLevelXp = Math.floor(100 * Math.pow((userData.level || 1), 1.5));
     const currentLevel = userData.level || 0;
-	//console.log("Datos que llegan de Laravel:", userData);
-	
+    const achievementPoints = userData.achievement_points || 0;
+
     return (
         <div className="glass-panel p-6 md:p-8 mb-8 relative overflow-hidden">
+            {/* Decoración de fondo */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/4"></div>
 
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 relative z-10">
@@ -49,9 +50,20 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
                         <h1 className="text-3xl md:text-4xl font-black text-white mb-2 uppercase tracking-tighter">
                             {userData.username}
                         </h1>
-                        <div className="inline-block px-4 py-1.5 rounded-full bg-dark-900/50 border border-white/10 mb-4">
-                            <p className="text-slate-400 text-xs font-mono tracking-wide">{userData.email}</p>
+                        <div className="inline-flex items-center gap-3 mb-4">
+                            <div className="px-4 py-1.5 rounded-full bg-dark-900/50 border border-white/10">
+                                <p className="text-slate-400 text-xs font-mono tracking-wide">{userData.email}</p>
+                            </div>
+
+                            {/* RECUADRO DE PUNTOS DE LOGRO */}
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-warning/10 border border-warning/20 shadow-[0_0_15px_rgba(245,158,11,0.05)]">
+                                <FaTrophy className="text-warning text-xs" />
+                                <span className="text-warning font-black text-xs tracking-wider">
+                                    {achievementPoints}
+                                </span>
+                            </div>
                         </div>
+
                         <div className="max-w-md mx-auto md:mx-0">
                             <p className="text-slate-300 italic text-sm md:text-base leading-relaxed line-clamp-3 md:line-clamp-none">
                                 {userData.bio && userData.bio.trim() !== "" ? `"${userData.bio}"` : t('profile.no_bio')}
@@ -64,32 +76,29 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
                             <div className="flex justify-between items-baseline mb-2">
                                 <span className="text-brand-500 font-black text-xl tracking-tighter">LVL. {currentLevel}</span>
                                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-                                    {/* Variable progress XP bar  */}
                                     {totalXp} / {nextLevelXp} XP
                                 </span>
                             </div>
                             <div className="h-1.5 w-full bg-dark-800 rounded-full overflow-hidden border border-white/5">
-                                <div 
-                                    className="h-full bg-brand-500 shadow-[0_0_8px_rgba(var(--color-brand-500),0.4)] transition-all duration-500" 
-                                    
-                                    style={{ width: `${(totalXp % nextLevelXp) / nextLevelXp * 100}%` }}
+                                <div
+                                    className="h-full bg-brand-500 shadow-[0_0_8px_rgba(59,130,246,0.4)] transition-all duration-500"
+                                    style={{ width: `${(totalXp / nextLevelXp) * 100}%` }}
                                 ></div>
                             </div>
                         </div>
 
-                        {/* Own Profile Edit or Other User Profile */}
+                        {/* Botones de acción */}
                         {isOwnProfile ? (
                             <Link to="/edit_profile" className="w-full md:w-auto">
-                                <button className="btn-secondary rounded-full px-8 py-2.5 flex items-center justify-center gap-3 text-sm font-bold transition-all border border-white/10 hover:bg-white/5">
+                                <button className="btn-secondary rounded-full px-8 py-2.5 flex items-center justify-center gap-3 text-sm font-bold transition-all border border-white/10 hover:bg-white/5 w-full">
                                     <FaEdit className="text-brand-400" />
                                     {t('profile.edit_profile')}
                                 </button>
                             </Link>
                         ) : (
-                            // Lógica de amistad en el perfil ajeno
                             <div className="w-full md:w-auto">
                                 {friendshipStatus === 'none' && userData.id && (
-                                    <button 
+                                    <button
                                         onClick={() => onAddFriend && onAddFriend(userData.id!)}
                                         className="btn-primary rounded-full px-8 py-2.5 w-full flex items-center justify-center gap-3 text-sm font-bold"
                                     >
