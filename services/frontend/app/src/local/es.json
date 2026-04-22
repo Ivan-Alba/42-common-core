@@ -13,6 +13,7 @@
     "loading": "Cargando...",
     "accept": "Aceptar",
     "decline": "Cancelar",
+	"continue": "Continuar",
     "you": "Tú",
     "all": "Todas",
     "player": "Jugador",
@@ -108,7 +109,12 @@
   "game_modes": {
     "title": "Selecciona el modo de juego",
     "subtitle": "Elige tu camino hacia la gloria.",
-    "campaign": "Campana (PvE)",
+	"campaign": "Campaña (PvE)",
+    "campaign1": "1: Básico",
+	"campaign2": "2: Intermedio",
+	"campaign3": "3: Avanzado",
+	"campaign4": "4: Experto",
+	"campaign5": "5: Maestro",
     "campaign_desc": "Aprende las reglas, desbloquea cartas y domina las mecánicas. Perfecto para principiantes.",
     "current_phase": "Fase actual",
     "casual": "Partida casual (PvP)",
@@ -215,6 +221,18 @@
 		"loss": "D",
 		"draw": "E"
 	}
+  },
+  "lobby": {
+	"waiting": "Esperando al oponente...",
+	"cancel": "Cancelar",
+	"opponent_found": "Oponente encontrado! Iniciando partida...",
+	"opponent_left": "El oponente abandonó el lobby. Regresando al panel de control...",
+	"error": "Ocurrió un error mientras se buscaba una partida. Por favor, inténtalo de nuevo.",
+	"searching": "Buscando una partida...",
+	"invite_sent": "Invitacion enviada! Esperando a que el oponente acepte...",
+	"invite_received": "Has recibido una invitación de juego de",
+	"accept_invite": "Aceptar",
+	"decline_invite": "Rechazar"
   },
   "game": {
 	"loading": "Iniciando Nexus Nine...",

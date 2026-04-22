@@ -110,6 +110,7 @@ const Index = () => {
 						experience: profileData.stats?.experience || 0,
 						level: profileData.stats?.level || 1,
                         achievement_points: profileData.stats?.achievement_points || 0,
+						
 					}}
 					isOwnProfile={true}
 				/>

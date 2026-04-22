@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaTimes, FaRobot, FaUsers, FaTrophy, FaLock, FaBolt, FaShieldAlt } from 'react-icons/fa';
@@ -15,7 +15,22 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
     
-    const isRankedUnlocked = (user?.experience || 0) > 100; 
+	/* Get user stats from unified model */
+    const isRankedUnlocked = (user?.stats?.experience || 0) > 100;
+    const maxCampaignPhase = user?.stats?.campaign || 1;
+
+	/* State to control the selected phase in the dropdown */
+    const [selectedPhase, setSelectedPhase] = useState<number>(1);
+
+	/* Dropdown state for campaign phase selector */
+	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+
+	/* Update selected campaign phase to the max available each time the modal opens */
+    useEffect(() => {
+        if (isOpen) {
+            setSelectedPhase(maxCampaignPhase);
+        }
+    }, [isOpen, maxCampaignPhase]);
 
     const handleSelectMode = (mode: string, submode?: string) => {
         const queryParams = submode ? `?mode=${mode}&submode=${submode}` : `?mode=${mode}`;
@@ -63,14 +78,54 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         
                         <div className="bg-dark-900 border border-white/5 rounded-xl p-3 mb-6 text-xs text-slate-300 flex items-center justify-between">
                             <span>{t('game_modes.current_phase')}:</span>
-                            <span className="font-bold text-brand-500">1 - Basic</span>
+                            
+                            {/* Dinamic Dropdown for the Phase Selector */}
+                            <div className="relative">
+								{/* The "button" that shows the current phase and toggles the dropdown */}
+                                <button 
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="flex items-center gap-2 bg-transparent text-brand-500 font-bold hover:text-brand-400 transition-colors focus:outline-none"
+                                >
+                                    {t(`game_modes.campaign${selectedPhase}`)}
+                                    <span className="text-[10px]">▼</span>
+                                </button>
+
+								{/* List of options only if dropdown is open */}
+                                {isDropdownOpen && (
+                                    <>
+										{/* Invisible background to close the menu when clicking outside */}
+                                        <div 
+                                            className="fixed inset-0 z-40" 
+                                            onClick={() => setIsDropdownOpen(false)}
+                                        ></div>
+
+										{/* Div to handle dropdown direction and positioning */}
+                                        <div className="absolute right-0 bottom-full mb-2 w-48 bg-dark-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col">
+                                            {Array.from({ length: maxCampaignPhase }, (_, i) => i + 1).map((phaseNumber) => (
+                                                <button
+                                                    key={phaseNumber}
+                                                    onClick={() => {
+                                                        setSelectedPhase(phaseNumber);
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                    className={`w-full text-right px-4 py-3 text-sm font-bold transition-colors hover:bg-white/10 ${
+                                                        selectedPhase === phaseNumber ? 'text-brand-500 bg-white/5' : 'text-slate-300'
+                                                    }`}
+                                                >
+                                                    {t(`game_modes.campaign${phaseNumber}`)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
 
                         <button 
-                            onClick={() => handleSelectMode('CAMPAIGN_1')}
+                            onClick={() => handleSelectMode(`CAMPAIGN_${selectedPhase}`)}
                             className="btn-primary w-full py-3 rounded-xl font-bold mt-auto"
                         >
-                            {t('common.continue', 'Continue')}
+                            {t('common.continue')}
                         </button>
                     </div>
 

@@ -13,6 +13,7 @@
     "loading": "Carregant...",
     "accept": "Acceptar",
     "decline": "Cancel·lar",
+	"continue": "Continuar",
     "you": "Tu",
     "all": "Totes",
     "player": "Jugador",
@@ -108,7 +109,12 @@
   "game_modes": {
     "title": "Selecciona el mode de joc",
     "subtitle": "Tria el teu camí cap a la glòria.",
-    "campaign": "Campanya (PvE)",
+	"campaign": "Campanya (PvE)",
+    "campaign1": "1 - Basic",
+	"campaign2": "2 - Intermedi",
+	"campaign3": "3 - Avançat",
+	"campaign4": "4 - Expert",
+	"campaign5": "5 - Mestre",
     "campaign_desc": "Aprende les regles, desbloqueja cartes i domina les mecàniques. Perfecte per a principiants.",
     "current_phase": "Fase actual",
     "casual": "Partida casual (PvP)",
@@ -120,7 +126,7 @@
     "ranked": "Partida classificada (PvP)",
     "locked_ranked": "Completa la Fase 3 a la Campanya per desbloquejar",
     "ranked_desc": "Mode competitiu amb totes les regles actives. Puja al classificat.",
-    "deck_limit": "Límit de cost del mazo",
+    "deck_limit": "Límit de cost del baralla",
     "find_match": "Trobar partida"
   },
   "friends": {
@@ -214,6 +220,18 @@
 		"loss": "D",
 		"draw": "E"
 	}
+  },
+  "lobby": {
+	"waiting": "Esperant l'oponent...",
+	"cancel": "Cancel·lar",
+	"opponent_found": "Oponent trobat! Iniciant partida...",
+	"opponent_left": "L'oponent ha deixat el lobby. Tornant al tauler de control...",
+	"error": "Ha ocorregut un error mentre es buscava una partida. Si us plau, torna-ho a intentar.",
+	"searching": "Cercant una partida...",
+	"invite_sent": "Invitació enviada! Esperant a que l'oponent accepti...",
+	"invite_received": "Has rebut una invitació de joc de",
+	"accept_invite": "Acceptar",
+	"decline_invite": "Rebutjar"
   },
   "game": {
 	"loading": "Iniciant Nexus Nine...",

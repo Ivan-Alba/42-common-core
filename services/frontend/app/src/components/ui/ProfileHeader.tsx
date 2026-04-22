@@ -8,7 +8,7 @@ interface ProfileHeaderProps {
         id?: number | string;
         username: string;
         email: string;
-        avatar?: string;
+        avatar?: string | null;
         bio?: string | null;
         experience?: number;
         level?: number;
@@ -21,7 +21,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAddFriend }: ProfileHeaderProps) => {
     const { t } = useTranslation();
-    const avatarUrl = userService.getFullAvatarUrl(userData.avatar);
+    const avatarUrl = userService.getFullAvatarUrl(userData.avatar || undefined);
 
     /* Level calculation based on experience points */
     const totalXp = userData.experience || 0;

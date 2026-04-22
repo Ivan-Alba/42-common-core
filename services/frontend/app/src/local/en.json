@@ -14,6 +14,7 @@
     "avatar": "Avatar",
     "accept": "Accept",
     "decline": "Cancel",
+	"continue": "Continue",
     "you": "You",
     "all": "All",
     "player": "Player",
@@ -110,7 +111,12 @@
   "game_modes": {
     "title": "Select Game Mode",
     "subtitle": "Choose your battlepath to glory.",
-    "campaign": "Campaign (PvE)",
+	"campaign": "Campaign (PvE)",
+    "campaign1": "1 - Basic",
+	"campaign2": "2 - Intermediate",
+	"campaign3": "3 - Advanced",
+	"campaign4": "4 - Expert",
+	"campaign5": "5 - Master",
     "campaign_desc": "Learn the rules, unlock cards, and master the mechanics. Perfect for beginners.",
     "current_phase": "Current Phase",
     "casual": "Casual Match (PvP)",
@@ -217,6 +223,18 @@
 		"loss": "L",
 		"draw": "D"
 	}
+  },
+  "lobby": {
+	"waiting": "Waiting for opponent...",
+	"cancel": "Cancel",
+	"opponent_found": "Opponent found! Starting game...",
+	"opponent_left": "Opponent left the lobby. Returning to dashboard...",
+	"error": "An error occurred while finding a match. Please try again.",
+	"searching": "Searching for a match...",
+	"invite_sent": "Invitation sent! Waiting for opponent to accept...",
+	"invite_received": "You have received a game invitation from",
+	"accept_invite": "Accept",
+	"decline_invite": "Decline"
   },
   "game": {
 	"loading": "Starting Nexus Nine...",

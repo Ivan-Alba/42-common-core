@@ -1,3 +1,5 @@
+import type { UserProfile } from "../models/User";
+
 /* Login Credentials for logging in */
 export interface LoginCredentials {
     email: string;
@@ -13,16 +15,18 @@ export interface RegisterCredentials {
 }
 
 /* User information for logged in user */
-export interface User {
-    id: string;
-    username: string;
-    email: string;
-    avatar?: string;
-	experience: number;
-	bio?: string;
-	language?: 'EN' | 'ES' | 'CAT';
+// export interface User {
+//     id: string;
+//     username: string;
+//     email: string;
+//     avatar?: string;
+// 	experience: number;
+// 	bio?: string;
+// 	language?: 'EN' | 'ES' | 'CAT';
     
-}
+// }
+
+export type User = UserProfile;
 
 /* Auth context type provided to consuming components  */
 export interface AuthContextType {
