@@ -91,6 +91,7 @@ class FriendshipController
         $achievementService = app(AchievementService::class);
         $achievementService->addProgress($user, 'SOCIAL_BUTTERFLY', -1);
         $achievementService->addProgress($friend, 'SOCIAL_BUTTERFLY', -1);
+        FriendRequestAccepted::dispatch($user, $friend->id);
 
         return response()->json([], 204);
     }

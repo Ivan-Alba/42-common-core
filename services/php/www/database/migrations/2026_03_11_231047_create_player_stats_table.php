@@ -19,6 +19,7 @@ return new class extends Migration
             
             $table->integer('level')->default(1);
             $table->bigInteger('experience')->default(0);
+            $table->integer('achievement_points')->default(0);
             
             // Indexed for fast ranking and leaderboard retrieval
             $table->integer('ranked_points')->default(0)->index();

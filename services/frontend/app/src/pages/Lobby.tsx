@@ -23,7 +23,10 @@ const Lobby = () => {
     const matchmakingStarted = useRef(false);
 
     const getModeDetails = () => {
-        if (mode === 'campaign') return { title: 'Campaign PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_1') return { title: 'Campaign 1 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_2') return { title: 'Campaign 2 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_3') return { title: 'Campaign 3 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_4') return { title: 'Campaign 4 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
         if (mode === 'PVP_RANKED') return { title: 'Ranked Match', icon: <FaTrophy className="text-warning text-4xl mb-2" /> };
         if (mode === 'PVP_CASUAL_LIMITED') return { title: `Casual Match (Limited)`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
         if (mode === 'PVP_CASUAL_UNLIMITED') return { title: `Casual Match (Unlimited)`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };

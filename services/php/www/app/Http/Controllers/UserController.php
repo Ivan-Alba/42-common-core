@@ -6,20 +6,15 @@ use App\Enums\Language;
 use App\Enums\OrderDirection;
 use App\Enums\UserStatus;
 use App\Http\Resources\FriendResource;
-use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
-use App\Models\OAuthExchange;
 use App\Models\User;
 use App\Models\UserMatch;
 use App\Models\Achievement;
+use App\Services\AchievementService;
 use App\Http\Controllers\MatchmakingController;
-use App\OAuth\Contracts\OAuthServer;
-use App\OAuth\Factories\OAuthServerFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -202,31 +197,25 @@ class UserController
         return response()->json(auth()->user()->toResource(), 200);
     }
 
-    // public function getFriends(User $user, Request $request)
-    // {
-    // 	if ($user->id != auth()->user()->id) {
-    // 		abort(403);
-    // 	}
+    public function claimAchievementReward(Request $request, int $achievementId)
+    {
+        /** @var User $user */
+        $user = $request->user();
 
-    // 	$validated = $request->validate([
-    // 		'page_size' => ['sometimes', 'integer', 'min:1', 'max:' . config('social.max_page_size')],
-    // 		'page' => ['sometimes', 'integer', 'min:1'],
-    // 		'sort_order' => ['sometimes', Rule::enum(OrderDirection::class)],
-    // 		'name' => ['sometimes', 'string', 'max:255'],
-    // 	]);
+        // Inyectamos el servicio (o lo pides en el constructor)
+        $achievementService = app(AchievementService::class);
 
-    // 	$pageSize = $request->integer('page_size', config('social.default_page_size'));
-    // 	$page = $request->integer('page', 1);
-    // 	$sortOrder =  $request->enum('sort_order', OrderDirection::class, OrderDirection::DESC);
-    // 	$name = $request->string('name') ?? "";
+        $result = $achievementService->claimReward($user, $achievementId);
 
-    // 	$friends = $user->friendsOfMine()
-    // 		->orderBy('created_at', $sortOrder->value)
-    // 		->when(!empty($name), fn($query) => $query->where('name', 'like', '%' . $name . '%'))
-    // 		->paginate($pageSize, ['*'], 'page', $page);
+        if (!$result['success']) {
+            return response()->json(['error' => $result['message']], 400);
+        }
 
-    // 	return FriendResource::collection($friends);
-    // }
+        return response()->json([
+            'message' => $result['message'],
+            'points_awarded' => $result['points']
+        ], 200);
+    }
 
     public function getFriends(User $user, Request $request)
     {

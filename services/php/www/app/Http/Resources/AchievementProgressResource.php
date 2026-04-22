@@ -52,6 +52,7 @@ class AchievementProgressResource extends JsonResource
             'current_progress' => $userProgress ? (int) $userProgress->pivot->progress : 0,
             'unlocked_at' => $userProgress ? $userProgress->pivot->unlocked_at : null,
             'is_unlocked' => $userProgress ? !is_null($userProgress->pivot->unlocked_at) : false,
+            'claimed' => $userProgress ? (int) $userProgress->pivot->claimed === 1 : false,
 
             // Reward information
             'card_reward_id' => $this->card_reward_id ? (int) $this->card_reward_id : null,

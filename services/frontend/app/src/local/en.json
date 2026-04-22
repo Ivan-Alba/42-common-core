@@ -18,7 +18,9 @@
     "all": "All",
     "player": "Player",
     "opponent": "Opponent",
-    "exit": "Exit"
+    "exit": "Exit",
+    "show_all": "Show all",
+    "show_less": "Show less"
   },
   "validation": {
     "required": "This field is required.",
@@ -165,11 +167,16 @@
     "opponent": "Opponent",
     "score": "Score",
     "date": "Date",
-	"match_results": {
-		"win": "Win",
-		"loss": "Loss",
-		"draw": "Draw"
-	},	
+    "achievements": "Achievements",
+    "unlocked_on": "Unlocked on:",
+    "progress": "Progress",
+    "challenge_locked": "Not achieved",
+    "claim_reward": "Claim reward",
+    "match_results": {
+      "win": "Win",
+      "loss": "Loss",
+      "draw": "Draw"
+    },
     "no_history": "No match history available.",
     "error_loading": "Error loading profile data.",
     "error_msg": "There was an error loading the profile or network issue.",

@@ -12,6 +12,7 @@ class PlayerStatResource extends JsonResource
         return [
             'level' => $this->level,
             'experience' => $this->experience,
+            'achievement_points' => $this->achievement_points,
             'ranked_points' => $this->ranked_points,
             'wins' => $this->wins,
             'losses' => $this->losses,

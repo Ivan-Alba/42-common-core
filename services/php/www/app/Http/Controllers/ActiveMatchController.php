@@ -123,15 +123,11 @@ class ActiveMatchController extends Controller
                 'penalty_until' => now()->addMinutes($penaltyMinutes)
             ]);
 
+            $achievementService = app(AchievementService::class);
+            $achievementService->resetProgress($user, 'STREAK_3');
+
             // 5. Persist the disconnection for PvP matches
             $match->save();
-
-            // 6. Broadcast to the rival so they can activate the AI in Unity
-            // We reuse the MatchFound logic or a specific RivalAbandoned event
-            /*broadcast(new \App\Events\PlayerAbandonedEvent(
-                $matchUuid,
-                $user->id,
-            ))->toOthers();*/
 
             return response()->json(['success' => true], 200);
         });

@@ -122,10 +122,52 @@ class AchievementService
                 'unlocked_at' => $isNowUnlocked ? now() : null,
             ]
         ]);
+    }
 
-        //if ($isNowUnlocked) {
-            //$this->grantReward($user, $achievement);
-        //}
+    /**
+     * Endpoint to claim an achievement reward.
+     */
+    public function claimReward(User $user, int $achievementId): array
+    {
+        // Searcgh for the achievement in the user's achievements
+        $achievement = $user->achievements()
+            ->where('achievement_id', $achievementId)
+            ->first();
+
+        // Security validations
+        if (!$achievement) {
+            return ['success' => false, 'message' => 'Achievement not found for this user.'];
+        }
+
+        if (!$achievement->pivot->unlocked_at) {
+            return ['success' => false, 'message' => 'Achievement is not unlocked yet.'];
+        }
+
+        if ($achievement->pivot->claimed) {
+            return ['success' => false, 'message' => 'Reward already claimed.'];
+        }
+
+        try {
+            DB::transaction(function () use ($user, $achievement) {
+                // 1. Mark as claimed in the DB
+                $user->achievements()->updateExistingPivot($achievement->id, [
+                    'claimed' => true
+                ]);
+
+                // 2. Grant rewards (XP and Cards)
+                $this->grantReward($user, $achievement);
+            });
+
+            return [
+                'success' => true,
+                'message' => 'Reward claimed successfully!',
+                'points' => $achievement->points
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("[Achievement] Error claiming reward: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Internal server error.'];
+        }
     }
 
     /**
@@ -134,10 +176,11 @@ class AchievementService
     private function grantReward(User $user, Achievement $achievement): void
     {
         // 1. Grant Points
-        $user->stats->increment('points', $achievement->points);
+        $user->stats->increment('achievement_points', $achievement->points);
 
         // 2. Grant Card Reward if exists (Logic to be implemented in user_cards table)
         if ($achievement->card_reward_id) {
+            $user->cards()->syncWithoutDetaching([$achievement->card_reward_id]);
             Log::info("User {$user->id} rewarded with card {$achievement->card_reward_id}");
         }
 

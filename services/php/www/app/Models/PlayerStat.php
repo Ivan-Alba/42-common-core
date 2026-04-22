@@ -13,7 +13,7 @@ class PlayerStat extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'user_id', 'level', 'experience', 'ranked_points', 
+        'user_id', 'level', 'experience', 'achievement_points', 'ranked_points', 
         'last_rank_pos', 'wins', 'losses', 'draws', 'campaign'
     ];
 

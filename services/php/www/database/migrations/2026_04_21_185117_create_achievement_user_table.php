@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->integer('progress')->default(0);
             // If null, the achievement is still locked
             $table->timestamp('unlocked_at')->nullable();
+            $table->boolean('claimed')->default(false);
             $table->timestamps();
 
             // Ensure a user only has one entry per achievement

@@ -49,6 +49,9 @@ Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function (
         /* Leaderboard and Ranking */
         Route::get('/ranking', [UserController::class, 'getRanking']);
 
+        /*Achievements */
+        Route::post('/achievements/{achievement}/claim', [UserController::class, 'claimAchievementReward']);
+
         /* Matchmaking system */
         Route::post('/matchmaking/cancel', [MatchmakingController::class, 'cancel']);
 
