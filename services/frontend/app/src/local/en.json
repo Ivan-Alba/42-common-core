@@ -162,6 +162,7 @@
     "games_played": "Games Played",
     "wins": "Wins",
     "losses": "Losses",
+	"draws": "Draws",
     "win_rate": "Win Rate",
     "history": "Match History",
     "no_bio": "No bio available.",
@@ -178,6 +179,7 @@
     "progress": "Progress",
     "challenge_locked": "Not achieved",
     "claim_reward": "Claim reward",
+	"open_card": "Open",
     "match_results": {
       "win": "Win",
       "loss": "Loss",

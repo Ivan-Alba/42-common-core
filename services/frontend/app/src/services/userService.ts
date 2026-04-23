@@ -13,13 +13,17 @@ export interface UpdateProfilePayload {
 
 const userService = {
 	/* Get user profile by id */
-	getProfile: async (id?: string | number): Promise<UserProfile> => {
-		/* Adding a no-cache parameter to ensure we get the latest data after updates */
+	getProfile: async (id?: string | number, lang: string = 'es'): Promise<UserProfile> => {
 		const noCache = new Date().getTime();
-        const url = id ? `/v1/users/${id}?_t=${noCache}` : `/v1/user?_t=${noCache}`;
-        const response = await api.get(url);
-        return response.data;
-    },
+		const url = id 
+            ? `/v1/users/${id}?lang=${lang}&_t=${noCache}` 
+            : `/v1/user?lang=${lang}&_t=${noCache}`;
+            
+		const response = await api.get(url, {
+			headers: { 'Accept-Language': lang }
+		});
+		return response.data;
+	},
 
 	/* Update user profile */
 	updateProfile: async (formData: FormData): Promise<UserProfile> => {

@@ -160,6 +160,7 @@
     "games_played": "Partides jugades",
     "wins": "Victòries",
     "losses": "Derrotes",
+	"draws": "Empates",
     "win_rate": "Taxa de victòries",
     "history": "Historial de partides",
     "no_bio": "No hi ha bio disponible.",
@@ -176,6 +177,7 @@
     "progress": "Progrés",
     "challenge_locked": "No aconseguit",
     "claim_reward": "Reclamar recompensa",
+	"open_card": "Veure",
     "match_results": {
       "win": "Victòria",
       "loss": "Derrota",
