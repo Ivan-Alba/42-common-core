@@ -64,7 +64,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             setUser(userResponse);
         } catch (error) {
-            console.error("Error: ", error);
             throw error;
         } finally {
             setIsLoading(false);
@@ -83,7 +82,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             
             setUser(userResponse);
         } catch (error) {
-            console.error("Error: ", error);
             throw error;
         } finally {
             setIsLoading(false);

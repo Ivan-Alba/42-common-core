@@ -24,7 +24,8 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId, onGameLoa
         addEventListener,
         removeEventListener,
         isLoaded,
-        loadingProgression
+        loadingProgression,
+		unload
     } = useUnityContext({
         loaderUrl: "/game/Build/NexusNineBuild.loader.js",
         dataUrl: "/game/Build/NexusNineBuild.data.gz",
@@ -108,6 +109,47 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId, onGameLoa
             }
         };
     }, [isLoaded, sendMessage, matchId]);
+
+	/* Intercept SPA navigation (Back Button) to trigger abandonment */
+	useEffect(() => {
+		/* Push a dummy state to catch the first click on "Back" */
+        window.history.pushState(null, "", window.location.href);
+
+		/* Catch the "Back" button to trigger the same abandonment logic as tab closure */
+        const handleBackButton = async () => {
+			/* Catch again if the user insists clicking "Back" button on navigation */
+            window.history.pushState(null, "", window.location.href);
+
+			/* If is loading, IGNORE back button to prevent GLctx error */
+            if (!isLoaded) {
+                console.log("Info: Bloqueada la salida mediante el navegador mientras Unity carga.");
+                return;
+            }
+
+			/* If the game is loaded, we assume the user is playing and wants to leave, so we trigger the emergency quit logic */
+            if (!hasCleanedUp.current) {
+                hasCleanedUp.current = true;
+                sendMessage('GameManager', 'HandleEmergencyQuit');
+                gameService.abandonMatchEmergency(matchId);
+            }
+
+			/* Unload the Unity instance gracefully before navigating away to prevent WebGL context errors */
+            try {
+                await unload();
+                navigate('/index');
+            } catch (error) {
+                console.log("ℹ️ Info: Unity forzó el cierre.");
+                navigate('/index');
+            }
+        };
+
+        window.addEventListener('popstate', handleBackButton);
+
+        return () => {
+            window.removeEventListener('popstate', handleBackButton);
+        };
+    }, [isLoaded, unload, navigate, sendMessage, matchId]);
+
 
     return (
         <div className="relative flex items-center justify-center w-full h-screen bg-black overflow-hidden">
