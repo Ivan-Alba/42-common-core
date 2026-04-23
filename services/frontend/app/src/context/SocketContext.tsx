@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import echo from '../utils/echo'; // Pre-configured Echo instance
+import echo from '../utils/echo';
 import Echo from 'laravel-echo';
-import { useAuth } from './AuthContext'; // Hook to listen for auth state changes
+import { useAuth } from './AuthContext';
 
 const SocketContext = createContext<Echo<any> | null>(null);
 
@@ -10,16 +10,14 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 	const [isReady, setIsReady] = useState(false);
 
 	useEffect(() => {
-		// Retrieve tokens stored by authService.getUser() during login/checkSession
+		/* Retrieve tokens stored by authService.getUser() during login/checkSession */
 		const token = sessionStorage.getItem('unity_auth_token');
 		const userId = sessionStorage.getItem('unity_user_id');
 
-		// We only connect if the user is authenticated and we have the necessary Unity tokens
+		/* We only connect if the user is authenticated and we have the necessary Unity tokens */
 		if (isAuthenticated && user && token && userId) {
 
-			// TOKEN REINFORCEMENT:
-			// Ensure the Echo instance uses the latest token from this session.
-			// This prevents authorization issues if the user just logged in without a page refresh.
+			/* Ensure the Echo instance uses the latest token from this session. */
 			echo.options.auth = {
 				...echo.options.auth,
 				headers: {
@@ -30,11 +28,10 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 			console.log(`[SocketContext] Echo ready for user: ${userId}`);
 
-			// Manually trigger the connection if it was disconnected
+			/* Manually trigger the connection if it was disconnected */
 			echo.connector.connect();
 
-			/* Implementation of the friend status listener:
-			 * 1. We subscribe to OUR own channel (because friends notify us there) */
+			/* Implementation of the friend status listener:We subscribe to OUR own channel (because friends notify us there) */
 			const channel = echo.private(`user.${userId}`);
 
 			/* Listen for friend status changes (online/offline) */
@@ -49,43 +46,40 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 			/* Listen for incoming friend requests */
 			channel.listen('.FriendRequestReceived', (_data: any) => {
-                console.log(`Reverb: ¡Petición de amistad recibida!`);
-                
+				console.log(`Reverb: ¡Petición de amistad recibida!`);
+				
 				/* Throw event to the entire React window to show red badge notification */
-                window.dispatchEvent(new CustomEvent('friendRequestReceived'));
-
+				window.dispatchEvent(new CustomEvent('friendRequestReceived'));
 				window.dispatchEvent(new Event('updateFriendNotifications'));
-            });
+			});
 
 			/* Listen for friend request accepted events */
 			channel.listen('.FriendRequestAccepted', (_data: any) => {
-                console.log(`Reverb: ¡Alguien aceptó tu petición de amistad!`);
-                
+				console.log(`Reverb: ¡Alguien aceptó tu petición de amistad!`);
+				
 				/* Throw event to the entire React window to show red badge notification */
-                window.dispatchEvent(new Event('updateFriendNotifications'));
-            });
+				window.dispatchEvent(new Event('updateFriendNotifications'));
+			});
 
 			setIsReady(true);
+
+			/* Cleanup: If the component unmounts or deps change */
+			return () => {
+				/* Stop listening to avoid memory leaks and errors when the user logs out or the component unmounts */
+				channel.stopListening('.UserStatusChanged');
+				channel.stopListening('.FriendRequestReceived');
+				channel.stopListening('.FriendRequestAccepted');
+			};
+
 		} else {
-			// If the user logs out, we should clean up the connection
+			/* If the user logs out, we clean up the connection safely */
 			if (isReady) {
 				console.log("[SocketContext] User logged out. Disconnecting Reverb...");
 				echo.disconnect();
 				setIsReady(false);
 			}
 		}
-
-
-		/* Cleanup: If the component unmounts, we leave the channel */
-		return () => {
-			if (userId) {
-				echo.leave(`user.${userId}`);
-			}
-		};
-
-		// Dependency on isAuthenticated and user ensures this runs 
-		// immediately after the AuthContext updates its state.
-	}, [isAuthenticated, user]);
+	}, [isAuthenticated, user, isReady]);
 
 	return (
 		// Provide the echo instance only when the connection is established and ready
@@ -95,8 +89,5 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 	);
 };
 
-/**
- * Custom hook to access the global Echo instance.
- * Returns null if the socket is not connected or the user is not authenticated.
- */
+/** Custom hook to access the global Echo instance. Returns null if the socket is not connected or the user is not authenticated.*/
 export const useSocket = () => useContext(SocketContext);

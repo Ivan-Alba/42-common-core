@@ -1,6 +1,6 @@
 import api from './api';
 import type { UserProfile } from '../models/User';
-import type { PlayerStats, RankingUser } from '../models/RankingUser';
+import type { RankingUser, PlayerStats } from '../models/RankingUser';
 
 /* This service will handle operations related to the user, such as getting their profile, updating it, etc. */
 export interface UpdateProfilePayload {
@@ -14,7 +14,9 @@ export interface UpdateProfilePayload {
 const userService = {
 	/* Get user profile by id */
 	getProfile: async (id?: string | number): Promise<UserProfile> => {
-        const url = id ? `/v1/users/${id}` : `/v1/user`;
+		/* Adding a no-cache parameter to ensure we get the latest data after updates */
+		const noCache = new Date().getTime();
+        const url = id ? `/v1/users/${id}?_t=${noCache}` : `/v1/user?_t=${noCache}`;
         const response = await api.get(url);
         return response.data;
     },

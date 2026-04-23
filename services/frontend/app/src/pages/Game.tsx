@@ -1,4 +1,4 @@
-import { useParams, Navigate, useNavigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import UnityGame from '../components/ui/UnityGame';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,13 +7,12 @@ import { MdScreenRotation } from "react-icons/md";
 
 const Game = () => {
     const { matchId } = useParams();
-    const navigate = useNavigate();
     const { t } = useTranslation();
     
     const token = sessionStorage.getItem('unity_auth_token');
     const userId = sessionStorage.getItem('unity_user_id');
 
-	const [isUnityLoaded, setIsUnityLoaded] = useState(false);
+    const [isUnityLoaded, setIsUnityLoaded] = useState(false);
 
     if (!token || !matchId || !userId) {
         return <Navigate to="/index" />;
@@ -23,7 +22,6 @@ const Game = () => {
         <div className="w-screen h-screen bg-black overflow-hidden relative flex items-center justify-center">
             
             {/* Mobile definition*/}
-            {/* Force horizontal on phones*/}
             <div className="portrait:flex landscape:hidden fixed inset-0 z-9999 bg-dark-900 flex-col items-center justify-center text-center p-6">
                 <MdScreenRotation size={80} className="text-brand-500 mb-6 animate-pulse" />
                 <h2 className="text-3xl font-bold text-white mb-3">
@@ -37,7 +35,7 @@ const Game = () => {
             {/* Exit Button to index */}
             {isUnityLoaded && (
                 <button 
-                    onClick={() => navigate('/index')}
+                    onClick={() => window.dispatchEvent(new Event('trigger-safe-exit'))}
                     className="absolute top-6 right-6 z-50 bg-dark-900/50 hover:bg-danger text-white px-4 py-2 sm:px-5 sm:py-3 rounded-xl backdrop-blur-md border border-white/10 transition-all shadow-lg flex items-center gap-3 group"
                 >
                     <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" /> 
@@ -48,7 +46,7 @@ const Game = () => {
             )}
 
             {/* Game Component */}
-			<UnityGame 
+            <UnityGame 
                 token={token} 
                 matchId={matchId} 
                 userId={userId as any} 
