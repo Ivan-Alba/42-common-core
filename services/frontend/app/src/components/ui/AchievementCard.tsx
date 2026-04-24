@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { FaLock, FaCheckCircle } from 'react-icons/fa';
+import { FaGift } from "react-icons/fa";
 import GameCard from './GameCard';
 import type { CardData } from '../../models/CardData';
 
@@ -139,28 +140,51 @@ const AchievementCard = ({ achievement, isOwnProfile, rewardCard, onClaimReward 
             </div>
 
             {/* DERECHA: Puntos y Carta */}
-            <div className="shrink-0 flex flex-row sm:flex-col items-center sm:items-end justify-center sm:justify-start gap-3 sm:gap-2 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-white/5 sm:border-t-0 sm:border-l sm:pl-4 min-w-[80px]">
-                <div className="text-center sm:text-right">
-                    <div className="text-[9px] text-slate-500 font-bold uppercase">{t('profile.reward', 'Premio')}</div>
-                    <div className={`font-black text-sm ${achievement.is_unlocked ? 'text-warning' : 'text-slate-600'}`}>
+            <div className="shrink-0 flex flex-col items-center justify-start gap-2.5 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-white/5 sm:border-t-0 sm:border-l sm:pl-3 w-full sm:w-[85px] min-h-[110px]">
+
+                {/* Bloque Superior: Siempre arriba */}
+                <div className="flex flex-col items-center gap-1 w-full shrink-0">
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
+                        <FaGift className="text-rose-400 text-[9px]" />
+                        <span className="text-[8px] text-rose-400 font-black uppercase tracking-tighter">
+                            {t('profile.reward', 'Premio')}
+                        </span>
+                    </div>
+
+                    <div className={`font-black text-sm leading-none ${achievement.is_unlocked ? 'text-warning' : 'text-slate-600'}`}>
                         +{achievement.points_reward}
+                        <span className="text-[8px] ml-0.5 opacity-60 uppercase font-bold">pts</span>
                     </div>
                 </div>
-                
-                {rewardCard && (
-                    <div className={`w-10 h-14 sm:w-11 sm:h-16 shrink-0 shadow-2xl rounded-sm transition-all duration-300 relative group 
-                        ${achievement.is_unlocked ? 'hover:scale-110 cursor-pointer' : 'grayscale opacity-20 pointer-events-none'}`}>
-                        <GameCard 
-                            card={rewardCard} 
-                            isUnlocked={true} 
-                            team="blue" 
-                        />
+
+                {/* Bloque Inferior Centrado: Carta (si existe) */}
+                {rewardCard ? (
+                    <div className="relative group flex justify-center items-center flex-1 w-full min-h-[60px]">
+                        {/* Este div reserva el espacio para que la ampliación sea central */}
+                        <div className="flex justify-center items-center w-12 h-16 pointer-events-none">
+                            <div className={`w-9 h-13 sm:w-9.5 sm:h-13.5 shadow-xl rounded-sm transition-all duration-300 ease-out z-10 pointer-events-auto
+                    ${achievement.is_unlocked
+                                    ? 'group-hover:scale-120 cursor-pointer'
+                                    : 'grayscale opacity-20 pointer-events-none'}`}
+                            >
+                                <GameCard
+                                    card={rewardCard}
+                                    isUnlocked={true}
+                                    team="blue"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Tooltip ultra-compacto y centrado */}
                         {achievement.is_unlocked && (
-                            <div className="absolute -bottom-2 -right-2 bg-brand-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                                {t('profile.open_card')}
+                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 bg-brand-600 text-white text-[6px] font-black px-1.5 py-0.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none uppercase">
+                                {t('profile.view', 'Ver')}
                             </div>
                         )}
                     </div>
+                ) : (
+                    /* Espaciador sutil para mantener consistencia visual si no hay carta */
+                    <div className="flex-1 w-full opacity-0"></div>
                 )}
             </div>
         </div>
