@@ -181,6 +181,7 @@ class AchievementService
         // 2. Grant Card Reward if exists (Logic to be implemented in user_cards table)
         if ($achievement->card_reward_id) {
             $user->cards()->syncWithoutDetaching([$achievement->card_reward_id]);
+            $this->addProgress($user, 'COLLECTOR_10', 1);
             Log::info("User {$user->id} rewarded with card {$achievement->card_reward_id}");
         }
 

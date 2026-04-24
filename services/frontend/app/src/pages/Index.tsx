@@ -155,7 +155,7 @@ const Index = () => {
 					isOwnProfile={true}
 				/>
 
-				<GameLauncher />
+				{/*<GameLauncher />*/}
 
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 animate-fade-in-up">
 

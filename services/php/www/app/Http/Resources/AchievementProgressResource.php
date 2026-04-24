@@ -15,6 +15,8 @@ class AchievementProgressResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $baseUrl = asset('storage/achievements/');
+
         // 1. Determine the language priority (Same as CardResource)
         $userLanguage = $request->query('lang')
             ?? $request->user()?->language->value
@@ -47,6 +49,7 @@ class AchievementProgressResource extends JsonResource
             'description' => $translation ? $translation->description : 'No description available',
             'goal' => (int) $this->goal,
             'points_reward' => (int) $this->points,
+            'image_url' => "{$baseUrl}/" . strtolower($this->code) . ".png",
 
             // Progress logic from the pivot table
             'current_progress' => $userProgress ? (int) $userProgress->pivot->progress : 0,

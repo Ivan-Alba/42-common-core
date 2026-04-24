@@ -10,6 +10,7 @@ interface AchievementCardProps {
         title: string;
         description: string;
         category: string;
+        image_url?: string | null;
         goal: number;
         current_progress: number;
         points_reward: number;
@@ -62,7 +63,7 @@ const AchievementCard = ({ achievement, isOwnProfile, rewardCard, onClaimReward 
                     
                     {/* Imagen con efectos de estado (como el dorso de las cartas) */}
                     <img 
-                        src={achImageUrl} 
+                        src={achievement.image_url} 
                         alt={achievement.title}
                         className={`w-full h-full object-cover transition-all duration-700 
                             ${!achievement.is_unlocked 
@@ -71,7 +72,7 @@ const AchievementCard = ({ achievement, isOwnProfile, rewardCard, onClaimReward 
                             }`}
                         onError={(e) => { 
                             // Fallback por si acaso algún nombre no coincide
-                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150/000000/FFFFFF?text=LOGRO'; 
+                            (e.target as HTMLImageElement).src = achImageUrl; 
                         }}
                     />
 
@@ -105,7 +106,7 @@ const AchievementCard = ({ achievement, isOwnProfile, rewardCard, onClaimReward 
                         isOwnProfile && (
                             <button
                                 onClick={() => onClaimReward(achievement.id)}
-                                className="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-black py-2 px-5 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all transform hover:scale-105 active:scale-95"
+                                className="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white text-[10px] font-black py-2 px-5 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all transform hover:scale-105 active:scale-95 animate-pulse"
                             >
                                 {t('profile.claim_reward', 'RECLAMAR RECOMPENSA')}
                             </button>
@@ -142,7 +143,7 @@ const AchievementCard = ({ achievement, isOwnProfile, rewardCard, onClaimReward 
                 <div className="text-center sm:text-right">
                     <div className="text-[9px] text-slate-500 font-bold uppercase">{t('profile.reward', 'Premio')}</div>
                     <div className={`font-black text-sm ${achievement.is_unlocked ? 'text-warning' : 'text-slate-600'}`}>
-                        +{achievement.points_reward} XP
+                        +{achievement.points_reward}
                     </div>
                 </div>
                 

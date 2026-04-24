@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaGamepad, FaExclamationTriangle, FaChevronDown, FaChevronUp } from "react-icons/fa";
@@ -28,6 +28,7 @@ const Profile = () => {
     const [showAllAchievements, setShowAllAchievements] = useState(false);
     const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected'>('none');
 
+    // Memorizamos la ordenación para evitar cálculos innecesarios
     const sortedAchievements = useMemo(() => {
         if (!profileData?.achievements) return [];
         return [...profileData.achievements].sort((a, b) => {
@@ -43,74 +44,63 @@ const Profile = () => {
         ? sortedAchievements
         : sortedAchievements.slice(0, 4);
 
-    const getMatchStyles = (result: 'win' | 'loss' | 'draw') => {
-        if (result === 'draw') return { border: 'bg-warning', badge: 'bg-warning/10 text-warning border border-warning/20' };
-        const isWin = result === 'win';
-        return {
-            border: isWin ? 'bg-success' : 'bg-danger',
-            badge: isWin ? 'bg-success/10 text-success border border-success/20' : 'bg-danger/10 text-danger border border-danger/20'
-        };
-    };
+    // Función principal de carga de datos (Reutilizable)
+    const fetchData = useCallback(async (isActive: boolean, showGlobalLoading: boolean) => {
+        if (showGlobalLoading) setIsLoading(true);
+
+        try {
+            const targetId = isOwnProfile ? authUser?.id : id;
+            if (!targetId) throw new Error("No user specified");
+
+            const currentLang = i18n.language?.split('-')[0] || 'es';
+
+            const [userData, catalogData] = await Promise.all([
+                userService.getProfile(targetId, currentLang),
+                userService.getAllCards(currentLang)
+            ]);
+
+            if (isActive) {
+                const formattedCatalog: CardData[] = catalogData.map((card: any) => {
+                    let mappedRarity = String(card.rarity).toLowerCase();
+                    if (mappedRarity.includes('golden')) mappedRarity = 'legendary';
+                    return {
+                        id: Number(card.id),
+                        name: card.name || '',
+                        description: card.description || '',
+                        category: card.category,
+                        rarity: mappedRarity as CardData['rarity'],
+                        stats: {
+                            top: card.stats?.top === 10 ? 'A' : card.stats?.top,
+                            right: card.stats?.right === 10 ? 'A' : card.stats?.right,
+                            bottom: card.stats?.bottom === 10 ? 'A' : card.stats?.bottom,
+                            left: card.stats?.left === 10 ? 'A' : card.stats?.left
+                        }
+                    };
+                });
+
+                setAllCards(formattedCatalog);
+                setProfileData(userData);
+                setRelationStatus(userData.friendship_status || 'none');
+            }
+        } catch (error: any) {
+            console.error("Error al obtener los datos:", error);
+            if (isActive) setProfileData(null);
+        } finally {
+            if (isActive) setIsLoading(false);
+        }
+    }, [id, authUser?.id, isOwnProfile, i18n.language]);
 
     useEffect(() => {
         if (isAuthLoading) return;
+        let isActive = true;
 
-        let isActive = true; 
+        // Cargamos con loading global solo la primera vez que no hay datos
+        fetchData(isActive, !profileData);
 
-        const fetchProfileAndCards = async () => {
-			/* Delete setIsLoading(true) from here to prevent the entire screen from flashing every time the language changes. This way, it feels much smoother. */
-            if (!profileData) setIsLoading(true); 
-            
-            try {
-                const targetId = isOwnProfile ? authUser?.id : id;
-                if (!targetId) throw new Error("No user specified");
-
-                const currentLang = i18n.language?.split('-')[0] || 'es';
-
-                const [userData, catalogData] = await Promise.all([
-                    userService.getProfile(targetId, currentLang),
-                    userService.getAllCards(currentLang)
-                ]);
-
-				/* Only update the state if this is the latest fetch, preventing race conditions and ensuring the UI always reflects the most recent data. */
-                if (isActive) {
-                    const formattedCatalog: CardData[] = catalogData.map((card: any) => {
-                        let mappedRarity = String(card.rarity).toLowerCase();
-                        if (mappedRarity.includes('golden')) mappedRarity = 'legendary';
-                        return {
-                            id: Number(card.id),
-                            name: card.name || '',
-                            description: card.description || '',
-                            category: card.category,
-                            rarity: mappedRarity as CardData['rarity'],
-                            stats: {
-                                top: card.stats?.top === 10 ? 'A' : card.stats?.top,
-                                right: card.stats?.right === 10 ? 'A' : card.stats?.right,
-                                bottom: card.stats?.bottom === 10 ? 'A' : card.stats?.bottom,
-                                left: card.stats?.left === 10 ? 'A' : card.stats?.left
-                            }
-                        };
-                    });
-
-                    setAllCards(formattedCatalog);
-                    setProfileData(userData);
-                    setRelationStatus(userData.friendship_status || 'none');
-                }
-            } catch (error: any) {
-                console.error("Error al obtener los datos:", error);
-                if (isActive) setProfileData(null);
-            } finally {
-                if (isActive) setIsLoading(false);
-            }
-        };
-
-        fetchProfileAndCards();
-
-		/* If the component re-renders (e.g., due to a state change or prop update) before the fetch completes, we set isActive to false, preventing any state updates from that fetch. This way, only the latest fetch can update the state, avoiding race conditions and ensuring that the UI always reflects the most recent data. */
         return () => {
             isActive = false;
         };
-    }, [id, authUser?.id, isAuthLoading, isOwnProfile, i18n.language]);
+    }, [fetchData, isAuthLoading, profileData === null]);
 
     const handleAddFriend = async (friendId: number | string) => {
         if (!authUser) return;
@@ -118,38 +108,22 @@ const Profile = () => {
             await userService.sendFriendRequest(authUser.id, friendId);
             setRelationStatus('outgoing');
         } catch (error) {
-            console.error("Error", error);
+            console.error("Error al añadir amigo", error);
         }
     };
 
     const handleClaimReward = async (achievementId: number) => {
         try {
             const response = await userService.claimAchievement(achievementId);
-
             if (response) {
-                setProfileData(prev => {
-                    if (!prev) return prev;
-
-                    const updatedAchievements = (prev.achievements || []).map(ach => {
-                        if (ach.id === achievementId) {
-                            return { ...ach, claimed: true };
-                        }
-                        return ach;
-                    });
-
-                    const updatedStats = response.new_total_points
-                        ? { ...prev.stats, achievement_points: response.new_total_points }
-                        : prev.stats;
-
-                    return { ...prev, achievements: updatedAchievements, stats: updatedStats };
-                });
+                // Tras reclamar, refrescamos todos los datos del servidor de forma silenciosa
+                // Esto actualizará los puntos en el Header y el progreso de otros logros
+                await fetchData(true, false);
             }
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error al reclamar recompensa:", error);
         }
     };
-
-    if (isLoading) return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
 
     const getRelativeTime = (dateString: string | null | undefined) => {
         if (!dateString) return 'N/A';
@@ -182,10 +156,18 @@ const Profile = () => {
         const opponentAvatar = rawAvatar === null ? undefined : rawAvatar;
         const scoreFormatted = isPlayer1 ? `${match.p1_score} - ${match.p2_score}` : `${match.p2_score} - ${match.p1_score}`;
         const dateFormatted = getRelativeTime(match.played_at);
-        const styles = getMatchStyles(resultString as 'win' | 'loss' | 'draw');
 
-        return { ...match, resultString, translatedResult, opponentId, opponentName, opponentAvatar, scoreFormatted, dateFormatted, styles };
+        const getMatchStyles = (result: string) => {
+            if (result === 'draw') return { border: 'bg-warning', badge: 'bg-warning/10 text-warning border border-warning/20' };
+            return result === 'win'
+                ? { border: 'bg-success', badge: 'bg-success/10 text-success border border-success/20' }
+                : { border: 'bg-danger', badge: 'bg-danger/10 text-danger border border-danger/20' };
+        };
+
+        return { ...match, resultString, translatedResult, opponentId, opponentName, opponentAvatar, scoreFormatted, dateFormatted, styles: getMatchStyles(resultString) };
     }) || [];
+
+    if (isLoading) return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
 
     return (
         <DashboardLayout isCentered={false}>
@@ -207,7 +189,7 @@ const Profile = () => {
 
                         {/* Stats Section */}
                         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <MdInsertChartOutlined className="text-brand-400 text-2xl" /> {t('profile.stats', 'Estadísticas')}
+                            <MdInsertChartOutlined className="text-brand-400 text-2xl" /> {t('profile.stats')}
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
                             {(() => {
@@ -218,11 +200,11 @@ const Profile = () => {
                                 const winRate = gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0;
                                 return (
                                     <>
-                                        <StatBox label={t('profile.games_played', 'Jugadas')} value={gamesPlayed} />
-                                        <StatBox label={t('profile.wins', 'Victorias')} value={wins} color="text-success" />
-                                        <StatBox label={t('profile.draws', 'Empates')} value={draws} color="text-warning" />
-                                        <StatBox label={t('profile.losses', 'Derrotas')} value={losses} color="text-danger" />
-                                        <StatBox label={t('profile.win_rate', 'Tasa')} value={`${winRate}%`} color="text-brand-400" />
+                                        <StatBox label={t('profile.games_played')} value={gamesPlayed} />
+                                        <StatBox label={t('profile.wins')} value={wins} color="text-success" />
+                                        <StatBox label={t('profile.draws')} value={draws} color="text-warning" />
+                                        <StatBox label={t('profile.losses')} value={losses} color="text-danger" />
+                                        <StatBox label={t('profile.win_rate')} value={`${winRate}%`} color="text-brand-400" />
                                     </>
                                 );
                             })()}
@@ -231,22 +213,21 @@ const Profile = () => {
                         {/* Achievements Section */}
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                <HiOutlineTrophy className="text-warning text-2xl" /> {t('profile.achievements', 'Logros')}
+                                <HiOutlineTrophy className="text-warning text-2xl" /> {t('profile.achievements')}
                             </h3>
                             {sortedAchievements.length > 4 && (
                                 <button
                                     onClick={() => setShowAllAchievements(!showAllAchievements)}
                                     className="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1 transition-colors bg-white/5 px-3 py-1.5 rounded-lg border border-white/10"
                                 >
-                                    {showAllAchievements ? <><FaChevronUp /> {t('common.show_less', 'Mostrar menos')}</> : <><FaChevronDown /> {t('common.show_all', 'Mostrar todo')}</>}
+                                    {showAllAchievements ? <><FaChevronUp /> {t('common.show_less')}</> : <><FaChevronDown /> {t('common.show_all')}</>}
                                 </button>
                             )}
                         </div>
 
-                        {/* Grid de Achievements externalizado */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 relative z-10">
                             {displayedAchievements.map((ach) => (
-                                <AchievementCard 
+                                <AchievementCard
                                     key={ach.id}
                                     achievement={ach}
                                     isOwnProfile={isOwnProfile}
@@ -256,9 +237,9 @@ const Profile = () => {
                             ))}
                         </div>
 
-                        {/* Historial */}
+                        {/* History Section */}
                         <h3 className="text-xl font-bold text-white mb-4 mt-10 flex items-center gap-2">
-                            <MdHistory className="text-brand-400 text-2xl" /> {t('profile.history', 'Historial')}
+                            <MdHistory className="text-brand-400 text-2xl" /> {t('profile.history')}
                         </h3>
                         {formattedHistory.length > 0 ? (
                             <>
@@ -283,10 +264,10 @@ const Profile = () => {
                                         <thead className="bg-white/5 text-slate-200 uppercase text-xs font-bold">
                                             <tr className="text-center">
                                                 <th className="px-6 py-4 w-8"></th>
-                                                <th className="px-6 py-4 w-40">{t('profile.result', 'Resultado')}</th>
-                                                <th className="px-6 py-4 text-center">{t('profile.opponent', 'Oponente')}</th>
-                                                <th className="px-6 py-4 w-40">{t('profile.score', 'Puntuación')}</th>
-                                                <th className="px-6 py-4 w-44">{t('profile.date', 'Fecha')}</th>
+                                                <th className="px-6 py-4 w-40">{t('profile.result')}</th>
+                                                <th className="px-6 py-4 text-center">{t('profile.opponent')}</th>
+                                                <th className="px-6 py-4 w-40">{t('profile.score')}</th>
+                                                <th className="px-6 py-4 w-44">{t('profile.date')}</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-white/5">
@@ -310,7 +291,7 @@ const Profile = () => {
                         ) : (
                             <div className="glass-panel p-10 text-center flex flex-col items-center justify-center bg-dark-800/40 border border-white/5 rounded-xl">
                                 <FaGamepad className="text-4xl text-slate-600 mb-3" />
-                                <span className="text-slate-400 font-bold text-sm">{t('profile.no_history', 'No hay historial disponible')}</span>
+                                <span className="text-slate-400 font-bold text-sm">{t('profile.no_history')}</span>
                             </div>
                         )}
                     </>
