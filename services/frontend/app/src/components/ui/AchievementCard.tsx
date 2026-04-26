@@ -144,9 +144,9 @@ const AchievementCard = ({ achievement, isOwnProfile, rewardCard, onClaimReward 
 
                 {/* Bloque Superior: Siempre arriba */}
                 <div className="flex flex-col items-center gap-1 w-full shrink-0">
-                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
-                        <FaGift className="text-rose-400 text-[9px]" />
-                        <span className="text-[8px] text-rose-400 font-black uppercase tracking-tighter">
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-400/10 border border-blue-400/20 shadow-[0_0_10px_rgba(96,165,250,0.05)]">
+                        <FaGift className="text-blue-400 text-[9px]" />
+                        <span className="text-[8px] text-blue-400 font-black uppercase tracking-tighter">
                             {t('profile.reward', 'Premio')}
                         </span>
                     </div>

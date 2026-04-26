@@ -38,7 +38,7 @@ const userService = {
 
 	/* Update user password */
 	updatePassword: async (password: string): Promise<any> => {
-		const response = await api.put('/v1/user/password', { password });
+		const response = await api.put('/v1/user/password/update', { password });
 		return response.data;
 	},
 

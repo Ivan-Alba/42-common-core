@@ -20,6 +20,7 @@ import sorceressAvatar from '../../public/assets/avatars/sorceress.png';
 import warriorAvatar from '../../public/assets/avatars/warrior.png';
 import wizardAvatar from '../../public/assets/avatars/wizard.png';
 
+
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -56,7 +57,7 @@ const EditProfile = () => {
     const navigate = useNavigate();
 
     const { name } = useParams<{ name?: string }>();
-    const { user: authUser, isLoading: isAuthLoading } = useAuth();
+    const { user: authUser, setUser: authSetUser, isLoading: isAuthLoading } = useAuth();
 
     const isOwnProfile = !name || (authUser && name.toLowerCase() === authUser?.username?.toLowerCase());
 
@@ -216,7 +217,7 @@ const EditProfile = () => {
         setIsSaving(true);
 
         try {
-            const profileFormData = new FormData();
+            /*const profileFormData = new FormData();
 
             if (formData.username) profileFormData.append('username', formData.username);
             if (formData.email) profileFormData.append('email', formData.email);
@@ -231,7 +232,7 @@ const EditProfile = () => {
 
             if (formData.newPassword) await userService.updatePassword(formData.newPassword);
 
-            i18n.changeLanguage(formData.language || 'en');
+            i18n.changeLanguage(formData.language || 'en');*/
             setShowSuccessModal(true);
 
         } catch (error: any) {
@@ -243,15 +244,35 @@ const EditProfile = () => {
         }
     };
 
-    const handleSuccessClose = () => {
+    const handleSuccessClose = async () => {
+        const profileFormData = new FormData();
+
+        if (formData.username) profileFormData.append('username', formData.username);
+        if (formData.email) profileFormData.append('email', formData.email);
+        if (formData.bio) profileFormData.append('bio', formData.bio);
+        if (formData.language) profileFormData.append('language', formData.language);
+
+        if (formData.avatarFile) {
+            profileFormData.append('avatar', formData.avatarFile, formData.avatarFile.name || 'avatar.png');
+        }
+
+        const response = await userService.updateProfile(profileFormData);
+
+        if (formData.newPassword) await userService.updatePassword(formData.newPassword);
+
+        i18n.changeLanguage(formData.language || 'en');
+
+        authSetUser(response);
+
+
         setShowSuccessModal(false);
         navigate('/profile');
     };
 
     const handleCancelClose = () => {
         setShowSuccessModal(false);
-        window.location.href = '/profile';
-        navigate('/edit_profile');
+        //window.location.href = '/profile';
+        //navigate('/edit_profile');
     };
 
     const handleLanguageSelect = (langCode: string) => {

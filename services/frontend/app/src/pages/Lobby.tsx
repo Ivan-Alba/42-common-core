@@ -6,6 +6,7 @@ import { useSocket } from '../context/SocketContext';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import { FaRobot, FaUserSecret, FaTimes, FaCircleNotch, FaTrophy, FaUsers } from 'react-icons/fa';
 import gameService, { type MatchData } from '../services/gameService';
+import userService from "../services/userService";
 
 const Lobby = () => {
     const { t } = useTranslation();
@@ -40,7 +41,7 @@ const Lobby = () => {
         const userId = sessionStorage.getItem('unity_user_id');
 
         // 1. If infrastructure is not ready, we stop here.
-    	if (!echo || !userId || !user) return;
+        if (!echo || !userId || !user) return;
 
         let isMounted = true;
         const privateChannel = `user.${userId}`;
@@ -148,13 +149,23 @@ const Lobby = () => {
                     <div className="glass-panel p-6 flex flex-col items-center w-48 relative z-10 border-brand-500/30 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
                         <div className="w-20 h-20 rounded-full bg-brand-500/20 flex items-center justify-center border-2 border-brand-500 mb-4 overflow-hidden">
                             {user?.avatar ? (
-                                <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
+                                <img
+                                    src={userService.getFullAvatarUrl(user.avatar)}
+                                    alt={user.username}
+                                    className="w-full h-full object-cover"
+                                />
                             ) : (
-                                <span className="text-2xl font-bold text-brand-500">{user?.username?.charAt(0).toUpperCase()}</span>
+                                <span className="text-2xl font-bold text-brand-500">
+                                    {user?.username?.charAt(0).toUpperCase()}
+                                </span>
                             )}
                         </div>
-                        <h3 className="text-lg font-bold text-white text-center w-full truncate">{user?.username}</h3>
-                        <span className="text-xs text-brand-400 font-medium bg-brand-500/10 px-3 py-1 rounded-full mt-2">Ready</span>
+                        <h3 className="text-lg font-bold text-white text-center w-full truncate">
+                            {user?.username}
+                        </h3>
+                        <span className="text-xs text-brand-400 font-medium bg-brand-500/10 px-3 py-1 rounded-full mt-2">
+                            Ready
+                        </span>
                     </div>
 
                     <div className="flex flex-col items-center justify-center z-10">

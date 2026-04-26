@@ -32,6 +32,7 @@ export type User = UserProfile;
 export interface AuthContextType {
 	/* Current user or null if not authenticated */
     user: User | null;
+    setUser: (user: User | null) => void;
 	/* Authentication state true or false*/
     isAuthenticated: boolean;
 	/* Loading state to verify the cookie on reload */ 

@@ -129,6 +129,17 @@ class UserController
         // Add PlayerStatsResource to UserResource
         $user->load('stats');
 
+        // All achievements with translations + progress for THIS user
+        $allAchievements = Achievement::with([
+            'translations',
+            'users' => function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            }
+        ])->get();
+
+        // Inject relation
+        $user->setRelation('all_achievements_with_progress', $allAchievements);
+
         // Add match history
         $history = UserMatch::where('player_1_id', $user->id)
             ->orWhere('player_2_id', $user->id)
@@ -191,6 +202,30 @@ class UserController
         if ($request->hasFile('avatar')) {
             $user->updateAvatar($request['avatar']);
         }
+
+        // Add PlayerStatsResource to UserResource
+        $user->load('stats');
+
+        // All achievements with translations + progress for THIS user
+        $allAchievements = Achievement::with([
+            'translations',
+            'users' => function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            }
+        ])->get();
+
+        // Inject relation
+        $user->setRelation('all_achievements_with_progress', $allAchievements);
+
+        // Add match history
+        $history = UserMatch::where('player_1_id', $user->id)
+            ->orWhere('player_2_id', $user->id)
+            ->with(['player1', 'player2'])
+            ->orderBy('created_at', 'desc')
+            ->take(15)
+            ->get();
+
+        $user->setRelation('match_history', $history);
 
         $user->save();
 
