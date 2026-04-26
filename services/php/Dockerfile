@@ -38,7 +38,7 @@ COPY ./www/composer.lock .
 # To install needed libraries in /www/vendor based on package.json
 RUN composer install --no-scripts --no-interaction --no-autoloader
 
-COPY www .
+COPY ./www .
 
 # To create composer static class map, used to detect classes or libraries without #include
 RUN composer dump-autoload --optimize
