@@ -131,7 +131,7 @@ const Index = () => {
 	const { timeLeft, isFinished } = useCountdown(penaltyTargetDate);
 
 	const isPenalized = timeLeft !== null && !isFinished;
-	const onlineFriendsCount = friendsList.filter(f => f.status === 'online' || f.status === 'playing').length;
+	const onlineFriendsCount = friendsList.filter(f => f.status === 'online' || f.status === 'playing' || f.status === 'away').length;
 
 	if (isAuthLoading || isLoading)
 		return <LoadingState />;
