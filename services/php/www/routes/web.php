@@ -15,6 +15,8 @@ use App\Http\Middleware\UpdateUserActivity;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Authenticated Web Routes (With Activity Tracking)
@@ -23,6 +25,7 @@ use Illuminate\Http\Request;
 | UpdateUserActivity middleware to keep the user ONLINE.
 */
 Route::middleware(['auth:sanctum', UpdateUserActivity::class])->group(function () {
+
 
     /* Basic user check */
     Route::get('/user', function (Request $request) {
@@ -113,3 +116,4 @@ Route::get('/media/{path}', [MediaController::class, 'getMedia'])->where('path',
 
 /* Default fallback for non-existing routes */
 Route::fallback(fn() => redirect('/error'));
+
