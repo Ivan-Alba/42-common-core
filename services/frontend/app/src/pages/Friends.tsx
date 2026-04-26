@@ -72,7 +72,7 @@ const Friends = () => {
 		try {
 			const data = await userService.getFriends(authUser.id);
 
-			//console.log("DATOS DEL BACKEND /friends:", data);
+			console.log("DATOS DEL BACKEND /friends:", data);
 
 			const myId = Number(authUser.id);
 
@@ -140,6 +140,27 @@ const Friends = () => {
 		return () => clearTimeout(delayDebounceFn);
 	}, [searchQuery]);
 
+	/* Listen for real-time status changes from SocketContext */
+    useEffect(() => {
+        const handleStatusChange = (e: any) => {
+            const { userId, newStatus } = e.detail;
+
+            setFriendsList((prevFriends) => 
+                prevFriends.map((friend) => 
+                    Number(friend.id) === Number(userId) 
+                        ? { ...friend, status: newStatus } 
+                        : friend
+                )
+            );
+        };
+
+        window.addEventListener('friendStatusChanged', handleStatusChange);
+        
+        return () => {
+            window.removeEventListener('friendStatusChanged', handleStatusChange);
+        };
+    }, []);
+
 	/* Send friend request */
 	const handleSendRequest = async (friendId: number) => {
 		if (!authUser)
@@ -195,7 +216,7 @@ const Friends = () => {
 			setPendingRequests(prev => prev.filter(f => Number(f.id) !== friendId));
 
 			/* Global event to update friend notifications count in Navbar */
-			window.dispatchEvent(new Event('updateFriendNotifications'));
+			window.dispatchEvent(new CustomEvent('friendRequestHandled'));
 
 		} catch (error) {
 			console.error(`Error ${action}: `, error);
@@ -346,7 +367,7 @@ const Friends = () => {
 									</ul>
 								) : (
 									<div className="p-4 text-center text-sm text-slate-400">
-										{t('friends.no_friends')}
+										{t('friends.player_not_found')}
 									</div>
 								)}
 							</div>

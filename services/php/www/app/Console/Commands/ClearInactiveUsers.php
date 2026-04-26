@@ -20,9 +20,14 @@ class ClearInactiveUsers extends Command
         $now = Carbon::now();
 
         /* 1. Set to AWAY users who haven't been active for 5 minutes */
-        User::whereIn('status', [UserStatus::ONLINE, UserStatus::PLAYING])
+        $awayUsers = User::whereIn('status', [UserStatus::ONLINE, UserStatus::PLAYING])
             ->where('last_activity', '<', $now->copy()->subMinutes(5))
-            ->update(['status' => UserStatus::AWAY]);
+            ->get();
+		
+		foreach ($awayUsers as $user) {
+			$user->update(['status' => UserStatus::AWAY]);
+			$this->info("User {$user->email} set to AWAY due to inactivity.");
+		}
 
         /* 2. Set to OFFLINE users who haven't been active for 30 minutes 
            (Matching your React session timeout) */

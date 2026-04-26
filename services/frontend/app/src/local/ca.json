@@ -17,7 +17,9 @@
     "all": "Totes",
     "player": "Jugador",
     "opponent": "Oponent",
-    "exit": "Sortir"
+    "exit": "Sortir",
+    "show_more": "Mostrar tot",
+    "show_less": "Mostrar menys"
   },
   "validation": {
     "required": "Aquest camp és obligatori.",
@@ -125,6 +127,7 @@
     "title": "Amics",
     "subtitle": "La teva llista d'amics",
     "search_placeholder": "Introdueix el nom d'usuari",
+	"player_not_found": "Jugador no trobat.",
     "no_friends": "Encara no tens amics afegits.",
     "already_friend": "Amic",
     "pending": "Pendent",
@@ -162,11 +165,16 @@
     "opponent": "Oponent",
     "score": "Puntuació",
     "date": "Data",
-	"match_results": {
-		"win": "Victòria",
-		"loss": "Derrota",
-		"draw": "Empat"
-	},
+    "achievements": "Fites",
+    "unlocked_on": "Desbloquejat el:",
+    "progress": "Progrés",
+    "challenge_locked": "No aconseguit",
+    "claim_reward": "Reclamar recompensa",
+    "match_results": {
+      "win": "Victòria",
+      "loss": "Derrota",
+      "draw": "Empat"
+    },
     "no_history": "No hi ha historial de partides disponible.",
     "error_loading": "Error en carregar les dades del perfil.",
     "error_msg": "Hi ha hagut un error en carregar el perfil o un problema de xarxa.",

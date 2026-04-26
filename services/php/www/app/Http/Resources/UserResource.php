@@ -6,6 +6,7 @@ use App\Enums\Language;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\PlayerStatResource;
+use App\Http\Resources\AchievementProgressResource;
 use App\Http\Resources\UserMatchResource;
 
 class UserResource extends JsonResource
@@ -29,6 +30,9 @@ class UserResource extends JsonResource
 
             // Only if ->load('stats')
             'stats' => new PlayerStatResource($this->whenLoaded('stats')),
+
+            // Only if ->load('all_achievements_with_progress')
+            'achievements' => AchievementProgressResource::collection($this->whenLoaded('all_achievements_with_progress')),
 
             // Only if injected
             'match_history' => UserMatchResource::collection($this->whenLoaded('match_history')),

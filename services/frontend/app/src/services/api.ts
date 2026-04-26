@@ -11,6 +11,7 @@ const api = axios.create({
         'Content-Type': 'application/json',
 		/* Required to identify API requests in Laravel */
         'Accept': 'application/json',
+		'X-Requested-With': 'XMLHttpRequest'
     }
 });
 

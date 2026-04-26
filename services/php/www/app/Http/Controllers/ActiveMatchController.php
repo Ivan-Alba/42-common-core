@@ -18,6 +18,7 @@ use App\Enums\GameMode;
 use App\Enums\MatchStatus;
 use App\Services\MatchLogicEngine;
 use App\Services\MatchConfigProvider;
+use App\Services\AchievementService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -122,15 +123,11 @@ class ActiveMatchController extends Controller
                 'penalty_until' => now()->addMinutes($penaltyMinutes)
             ]);
 
+            $achievementService = app(AchievementService::class);
+            $achievementService->resetProgress($user, 'STREAK_3');
+
             // 5. Persist the disconnection for PvP matches
             $match->save();
-
-            // 6. Broadcast to the rival so they can activate the AI in Unity
-            // We reuse the MatchFound logic or a specific RivalAbandoned event
-            /*broadcast(new \App\Events\PlayerAbandonedEvent(
-                $matchUuid,
-                $user->id,
-            ))->toOthers();*/
 
             return response()->json(['success' => true], 200);
         });
@@ -550,8 +547,27 @@ class ActiveMatchController extends Controller
                 'played_at' => $match->created_at,
             ]);
 
-            // Add rewards logic here
+            // Reward distribution is done here to ensure it happens even if the client fails to acknowledge the match end or if there are network issues.
             $this->distributeRewards($match, $winner_id);
+
+            // Instanciar o inyectar el servicio
+            $achievementService = app(AchievementService::class);
+
+            // Para el Jugador 1
+            $achievementService->checkMatchAchievements($match->player_1_id, [
+                'is_winner' => ($winner_id === $match->player_1_id),
+                'my_score' => $scores['p1'],
+                'opponent_score' => $scores['p2'],
+                'game_mode' => $match->game_mode,
+            ]);
+
+            // Para el Jugador 2
+            $achievementService->checkMatchAchievements($match->player_2_id, [
+                'is_winner' => ($winner_id === $match->player_2_id),
+                'my_score' => $scores['p2'],
+                'opponent_score' => $scores['p1'],
+                'game_mode' => $match->game_mode,
+            ]);
 
             $match->delete();
             Log::info("[Match] History recorded and active session cleared for {$match->match_uuid}");
@@ -570,6 +586,7 @@ class ActiveMatchController extends Controller
     {
         $config = MatchConfigProvider::getConfig($match->game_mode);
         $rewards = $config['rewards'] ?? null;
+        $achievementService = app(AchievementService::class);
 
         if (!$rewards)
             return;
@@ -619,6 +636,8 @@ class ActiveMatchController extends Controller
                 if ($stats->experience >= $xpRequired) {
                     $stats->experience -= $xpRequired;
                     $stats->level += 1;
+                    if ($stats->level >= 10)
+                        $achievementService->addProgress($user, 'LEVEL_10', 1);
                     Log::info("[Rewards] User {$playerId} leveled up to {$stats->level}!");
                 } else {
                     break;

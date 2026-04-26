@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CardSeeder::class,
             CardTranslationSeeder::class,
+            AchievementSeeder::class,
+            AchievementTranslationSeeder::class,
         ]);
 
         // Master Bot user creation
