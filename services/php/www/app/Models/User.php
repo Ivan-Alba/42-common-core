@@ -17,6 +17,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use App\Models\PlayerStat;
 use App\Models\Card;
 use App\Events\UserStatusChangedEvent;
+use App\Notifications\Auth\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -137,7 +138,15 @@ class User extends Authenticatable
         return $this->achievements()->wherePivotNotNull('unlocked_at');
     }
 
-    // MIRIAM
+    public function sendPasswordResetNotification($token)
+    {
+        app()->setLocale($this->language->value);
+
+        $notification = new ResetPasswordNotification($token)->language($this->language);
+
+        $this->notify($notification);
+    }
+
     protected static function booted()
     {
         static::updated(function ($user) {

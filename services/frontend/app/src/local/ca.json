@@ -28,6 +28,7 @@
     "email_invalid": "Adreça de correu electrònic no vàlida.",
     "email_registered": "El correu electrònic ja està registrat a la nostra base de dades.",
     "email_not_registered": "El correu electrònic no està registrat a la nostra base de dades.",
+    "email_not_registered_or_timeout": "El correu electrònic no està registrat a la nostra base de dades o s'ha intentat massa vegades.",
     "name_required": "El nom d'usuari és obligatori.",
     "name_short": "El nom d'usuari ha de tenir almenys 3 caràcters.",
     "name_long": "El nom d'usuari ha de tenir com a màxim 14 caràcters.",

@@ -90,11 +90,14 @@ const ResetPassword = () => {
                 email: formData.email.trim().toLowerCase() 
             });
             setIsEmailed(true);
+            setTimeout(() => {
+                navigate("/signin");
+            }, 4000);
         } catch (error) {
             console.error("Error pidiendo email:", error);
             // Si Laravel decide devolver 422 para emails no encontrados:
             if (axios.isAxiosError(error) && error.response?.status === 422) {
-                setErrors(prev => ({ ...prev, email: t("validation.email_not_registered") }));
+                setErrors(prev => ({ ...prev, email: t("validation.email_not_registered_or_timeout") }));
             } else {
                 setServerError(t("errors.unexpected"));
             }

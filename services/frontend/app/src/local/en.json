@@ -29,6 +29,7 @@
     "email_invalid": "Invalid email address.",
     "email_registered": "The email is already registered in our database.",
     "email_not_registered": "The email is not registered in our database.",
+    "email_not_registered_or_timeout": "The email is not registered in our database or you tried too many times.",
     "name_required": "Username is required.",
     "name_short": "Username must be at least 3 characters long.",
     "name_long": "Username must be at most 14 characters long.",

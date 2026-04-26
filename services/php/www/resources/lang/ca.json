@@ -1,0 +1,10 @@
+{
+    "Reset Password Notification": "Notificació de restabliment de contrasenya",
+    "You are receiving this email because we received a password reset request for your account.": "Has rebut aquest correu perquè has sol·licitat restablir la teva contrasenya.",
+    "Reset Password": "Restableix la contrasenya",
+    "This password reset link will expire in :count minutes.": "Aquest enllaç per restablir la contrasenya caducarà en :count minuts.",
+    "If you did not request a password reset, no further action is required.": "Si no has sol·licitat aquest canvi, no cal fer res més.",
+    "Whoops!": "Ups!",
+    "Hello!": "Hola!",
+    "Best regards,": "Salutacions,"
+}

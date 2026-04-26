@@ -28,6 +28,7 @@
     "email_invalid": "Dirección de correo electrónico no válida.",
     "email_registered": "El correo electrónico ya está registrado en nuestra base de datos.",
     "email_not_registered": "El correo electrónico no está registrado en nuestra base de datos.",
+    "email_not_registered_or_timeout": "El correo electrónico no está registrado en nuestra base de datos, o a excedido el número de intentos.",
     "name_required": "El nombre de usuario es obligatorio.",
     "name_short": "El nombre de usuario debe tener al menos 3 caracteres.",
     "name_long": "El nombre de usuario debe tener como máximo 14 caracteres.",
