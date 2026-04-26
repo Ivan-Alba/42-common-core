@@ -1,102 +1,91 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import echo from '../utils/echo'; // Pre-configured Echo instance
+import echo from '../utils/echo';
 import Echo from 'laravel-echo';
-import { useAuth } from './AuthContext'; // Hook to listen for auth state changes
+import { useAuth } from './AuthContext';
 
 const SocketContext = createContext<Echo<any> | null>(null);
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-	const { isAuthenticated, user } = useAuth();
-	const [isReady, setIsReady] = useState(false);
+    const { isAuthenticated, user } = useAuth();
+    const [isReady, setIsReady] = useState(false);
 
-	useEffect(() => {
-		// Retrieve tokens stored by authService.getUser() during login/checkSession
-		const token = sessionStorage.getItem('unity_auth_token');
-		const userId = sessionStorage.getItem('unity_user_id');
+    useEffect(() => {
+        const token = sessionStorage.getItem('unity_auth_token');
+        const userId = sessionStorage.getItem('unity_user_id');
 
-		// We only connect if the user is authenticated and we have the necessary Unity tokens
-		if (isAuthenticated && user && token && userId) {
+        // Referencia al motor de conexión para acortar el código
+        const connector = echo.connector.pusher;
 
-			// TOKEN REINFORCEMENT:
-			// Ensure the Echo instance uses the latest token from this session.
-			// This prevents authorization issues if the user just logged in without a page refresh.
-			echo.options.auth = {
-				...echo.options.auth,
-				headers: {
-					...(echo.options.auth?.headers || {}),
-					Authorization: `Bearer ${token}`
-				}
-			};
+        if (isAuthenticated && user && token && userId) {
+            echo.options.auth = {
+                ...echo.options.auth,
+                headers: {
+                    ...(echo.options.auth?.headers || {}),
+                    Authorization: `Bearer ${token}`
+                }
+            };
 
-			console.log(`[SocketContext] Echo ready for user: ${userId}`);
+            // Intentamos conectar solo si está desconectado
+            if (connector.connection.state === 'disconnected') {
+                echo.connector.connect();
+            }
 
-			// Manually trigger the connection if it was disconnected
-			echo.connector.connect();
+            const channel = echo.private(`user.${userId}`);
 
-			/* Implementation of the friend status listener:
-			 * 1. We subscribe to OUR own channel (because friends notify us there) */
-			const channel = echo.private(`user.${userId}`);
-
-			/* Listen for friend status changes (online/offline) */
-			channel.listen('.UserStatusChanged', (data: { userId: number, newStatus: string }) => {
-				console.log(`Reverb: El amigo ${data.userId} ha cambiado a ${data.newStatus}`);
-
-				/* Throw event to the entire React window */
-				window.dispatchEvent(new CustomEvent('friendStatusChanged', {
-					detail: { userId: data.userId, newStatus: data.newStatus }
-				}));
-			});
-
-			/* Listen for incoming friend requests */
-			channel.listen('.FriendRequestReceived', (_data: any) => {
-                console.log(`Reverb: ¡Petición de amistad recibida!`);
-                
-				/* Throw event to the entire React window to show red badge notification */
-                window.dispatchEvent(new CustomEvent('friendRequestReceived'));
-
-				window.dispatchEvent(new Event('updateFriendNotifications'));
+            channel.listen('.UserStatusChanged', (data: { userId: number, newStatus: string }) => {
+                window.dispatchEvent(new CustomEvent('friendStatusChanged', {
+                    detail: { userId: data.userId, newStatus: data.newStatus }
+                }));
             });
 
-			/* Listen for friend request accepted events */
-			channel.listen('.FriendRequestAccepted', (_data: any) => {
-                console.log(`Reverb: ¡Alguien aceptó tu petición de amistad!`);
-                
-				/* Throw event to the entire React window to show red badge notification */
+            channel.listen('.FriendRequestReceived', (_data: any) => {
+                window.dispatchEvent(new CustomEvent('friendRequestReceived'));
                 window.dispatchEvent(new Event('updateFriendNotifications'));
             });
 
-			setIsReady(true);
-		} else {
-			// If the user logs out, we should clean up the connection
-			if (isReady) {
-				console.log("[SocketContext] User logged out. Disconnecting Reverb...");
-				echo.disconnect();
-				setIsReady(false);
-			}
-		}
+            channel.listen('.FriendRequestAccepted', (_data: any) => {
+                window.dispatchEvent(new Event('updateFriendNotifications'));
+            });
 
+            setIsReady(true);
+        }
 
-		/* Cleanup: If the component unmounts, we leave the channel */
-		return () => {
-			if (userId) {
-				echo.leave(`user.${userId}`);
-			}
-		};
+        return () => {
+            const state = connector.connection.state;
+            
+            /* LA CLAVE: Solo intentamos dejar canales o desconectar si 
+               la conexión está totalmente ESTABLECIDA ('connected').
+               Si está en 'connecting', no la tocamos para evitar el error de "closed before established".
+            */
+            if (state === 'connected') {
+                if (userId) {
+                    echo.leave(`user.${userId}`);
+                }
 
-		// Dependency on isAuthenticated and user ensures this runs 
-		// immediately after the AuthContext updates its state.
-	}, [isAuthenticated, user]);
+                if (!isAuthenticated) {
+                    console.log("[SocketContext] Desconectando Echo de forma segura...");
+                    echo.disconnect();
+                    setIsReady(false);
+                }
+            } else if (state === 'connecting' && !isAuthenticated) {
+                // Si estamos conectando pero el usuario se ha ido (logout), 
+                // esperamos un pelín para desconectar o simplemente dejamos que el timeout limpie.
+                // Pero lo más seguro es no forzar el disconnect aquí para evitar el warning.
+                setTimeout(() => {
+                    if (connector.connection.state === 'connected' && !isAuthenticated) {
+                        echo.disconnect();
+                    }
+                }, 500);
+            }
+        };
 
-	return (
-		// Provide the echo instance only when the connection is established and ready
-		<SocketContext.Provider value={isReady ? echo : null}>
-			{children}
-		</SocketContext.Provider>
-	);
+    }, [isAuthenticated, user]);
+    
+    return (
+        <SocketContext.Provider value={isReady ? echo : null}>
+            {children}
+        </SocketContext.Provider>
+    );
 };
 
-/**
- * Custom hook to access the global Echo instance.
- * Returns null if the socket is not connected or the user is not authenticated.
- */
 export const useSocket = () => useContext(SocketContext);
