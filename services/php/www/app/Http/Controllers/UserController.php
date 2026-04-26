@@ -176,8 +176,7 @@ class UserController
 
         $request->validate([
             'username' => ['nullable', 'string', 'max:255',
-                Rule::unique(User::class, 'name'),
-            ],
+                Rule::unique(User::class, 'name')->ignore($user->id),            ],
             'email' => [
                 'nullable',
                 'string',
