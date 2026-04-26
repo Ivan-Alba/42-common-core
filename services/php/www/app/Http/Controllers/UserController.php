@@ -175,7 +175,9 @@ class UserController
         $user = auth()->user();
 
         $request->validate([
-            'username' => ['nullable', 'string', 'max:255'],
+            'username' => ['nullable', 'string', 'max:255',
+                Rule::unique(User::class, 'name'),
+            ],
             'email' => [
                 'nullable',
                 'string',

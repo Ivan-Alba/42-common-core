@@ -1,34 +1,3 @@
-// /* MatchHistory imported to UserProfile to include match history */
-// import type { MatchHistory } from "./Match";
-
-// /* Definition of User-related interfaces */
-
-// export interface UserStats {
-// 	level?: number;
-//     experience?: number;
-//     gamesPlayed?: number;
-//     wins?: number;
-//     losses?: number;
-// 	draws?: number;
-//     winRate?: number;
-// 	achievement_points?: number;
-// 	campaign?: number;
-//     ranked_points?: number;
-//     last_rank_pos?: number | null;
-// }
-
-// export interface UserProfile {
-// 	id: number;
-// 	username: string;
-// 	email?: string;
-// 	avatar?: string;
-// 	status?: 'online' | 'offline' | 'playing' | 'away';
-// 	stats: UserStats;
-// 	bio?: string;
-//     language?: 'en' | 'es' | 'ca';
-// 	match_history?: MatchHistory[];
-// 	friendship_status?: 'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected';
-// }
 
 /* MatchHistory imported to UserProfile to include match history */
 import type { MatchHistory } from "./Match";

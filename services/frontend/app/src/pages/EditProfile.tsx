@@ -48,7 +48,7 @@ const getPreviewUrl = (avatarPath?: string) => {
         return avatarPath;
 
     const cleanPath = avatarPath.startsWith('/') ? avatarPath : `/${avatarPath}`;
-    
+
     return cleanPath.includes('/storage/') ? cleanPath : `/storage${cleanPath}`;
 };
 
@@ -66,6 +66,7 @@ const EditProfile = () => {
     const [formData, setFormData] = useState<ProfileFormState | null>(null);
 
     const [profileError, setProfileError] = useState<string | null>(null);
+    const [usernameError, setUsernameError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [avatarError, setAvatarError] = useState<string | null>(null);
 
@@ -93,7 +94,7 @@ const EditProfile = () => {
             navigate('/signin');
             return;
         }
-        
+
         const fetchUserData = async () => {
             setIsLoading(true);
             try {
@@ -103,7 +104,7 @@ const EditProfile = () => {
                 setFormData({
                     username: userData.username || "",
                     email: userData.email || "",
-                    avatar: getPreviewUrl(userData.avatar) || "", 
+                    avatar: getPreviewUrl(userData.avatar) || "",
                     bio: userData.bio || "",
                     language: dbLang,
                     newPassword: "",
@@ -127,6 +128,7 @@ const EditProfile = () => {
         const { name, value } = e.target;
         if (name === 'language') return;
         setFormData(prev => prev ? { ...prev, [name]: value } : null);
+        if (name === 'username') setUsernameError(null);
         if (name === 'newPassword' || name === 'confirmPassword') setPasswordError(null);
     };
 
@@ -155,7 +157,7 @@ const EditProfile = () => {
         }
     };
 
-    const onCropComplete = useCallback ((croppedArea: any, croppedAreaPixels: any) => {
+    const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
 
@@ -182,7 +184,7 @@ const EditProfile = () => {
     const handleSelectPreset = async (presetUrl: string) => {
         setAvatarError(null);
         setProfileError(null);
-        
+
         setFormData(prev => prev ? { ...prev, avatar: presetUrl } : null);
 
         try {
@@ -238,7 +240,7 @@ const EditProfile = () => {
         } catch (error: any) {
             console.error("Error:", error.response?.data);
             const errorMessage = error.response?.data?.message || "Error";
-            setProfileError(errorMessage); 
+            setProfileError(errorMessage);
         } finally {
             setIsSaving(false);
         }
@@ -256,17 +258,27 @@ const EditProfile = () => {
             profileFormData.append('avatar', formData.avatarFile, formData.avatarFile.name || 'avatar.png');
         }
 
-        const response = await userService.updateProfile(profileFormData);
+        try {
+            const response = await userService.updateProfile(profileFormData);
 
-        if (formData.newPassword) await userService.updatePassword(formData.newPassword);
+            if (formData.newPassword) await userService.updatePassword(formData.newPassword);
 
-        i18n.changeLanguage(formData.language || 'en');
+            i18n.changeLanguage(formData.language || 'en');
 
-        authSetUser(response);
+            authSetUser(response);
 
+            setShowSuccessModal(false);
+            navigate('/profile');
+        } catch (error: any) {
+            if (error.response.status === 422) {
+                const serverErrors = error.response.data.errors;
+                if (serverErrors.username) {
+                    setUsernameError(t("validation.name_taken") || "Username already taken");
+                    setShowSuccessModal(false);
 
-        setShowSuccessModal(false);
-        navigate('/profile');
+                }
+            }
+        }
     };
 
     const handleCancelClose = () => {
@@ -282,9 +294,9 @@ const EditProfile = () => {
     };
 
     if (isLoading)
-		return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
+        return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
     if (!formData)
-		return null;
+        return null;
 
     return (
         <DashboardLayout isCentered={false}>
@@ -355,7 +367,12 @@ const EditProfile = () => {
                         <div className="grid gap-6 pt-4 border-t border-white/5">
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><MdEdit className="text-brand-500" size={iconSize} /> {t('common.name')}</label>
-                                <input type="text" name="username" value={formData.username} onChange={handleInputChange} className="input-nexus w-full" placeholder={t('common.name')} />
+                                <input type="text" name="username" value={formData.username} onChange={handleInputChange} className="input-nexus w-full" placeholder={t('common.name')} error={usernameError} />
+                                {usernameError && (
+                                    <p className="text-danger text-xs mt-1 ml-1 flex items-center gap-1 animate-fade-in">
+                                        <FaExclamationCircle size={12} /> {usernameError}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -467,10 +484,10 @@ const EditProfile = () => {
                                     ✕
                                 </button>
                             </div>
-                            
+
                             <div className="relative flex-1 w-full bg-black">
                                 {/* @ts-ignore: to avoid error in Cropper component */}
-                                <Cropper 
+                                <Cropper
                                     image={imageToCrop}
                                     crop={crop}
                                     zoom={zoom}
@@ -486,29 +503,29 @@ const EditProfile = () => {
                             <div className="p-4 bg-dark-800 border-t border-white/10 space-y-4">
                                 <div className="flex items-center gap-4">
                                     <span className="text-slate-400 text-sm">Zoom</span>
-                                    <input 
-                                        type="range" 
-                                        value={zoom} 
-                                        min={1} 
-                                        max={3} 
+                                    <input
+                                        type="range"
+                                        value={zoom}
+                                        min={1}
+                                        max={3}
                                         step={0.1}
                                         aria-labelledby="Zoom"
-                                        onChange={(e) => setZoom(Number(e.target.value))} 
+                                        onChange={(e) => setZoom(Number(e.target.value))}
                                         className="w-full accent-brand-500"
                                     />
                                 </div>
-                                
+
                                 <div className="flex justify-end gap-3 pt-2">
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setShowCropModal(false)} 
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCropModal(false)}
                                         className="btn-secondary px-6 py-2 rounded-xl text-sm font-bold"
                                     >
                                         {t('common.decline')}
                                     </button>
-                                    <button 
-                                        type="button" 
-                                        onClick={handleCropSave} 
+                                    <button
+                                        type="button"
+                                        onClick={handleCropSave}
                                         className="btn-primary px-6 py-2 rounded-xl text-sm font-bold"
                                     >
                                         {t('common.accept')}

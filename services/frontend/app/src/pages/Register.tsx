@@ -84,8 +84,8 @@ const Register = () => {
                     if (serverErrors.email) {
                         setErrors(prev => ({ ...prev, email: t("validation.email_registered") }));
                     }
-                    if (serverErrors.name) {
-                        setErrors(prev => ({ ...prev, name: t("validation.name_taken") }));
+                    if (serverErrors.username) {
+                        setErrors(prev => ({ ...prev, username: t("validation.name_taken") }));
                     }
                 } else {
                     console.log("Error", error);
