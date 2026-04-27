@@ -12,7 +12,7 @@ services:
       - ${PWD}/private:/etc/ssl/private
       #- ${PWD}/services/php/www:/var/www/
       - ${PWD}/services/php/www/public:/var/www/public
-      - php_vm:/var/www/storage/app/public
+      - php_vm:/var/www/storage
     networks:
       - transcendence
     healthcheck:
