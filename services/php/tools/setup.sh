@@ -32,14 +32,13 @@ if [ "$RUN_SETUP" = "true" ]; then
     rm -rf /var/www/public/storage 2>/dev/null
 
     # Intentamos crear el link mediante Artisan (el método oficial)
-    #php artisan storage:link --force
+    php artisan storage:link --force
 
     # Red de seguridad: Si por un conflicto de volumen Artisan no pudo crear el link, 
     # lo creamos manualmente usando el comando nativo de Linux 'ln -s'.
     if [ ! -L /var/www/public/storage ]; then
         echo "Artisan link failed, creating manual symbolic link..."
         ln -s /var/www/storage/app/public /var/www/public/storage
-        ln -s /var/www/storage /var/www/storage/app/public
     fi
 
     # Ejecutar migraciones
