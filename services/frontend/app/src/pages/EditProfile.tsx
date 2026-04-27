@@ -8,7 +8,7 @@ import DashboardLayout from '../components/layouts/DashboardLayout';
 import LoadingState from '../components/ui/LoadingState';
 import ConfirmModal from '../components/ConfirmModal';
 import type { UserProfile } from '../models/User';
-import { validatePassword } from '../utils/validators';
+import { validatePassword, validateName } from '../utils/validators';
 import userService from '../services/userService';
 import { useAuth } from '../context/AuthContext';
 import Cropper from 'react-easy-crop';
@@ -66,7 +66,7 @@ const EditProfile = () => {
     const [formData, setFormData] = useState<ProfileFormState | null>(null);
 
     const [profileError, setProfileError] = useState<string | null>(null);
-    const [usernameError, setUsernameError] = useState<string | null>(null);
+    const [nameError, setNameError] = useState<string | null>(null);
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [avatarError, setAvatarError] = useState<string | null>(null);
 
@@ -128,7 +128,7 @@ const EditProfile = () => {
         const { name, value } = e.target;
         if (name === 'language') return;
         setFormData(prev => prev ? { ...prev, [name]: value } : null);
-        if (name === 'username') setUsernameError(null);
+        if (name === 'username') setNameError(null);
         if (name === 'newPassword' || name === 'confirmPassword') setPasswordError(null);
     };
 
@@ -204,6 +204,13 @@ const EditProfile = () => {
         e.preventDefault();
         if (!formData) return;
 
+        const validationError = validateName(formData.username, t);
+        if (validationError) {
+            setNameError(validationError);
+            return;
+        }
+
+
         if (formData.newPassword) {
             const validationError = validatePassword(formData.newPassword, t);
             if (validationError) {
@@ -273,7 +280,7 @@ const EditProfile = () => {
             if (error.response.status === 422) {
                 const serverErrors = error.response.data.errors;
                 if (serverErrors.username) {
-                    setUsernameError(t("validation.name_taken") || "Username already taken");
+                    setNameError(t("validation.name_taken") || "Username already taken");
                     setShowSuccessModal(false);
 
                 }
@@ -367,10 +374,10 @@ const EditProfile = () => {
                         <div className="grid gap-6 pt-4 border-t border-white/5">
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-slate-300 ml-1 flex items-center gap-2"><MdEdit className="text-brand-500" size={iconSize} /> {t('common.name')}</label>
-                                <input type="text" name="username" value={formData.username} onChange={handleInputChange} className="input-nexus w-full" placeholder={t('common.name')} error={usernameError} />
-                                {usernameError && (
+                                <input type="text" name="username" value={formData.username} onChange={handleInputChange} className="input-nexus w-full" placeholder={t('common.name')} error={nameError} />
+                                {nameError && (
                                     <p className="text-danger text-xs mt-1 ml-1 flex items-center gap-1 animate-fade-in">
-                                        <FaExclamationCircle size={12} /> {usernameError}
+                                        <FaExclamationCircle size={12} /> {nameError}
                                     </p>
                                 )}
                             </div>

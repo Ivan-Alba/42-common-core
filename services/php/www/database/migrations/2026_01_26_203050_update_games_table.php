@@ -17,6 +17,7 @@ return new class extends Migration
                 'CAMPAIGN_1',
                 'CAMPAIGN_2',
                 'CAMPAIGN_3',
+                'CAMPAIGN_4',
                 'PVE',
                 'PVP_CASUAL_LIMITED',
                 'PVP_CASUAL_UNLIMITED',

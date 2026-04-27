@@ -616,6 +616,8 @@ class ActiveMatchController extends Controller
                 $xpGain = $rewards['win_xp'];
                 $rankedGain = $rewards['win_ranked_points'];
                 $stats->increment('wins');
+
+                $this->handleCampaignProgression($match->game_mode->value, $stats);
             } else {
                 $xpGain = $rewards['loss_xp'];
                 $rankedGain = $rewards['loss_ranked_points'];
@@ -647,6 +649,21 @@ class ActiveMatchController extends Controller
             $stats->save();
 
             Log::info("[Rewards] Processed for User {$playerId}: +{$xpGain}XP, +{$rankedGain} Rank.");
+        }
+    }
+
+    /**
+     * Helper to handle campaign level increment.
+     */
+    private function handleCampaignProgression(string $gameMode, $stats): void
+    {
+        if (str_starts_with($gameMode, 'CAMPAIGN_')) {
+            $completedLevel = (int) str_replace('CAMPAIGN_', '', $gameMode);
+
+            if ($stats->campaign === $completedLevel) {
+                $stats->campaign = $completedLevel + 1;
+                Log::info("[Campaign] User stats updated. Campaign level is now: {$stats->campaign}");
+            }
         }
     }
 

@@ -34,10 +34,12 @@ class MatchInitialResource extends JsonResource
             GameMode::CAMPAIGN_1,
             GameMode::CAMPAIGN_2,
             GameMode::CAMPAIGN_3,
+            GameMode::CAMPAIGN_4,
             GameMode::PVE
         ]);
 
         $config = MatchConfigProvider::getConfig($this->game_mode);
+        $config['game_mode'] = $this->game_mode;
         $config['first_player_id'] = (int) $this->first_player_id;
 
         return [

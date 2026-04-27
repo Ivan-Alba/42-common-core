@@ -113,6 +113,7 @@ class MatchmakingService
             GameMode::CAMPAIGN_1,
             GameMode::CAMPAIGN_2,
             GameMode::CAMPAIGN_3,
+            GameMode::CAMPAIGN_4,
             GameMode::PVE
         ]);
     }
