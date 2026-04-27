@@ -1,6 +1,24 @@
 #!/bin/sh
 
-# 1. Instalar dependencias
+# Make export of secrets
+SECRET_FILE="/run/secrets/db_password"
+
+echo "Checking database credentials..."
+
+if [ -f "$SECRET_FILE" ]; then
+    export DB_PASSWORD=$(cat "$SECRET_FILE" | tr -d '\r\n')
+    echo "Database password loaded from secrets."
+else
+    # Si no existe el archivo y tampoco hay una variable previa (fail-fast)
+    if [ -z "$DB_PASSWORD" ]; then
+        echo "FATAL ERROR: No database password found!"
+        echo "The secret file '$SECRET_FILE' is missing and DB_PASSWORD is not set."
+        exit 1
+    fi
+    echo "Warning: Secret file not found, using environment variable."
+fi
+
+# Instalar dependencias
 # (Solo si no están ya en el volumen, para acelerar el arranque)
 composer install --no-interaction --no-scripts
 
@@ -37,6 +55,6 @@ chown -R www-data:www-data /var/www/bootstrap/cache /var/www/public
 # Aplicamos permisos de lectura/escritura/ejecución (775)
 chmod -R 775 /var/www/bootstrap/cache
 
-# 5. Ejecutar el comando principal (php-fpm o el definido en el Dockerfile)
+# Ejecutar el comando principal (php-fpm o el definido en el Dockerfile)
 echo "Laravel setup completed. Starting application..."
 exec "$@"
