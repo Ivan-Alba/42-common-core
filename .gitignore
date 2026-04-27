@@ -2,10 +2,15 @@
 /private/*
 /certs/*
 /secrets/*
-/node_modules/
+/php_storage/logs/*
+/php_storage/views/*
+/php_storage/cache/*
+/php_storage/sessions/*
+
+
 
 # Laravel public storage
-/public/storage
+/services/php/www/public/storage
 
 # Local environment
 .env

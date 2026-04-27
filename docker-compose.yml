@@ -10,7 +10,9 @@ services:
       - ${PWD}/services/nginx/conf:/etc/nginx/conf.d 
       - ${PWD}/certs:/etc/ssl/certs
       - ${PWD}/private:/etc/ssl/private
-      - ${PWD}/services/php/www:/var/www
+      #- ${PWD}/services/php/www:/var/www/
+      - ${PWD}/services/php/www/public:/var/www/public
+      - php_vm:/var/www/storage
     networks:
       - transcendence
     healthcheck:
@@ -60,10 +62,13 @@ services:
     build: ./services/php
     image: php
     container_name: laravel
+    environment:
+      - RUN_SETUP=true
     volumes:
       - .env:/var/www/.env
       - ${PWD}/services/php/www:/var/www
       - php_vendor_vm:/var/www/vendor # To keep the container internal modules
+      - php_vm:/var/www/storage
       - ${PWD}/services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
     - transcendence
@@ -84,12 +89,15 @@ services:
     build: ./services/php
     image: php
     container_name: laravel_scheduler
+    environment:
+      - RUN_SETUP=false
     # 'schedule:work' is the command that runs the scheduler every minute automatically
     command: php artisan schedule:work
     volumes:
       - .env:/var/www/.env
       - ${PWD}/services/php/www:/var/www
       - php_vendor_vm:/var/www/vendor
+      - php_vm:/var/www/storage
       - ${PWD}/services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - transcendence
@@ -128,11 +136,14 @@ services:
     build: ./services/php
     image: php
     container_name: reverb
+    environment:
+      - RUN_SETUP=false
     command: php artisan reverb:start --host=0.0.0.0 --port=6001 --debug
     volumes:
       - .env:/var/www/.env
       - ${PWD}/services/php/www:/var/www
       - php_vendor_vm:/var/www/vendor # To keep the container internal modules
+      - php_vm:/var/www/storage
     networks:
     - transcendence
     healthcheck:
@@ -150,11 +161,14 @@ services:
     build: ./services/php
     image: php  
     container_name: laravel_worker
+    environment:
+      - RUN_SETUP=false
     command: php artisan queue:work --verbose --tries=3 --timeout=90
     volumes:
       - .env:/var/www/.env
       - ${PWD}/services/php/www:/var/www
       - php_vendor_vm:/var/www/vendor # To keep the container internal modules
+      - php_vm:/var/www/storage
       - ${PWD}/services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - transcendence
@@ -225,10 +239,17 @@ volumes:
   
   # We use Bind Mount Volumes when targeting databases to keep container permissions,
   # user owner and group owner of the files
+  php_vm:
+    driver: local
+    driver_opts:
+      device: "${PWD}/php_storage"
+      o: bind
+      type: none
+
   redis_vm:
     driver: local
     driver_opts:
-      device: "${PWD}/services/redis/data"
+      device: "${PWD}/redis_data"
       o: bind
       type: none
   
