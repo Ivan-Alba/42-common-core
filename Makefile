@@ -25,20 +25,7 @@ clean: down
 		/tmp/php_storage/framework/cache/* \
 		/tmp/php_storage/framework/sessions/*\
 		/tmp/services/php/www/public/storage
-
-	@if [ ! -z "$$(docker ps -qa)" ]; then \
-		docker stop $$(docker ps -qa); \
-		docker rm $$(docker ps -qa); \
-	fi
-	@if [ ! -z "$$(docker images -qa)" ]; then \
-		docker rmi $$(docker images -qa); \
-	fi
-	@if [ ! -z "$$(docker volume ls -q)" ]; then \
-		docker volume rm $$(docker volume ls -q); \
-	fi
-	@if [ ! -z "$$(docker network ls | grep transcendence)" ]; then \
-		docker network rm transcendence; \
-	fi
+	docker compose down --rmi all --volumes
 re: clean build
 
 .PHONY: all build up down clean fclean re
