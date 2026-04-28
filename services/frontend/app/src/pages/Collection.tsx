@@ -50,6 +50,10 @@ const Collection = () => {
 						description: card.description || '',
 						category: card.category,
 						rarity: mappedRarity as CardData['rarity'],
+						blue_url: card.blue_url || '',
+						red_url: card.red_url || '',
+						blue_artwork: card.blue_artwork || '',
+                        red_artwork: card.red_artwork || '',
 						stats: {
 							top: card.stats?.top === 10 ? 'A' : card.stats?.top,
 							right: card.stats?.right === 10 ? 'A' : card.stats?.right,
