@@ -36,18 +36,20 @@ class NetworkController extends Controller
                 'success' => true,
                 'message' => 'Match already concluded or not found.',
                 'data' => [
-                    'rival_disconnected' => false
+                    'rival_disconnected' => false,
+                    'own_disconnection' => true
                 ]
             ]);
         }
 
         // Configuration thresholds
-        $timeoutThreshold = 16.0; // Standard margin for active players
-        $loadingThreshold = 40.0; // Grace period for the first ping after creation
+        $timeoutThreshold = 16.0;
+        $loadingThreshold = 40.0;
+        $maxInactivityThreshold = 30.0;
+        $staleMatchThreshold = 10.0; // Margin after next_timeout_at before considering the match "dead"
 
-        return DB::transaction(function () use ($match, $user, $request, $serverTime, $timeoutThreshold, $loadingThreshold) {
+        return DB::transaction(function () use ($match, $user, $request, $serverTime, $timeoutThreshold, $loadingThreshold, $maxInactivityThreshold, $staleMatchThreshold) {
 
-            // 1. Lock the match row to prevent race conditions
             $match->lockForUpdate();
 
             $isP1 = (int) $user->id === (int) $match->player_1_id;
@@ -57,7 +59,36 @@ class NetworkController extends Controller
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
 
-            // 2. Update the sender's last ping timestamp (Always, even in PvE)
+            // --- SECURITY BARRIER: OWN DISCONNECTION & STALE MATCH CHECK ---
+            $ownLastPing = $isP1 ? $match->last_ping_p1 : $match->last_ping_p2;
+            $isAlreadyMarkedDisconnected = $isP1 ? $match->p1_disconnected : $match->p2_disconnected;
+
+            // Check if the match timer is stale (next_timeout_at + 10s has passed without updates)
+            $isMatchStale = false;
+            if ($match->next_timeout_at && ($serverTime > ($match->next_timeout_at + $staleMatchThreshold))) {
+                $isMatchStale = true;
+            }
+
+            // Conditions to kick the player
+            if ($isAlreadyMarkedDisconnected || $isMatchStale || ($ownLastPing !== null && ($serverTime - $ownLastPing) > $maxInactivityThreshold)) {
+
+                // Determine the reason for logging and frontend handling
+                $reason = 'inactivity_timeout';
+                if ($isAlreadyMarkedDisconnected)
+                    $reason = 'marked_by_server';
+                if ($isMatchStale)
+                    $reason = 'stale_game_state';
+
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'own_disconnection' => true,
+                        'reason' => $reason
+                    ]
+                ]);
+            }
+
+            // 2. Update the sender's last ping timestamp
             if ($isP1) {
                 $match->last_ping_p1 = $serverTime;
             } else {
@@ -69,22 +100,19 @@ class NetworkController extends Controller
             $rival = User::find($rivalId);
             $isRivalBot = $rival && $rival->is_bot;
 
-            // 4. Cross-check Connectivity (ONLY if the rival is NOT a Bot)
+            // 4. Cross-check Connectivity
             $rivalAlreadyDisconnected = $isP1 ? $match->p2_disconnected : $match->p1_disconnected;
 
             if (!$isRivalBot && !$rivalAlreadyDisconnected) {
                 $rivalLastPing = $isP1 ? $match->last_ping_p2 : $match->last_ping_p1;
 
                 if ($rivalLastPing !== null) {
-                    // CASE A: PvP Rival was active but stopped sending pings
                     if (($serverTime - $rivalLastPing) > $timeoutThreshold) {
                         $this->markRivalAsDisconnected($match, $isP1);
                         Log::info("Match {$match->match_uuid}: Human Rival timed out.");
                     }
                 } else {
-                    // CASE B: PvP Rival never sent a ping (Loading timeout)
                     $matchStartTime = (float) $match->created_at->getTimestamp();
-
                     if (($serverTime - $matchStartTime) > $loadingThreshold) {
                         $this->markRivalAsDisconnected($match, $isP1);
                         Log::warning("Match {$match->match_uuid}: Human Rival failed to load.");
@@ -94,7 +122,7 @@ class NetworkController extends Controller
 
             $match->save();
 
-            // 5. Broadcast the pong event (RTT sync via WebSockets)
+            // 5. Broadcast the pong event
             broadcast(new PongEvent(
                 $user->id,
                 (float) $request->client_timestamp,
@@ -102,11 +130,11 @@ class NetworkController extends Controller
             ));
 
             // 6. Final Response
-            // Note: rival_disconnected will always be false for bots
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'rival_disconnected' => $isP1 ? (bool) $match->p2_disconnected : (bool) $match->p1_disconnected
+                    'rival_disconnected' => $isP1 ? (bool) $match->p2_disconnected : (bool) $match->p1_disconnected,
+                    'own_disconnection' => false
                 ]
             ]);
         });
