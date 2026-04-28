@@ -83,8 +83,8 @@ const Lobby = () => {
                 // regardless of isMounted if we want the user to be redirected out of the lobby.
                 // However, since navigate only works if the component is in the tree, 
                 // we check isMounted but we handle the error priority.
-                if (error.response?.status === 403) {
-                    console.warn("[Lobby] Access forbidden: User is likely penalized.");
+                if (error.response?.status === 403 || error.response?.status === 409) {
+                    console.warn("[Lobby] Access forbidden: ", error.response.data.error);
                     navigate('/index');
                     return;
                 }

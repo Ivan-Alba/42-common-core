@@ -47,6 +47,17 @@ class MatchmakingController extends Controller
                 ], 403);
             }
 
+            $alreadyInMatch = ActiveMatch::where('player_1_id', $user->id)
+                ->orWhere('player_2_id', $user->id)
+                ->exists();
+
+            if ($alreadyInMatch) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'You are already in an active match.'
+                ], 409);
+            }
+
             $match = $this->matchmaking->findOrCreateMatch($user, $mode);
 
             //$user->update(['status' => UserStatus::QUEUEING]);

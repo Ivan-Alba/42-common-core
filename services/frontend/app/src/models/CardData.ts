@@ -6,8 +6,10 @@ export interface CardData {
 	description: string;
 	category: string;
 	rarity: CardRarity;
-	front_image?: string;
-	back_image?: string;
+	blue_artwork?: string;
+    red_artwork?: string;
+	blue_url?: string;
+	red_url?: string;
 	stats: {
 		top: number | 'A';
 		right: number | 'A';
