@@ -22,25 +22,7 @@ class DatabaseSeeder extends Seeder
             CardTranslationSeeder::class,
             AchievementSeeder::class,
             AchievementTranslationSeeder::class,
-        ]);
-
-        // Master Bot user creation
-        $avatarName = 'botAvatar.png';
-        $relativeDestPath = 'media/avatars/' . $avatarName;
-
-        Storage::disk('public')->makeDirectory('media/avatars');
-
-        $sourcePath = database_path('seeders/assets/' . $avatarName);
-
-        if (File::exists($sourcePath)) {
-            Storage::disk('public')->put($relativeDestPath, File::get($sourcePath));
-        }
-
-        User::factory()->create([
-            'name' => 'Master Bot',
-            'email' => 'master@example.com',
-            'avatar' => $relativeDestPath,
-            'is_bot' => true,
+            UserSeeder::class,
         ]);
     }
 }

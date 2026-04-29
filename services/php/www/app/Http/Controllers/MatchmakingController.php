@@ -47,8 +47,11 @@ class MatchmakingController extends Controller
                 ], 403);
             }
 
-            $alreadyInMatch = ActiveMatch::where('player_1_id', $user->id)
-                ->orWhere('player_2_id', $user->id)
+            $alreadyInMatch = ActiveMatch::where(function ($query) use ($user) {
+                $query->where('player_1_id', $user->id)
+                    ->orWhere('player_2_id', $user->id);
+                })
+                ->where('status', '!=', MatchStatus::FINISHED->value)
                 ->exists();
 
             if ($alreadyInMatch) {

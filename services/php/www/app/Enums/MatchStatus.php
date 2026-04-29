@@ -8,6 +8,5 @@ enum MatchStatus: string
     case LOADING = 'loading';     // Both accepted, waiting for Unity handshake
     case SELECTING = 'selecting'; // Picking cards
     case PLAYING = 'playing';     // Duel in progress
-
-    CASE FINISHED = 'finished';    // Match ended, showing results
+    case FINISHED = 'finished';    // Match ended, showing results
 }

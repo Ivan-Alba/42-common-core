@@ -569,7 +569,12 @@ class ActiveMatchController extends Controller
                 'game_mode' => $match->game_mode,
             ]);
 
-            $match->delete();
+            //$match->delete();
+
+            $match->update([
+            'status' => MatchStatus::FINISHED->value,
+            ]);
+
             Log::info("[Match] History recorded and active session cleared for {$match->match_uuid}");
         });
     }
