@@ -28,4 +28,4 @@ clean: down
 	docker compose down --rmi all --volumes
 re: clean build
 
-.PHONY: all build up down clean fclean re
+.PHONY: all build up down clean re
