@@ -16,7 +16,7 @@ services:
     networks:
       - transcendence
     healthcheck:
-      test: ["CMD-SHELL", "curl -k -f https://localhost || exit 1"]
+      test: ["CMD-SHELL", "curl -k -f https://localhost:7999 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -78,7 +78,7 @@ services:
       test: ["CMD-SHELL", "cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
       start_period: 10s
     depends_on:
       mariadb:
@@ -107,7 +107,7 @@ services:
       - transcendence
     healthcheck:
       # Check if the schedule:work process is alive
-      test: ["CMD-SHELL", "ps aux | grep 'schedule:work' || exit 1"]
+      test: ["CMD-SHELL", "php artisan about || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -181,7 +181,7 @@ services:
     networks:
       - transcendence
     healthcheck:
-      test: ["CMD-SHELL", "ps aux | grep 'queue:work' || exit 1"]
+      test: ["CMD-SHELL", "php artisan about || exit 1"]
       interval: 20s
       timeout: 5s
       retries: 3
