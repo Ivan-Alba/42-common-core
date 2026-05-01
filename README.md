@@ -11,6 +11,7 @@ The goal of this project is to develop a secure and performant web platform for 
 ### Overview:
 
 NexusNine is a centralized gaming hub where users can engage in competitive matches and monitor their development through a dedicated statistics system. The platform facilitates social interaction by allowing users to manage a friend list and track the status of their peers, focusing on the competitive bond between players.
+
 Progression is a core element of the experience, driven by an achievement system and a global ranking ladder that rewards skill and consistency. The application is designed to provide a fluid transition from user authentication to live gameplay, ensuring that matchmaking and performance metrics are always at the forefront of the user experience.
 
 ### Key Features:
@@ -44,7 +45,41 @@ Progression is a core element of the experience, driven by an achievement system
 
 [Documentación, artículos, tutoriales, etc.]
 
-#### DevOps:
+#### Unity
+
+#### Frontend
+
+- [React](https://react.dev/learn)  
+- [Node.js](https://nodejs.org/en/docs)
+- [npm](https://docs.npmjs.com/)  
+- [TypeScript](https://www.typescriptlang.org/docs/)  
+- [Vite (frontend usage)](https://vitejs.dev/guide/)  
+- [React Router](https://reactrouter.com/en/main)  
+- [Axios (HTTP client)](https://axios-http.com/docs/intro)  
+- [Tailwind CSS](https://tailwindcss.com/docs)  
+
+---
+
+#### Backend
+
+- [Laravel](https://laravel.com/docs)  
+- [PHP](https://www.php.net/docs.php)  
+- [Brevo (formerly Sendinblue)](https://developers.brevo.com/docs)  
+- [Redis](https://redis.io/docs/)  
+- [Vite (Laravel integration)](https://laravel.com/docs/vite)  
+- [MariaDB](https://mariadb.com/docs/)  
+- [Reverb (Laravel WebSockets)](https://laravel.com/docs/reverb)  
+- [Adminer](https://www.adminer.org/en/)  
+- [Composer (PHP package manager)](https://getcomposer.org/doc/)  
+- [Laravel Eloquent ORM](https://laravel.com/docs/eloquent)  
+- [Laravel Queues](https://laravel.com/docs/queues)  
+- [Laravel Events & Broadcasting](https://laravel.com/docs/broadcasting)  
+- [Laravel Validation](https://laravel.com/docs/validation)  
+- [Laravel Authentication (Sanctum)](https://laravel.com/docs/sanctum)  
+- [REST API design](https://restfulapi.net/)  
+- [PHPUnit (testing)](https://phpunit.de/documentation.html)  
+
+#### DevOps
 
 - https://docs.docker.com/get-started/docker-overview/
 - https://docs.docker.com/compose/gettingstarted/
@@ -53,8 +88,16 @@ Progression is a core element of the experience, driven by an achievement system
 - https://docs.unity3d.com/2022.3/Documentation/Manual/web-server-config-nginx.html
 
 ### AI Usage: 
-[Descripción de cómo se usó la IA, especificando tareas y partes del proyecto]
 
+Artificial intelligence has been used through the whole project in different manners. 
+
+- Code generation assistance through autocomplete and code snippet generation.
+- Assistance on the architectural design of the backend.
+- Search engine to find resources on internet.
+- Assistance by answering questions, helping the developers understand the tools integrated into the project.
+- Quality assurance. (QA)
+- Debugging assistance. 
+  
 #### DevOps:
 Research and Understand: Explore various containerization patterns and networking configurations within Docker.
 Comparative Analysis: Evaluate the advantages and disadvantages of different deployment strategies to determine the most stable and scalable approach for our microservices.
@@ -69,7 +112,7 @@ Troubleshooting: Assist in diagnosing complex networking issues between the Unit
 | mirifern | Frontend Developer / Graphic Designer    | ___                                                                              |
 | daortega | DevOps Engineer / System Architect       | Designed and implemented the project’s infrastructure using Docker and Docker Compose, ensuring a containerized and reproducible environment for all services. |
 | igarcia2 | ___                                      | ____                                                                             |
-| kseligma | Backend Developer                        | Designed and implemented the project                                             |
+| kseligma | Backend Developer                        | Designed and implemented the project's backend; Laravel, API, database, Redis, Mailing, authentication, etc. |
 
 ## Project Management
 
@@ -84,12 +127,23 @@ Discord, Slack, Whatsapp
 
 ## Technical Stack
 - **Frontend**: [Tecnologías y frameworks]
-- **Backend**: [Tecnologías y frameworks]
+- **Backend**: Laravel, Reverb, Redis, Blade, Brevo, Laravel ecosystem dependences (Sanctum, Fortify, Phpunit) 
 - **Database**: We chose MariaDB as our primary database system due to the team's high level of familiarity and prior experience with its ecosystem.
 - **Other**: [Otras librerías o tecnologías significativas]
 
 ### Major Technical Choices Justification: 
 [Justificación de las decisiones técnicas principales]
+
+#### Frontend
+
+#### Backend
+
+- Laravel is a PHP framework with a big community and a rich ecosystem that offers solutions to many of the problems an application like ours have.
+- Reverb is a Laravel-adjacent websocket server, which is fundamental for multiplayer features facilitating live interaction between browser users.
+
+#### Database
+
+#### Other
 
 ## Database Schema
 
