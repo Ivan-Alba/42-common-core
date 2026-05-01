@@ -147,11 +147,104 @@ Discord, Slack, Whatsapp
 
 ## Database Schema
 
-[Descripción de la estructura de la base de datos o enlace/referencia a la imagen]
+This database supports a multiplayer card game with users, matches, achievements, and chat.
 
-- Tables/Collections: 
+### `users`: Stores player accounts.
 
-[Relaciones, campos clave y tipos de datos]
+- `id` (PK)
+- `name`, `email`
+- `password`
+- `status` (online, offline, etc.)
+- `language`
+
+### `cards`: Game cards with stats.
+
+- `id` (PK)
+- `name`, `description`
+- `category` (human, animal, beast, artifact)
+- `top`, `bottom`, `left`, `right`
+- `rarity`
+
+### `card_translations`: Card localization.
+
+- `card_id` -> cards.id
+- `language`
+- `name`, `description`
+
+### `card_user`: User card pivot table.
+
+- `user_id` → users.id
+- `card_id` → cards.id
+
+### `matches`: Finished matches.
+
+- `player_1_id` → users.id
+- `player_2_id` → users.id
+- `winner_id` → users.id
+- `p1_score`, `p2_score`
+
+### `active_matches`
+
+- `match_uuid`
+- `player_1_id`, `player_2_id`
+- `current_turn_player_id`
+- `board_state` (JSON)
+- `hands_state` (JSON)
+
+#### `matchmaking_queue`: Players waiting for match.
+
+- `user_id` → users.id
+- `game_mode`
+
+#### `achievements`
+
+- `code` (unique)
+- `category`
+- `goal`
+- `points`
+
+#### `player_stats`
+
+- `user_id` → users.id
+- `level`, `experience`
+- `wins`, `losses`, `draws`
+- `ranked_points`
+
+#### `friendships`
+
+- `user_id` → users.id
+- `friend_id` → users.id
+- `status` (pending, accepted, rejected)
+
+#### `chats`
+
+- `id` (PK)
+- `visibility`
+
+#### `messages`: Chat messages.
+
+- `chat_id` → chats.id
+- `user_id` → users.id
+- `text`
+
+#### `user_chat`: Users in chats
+
+- `user_id` → users.id
+- `chat_id` → chats.id
+
+#### Other
+
+- `games`, `teams`, `team_user` → game structure
+- `jobs`, `failed_jobs`, `job_batches` → queues
+- `cache`, `sessions` → system
+
+#### Relationships Summary
+
+- Users - Cards -> `card_user`
+- Users - Achievements -> `achievement_user`
+- Users - Matches -> `matches`, `active_matches`
+- Users - Users -> `friendships`
+- Users - Chats -> `user_chat`
 
 ## Features List
 | Feature                    | Member(s) | Description                                                                 |
