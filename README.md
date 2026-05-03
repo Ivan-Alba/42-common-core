@@ -18,7 +18,7 @@ Progression is a core element of the experience, driven by an achievement system
 
 - Competitive Multiplayer: Core interactive gameplay optimized for real-time competition between users.
 - Automated Matchmaking: An efficient system that pairs available players for immediate game sessions.
-- Achievement System: A set of unlockable milestones that recognize and reward specific player accomplishments and milestones.
+- Achievement System: A set of unlockable milestones that recognize and reward specific Paso 1player accomplishments and milestones.
 - Social Connectivity: A streamlined friend management system to build a network of competitive peers and track their activity.
 - Global Ranking: A dynamic leaderboard that displays player standings and performance metrics across the platform.
 - Profile & Progress Tracking: Secure user accounts that store detailed match history, statistics, and earned rewards.
@@ -100,8 +100,22 @@ Use for websocket connection. Use own domain.
 Use for websocket connection. Use own port.
 
 ### Step-by-Step Execution:
-[Paso 1]
-[Paso 2]
+
+#### Main instructions
+
+- Step 1. Execute the command `mkdir secrets` on the root of the project.
+- Step 2. Create the appropiate files inside the secrets folder `touch secrets/db_password.txt secrets/db_root_password.txt`.
+- Step 3. Fill the password with the appropiate credentials.
+- Step 4. generate a .env file from the env_example. `mv .env.example .env` or `cp .env.example .env`.
+- Step 5. Build the project. `make`. 
+
+#### Other commands
+
+You can `make down` for stopping the containers.
+
+You can `make up` for starting the containers when the project has already been built once.
+
+You can `make clean` for clearing up the whole project. (Use carefully)
 
 ## Resources
 
