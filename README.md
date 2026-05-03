@@ -91,11 +91,11 @@ Generated when installing Reverb. Unique per project.
 
 Generated when installing Reverb. Unique per project.
 
-- VITE_REVERB_HOST=localhost # Domain name of the web
+- VITE_REVERB_HOST=localhost
 
 Use for websocket connection. Use own domain.
 
-- VITE_REVERB_PORT=PORT # Port exposed by Nginx
+- VITE_REVERB_PORT=PORT
 
 Use for websocket connection. Use own port.
 
