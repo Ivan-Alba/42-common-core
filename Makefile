@@ -16,15 +16,14 @@ clean: down
 	-@rm -rf services/php/www/vendor
 
 	# We create a tmp container to remove the mount volumes
-	docker run --rm -v $(CURDIR):/tmp alpine rm -rf /tmp/database \
+	docker run --rm -v $(CURDIR):/tmp alpine sh -c "rm -rf \
+		/tmp/database \
 		/tmp/certs \
 		/tmp/private \
-		/tmp/redis_data\
+		/tmp/redis_data \
 		/tmp/php_storage/logs/*.log \
-		/tmp/php_storage/framework/views/* \
-		/tmp/php_storage/framework/cache/* \
-		/tmp/php_storage/framework/sessions/*\
-		/tmp/services/php/www/public/storage
+		/tmp/php_storage/app/public/media/avatars/*.png \
+		/tmp/services/php/www/public/storage"
 	docker compose down --rmi all --volumes
 re: clean build
 
