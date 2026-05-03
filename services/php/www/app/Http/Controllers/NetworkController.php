@@ -31,10 +31,10 @@ class NetworkController extends Controller
 
         $match = ActiveMatch::where('match_uuid', $matchUuid)->first();
 
-        if (!$match) {
+        if ($match && $match->status === 'finished') {
             return response()->json([
                 'success' => true,
-                'message' => 'Match already concluded or not found.',
+                'message' => 'Match already finished. No penalty applied.',
                 'data' => [
                     'rival_disconnected' => false,
                     'own_disconnection' => true
@@ -47,6 +47,7 @@ class NetworkController extends Controller
         $loadingThreshold = 40.0;
         $maxInactivityThreshold = 30.0;
         $staleMatchThreshold = 10.0; // Margin after next_timeout_at before considering the match "dead"
+
 
         return DB::transaction(function () use ($match, $user, $request, $serverTime, $timeoutThreshold, $loadingThreshold, $maxInactivityThreshold, $staleMatchThreshold) {
 
@@ -63,14 +64,23 @@ class NetworkController extends Controller
             $ownLastPing = $isP1 ? $match->last_ping_p1 : $match->last_ping_p2;
             $isAlreadyMarkedDisconnected = $isP1 ? $match->p1_disconnected : $match->p2_disconnected;
 
-            // Check if the match timer is stale (next_timeout_at + 10s has passed without updates)
             $isMatchStale = false;
-            if ($match->next_timeout_at && ($serverTime > ($match->next_timeout_at + $staleMatchThreshold))) {
-                $isMatchStale = true;
+            $hasInactivityTimeout = false;
+
+            // Check if the match timer is stale (next_timeout_at + 10s has passed without updates)
+            if ($match->status !== 'loading') {
+                if ($match->next_timeout_at && ($serverTime > ($match->next_timeout_at + $staleMatchThreshold))) {
+                    $isMatchStale = true;
+                }
+
+            // 2. Check for inactivity timeout
+                if ($ownLastPing !== null && ($serverTime - $ownLastPing) > $maxInactivityThreshold) {
+                    $hasInactivityTimeout = true;
+                }
             }
 
             // Conditions to kick the player
-            if ($isAlreadyMarkedDisconnected || $isMatchStale || ($ownLastPing !== null && ($serverTime - $ownLastPing) > $maxInactivityThreshold)) {
+            if ($isAlreadyMarkedDisconnected || $isMatchStale || $hasInactivityTimeout) {
 
                 // Determine the reason for logging and frontend handling
                 $reason = 'inactivity_timeout';

@@ -65,7 +65,7 @@ class CleanupActiveMatches extends Command
      */
     private function cleanupInactiveMatches()
     {
-        $inactivityThreshold = Carbon::now()->subMinutes(3);
+        $inactivityThreshold = Carbon::now()->subMinutes(2);
 
         $deadMatches = ActiveMatch::where('updated_at', '<', $inactivityThreshold)
             ->get();

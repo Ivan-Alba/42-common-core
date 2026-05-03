@@ -90,6 +90,13 @@ class ActiveMatchController extends Controller
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            if ($match->status === MatchStatus::FINISHED) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Match already finished. No penalty applied.'
+                ]);
+            }
+
             // 2. Identify if the user is P1 or P2
             $isP1 = (int) $user->id === (int) $match->player_1_id;
             $isP2 = (int) $user->id === (int) $match->player_2_id;
