@@ -121,9 +121,9 @@ You can `make clean` for clearing up the whole project. (Use carefully)
 
 ### References: 
 
-[Documentación, artículos, tutoriales, etc.]
-
 #### Unity
+
+TODO: Unity references
 
 #### Frontend
 
@@ -135,8 +135,6 @@ You can `make clean` for clearing up the whole project. (Use carefully)
 - [React Router](https://reactrouter.com/en/main)  
 - [Axios (HTTP client)](https://axios-http.com/docs/intro)  
 - [Tailwind CSS](https://tailwindcss.com/docs)  
-
----
 
 #### Backend
 
@@ -159,11 +157,11 @@ You can `make clean` for clearing up the whole project. (Use carefully)
 
 #### DevOps
 
-- https://docs.docker.com/get-started/docker-overview/
-- https://docs.docker.com/compose/gettingstarted/
-- https://docs.docker.com/engine/storage/volumes/
-- https://nginx.org/en/docs/http/ngx_http_proxy_module.h
-- https://docs.unity3d.com/2022.3/Documentation/Manual/web-server-config-nginx.html
+- [Docker introduction](https://docs.docker.com/get-started/docker-overview/)
+- [Install Docker](https://docs.docker.com/compose/gettingstarted/)
+- [Docker volumes](https://docs.docker.com/engine/storage/volumes/)
+- [Nginx](https://nginx.org/en/docs/http/ngx_http_proxy_module.h)
+- [Unity-Nginx](https://docs.unity3d.com/2022.3/Documentation/Manual/web-server-config-nginx.html)
 
 ### AI Usage: 
 
@@ -178,44 +176,44 @@ Artificial intelligence has been used through the whole project in different man
 
 ## Team Information
 
+TODO: Team information
+
 **Importante**, poner los roles del subject (Product Owner (PO), Project Manager (PM) / Scrum Master, Technical Lead / Architect)
 | Member   | Assigned Role(s)                         | Responsibilities                                                                 |
 |----------|------------------------------------------|----------------------------------------------------------------------------------|
 | mirifern | Frontend Developer / Graphic Designer    | ___                                                                              |
 | daortega | DevOps Engineer / System Architect       | Designed and implemented the project’s infrastructure using Docker and Docker Compose, ensuring a containerized and reproducible environment for all services. |
-| igarcia2 | ___                                      | ____                                                                             |
-| kseligma | Backend Developer                        | Designed and implemented the project's backend; Laravel, API, database, Redis, Mailing, authentication, etc. |
+| igarcia2 | Backend Developer / Unity developer / PM | ___                                                                              |
+| kseligma | Backend Developer / Technical Architect  | Designed and implemented the project's backend; Laravel, API, database, Redis, Mailing, authentication, etc. |
 
 ## Project Management
 
 ### Organization: 
-[Cómo se organizó el trabajo, distribución de tareas y reuniones]
+
+The project has been organized by distributing the tasks by development stack in four parts: Frontend (React+), Backend (Laravel+), Game Development (Unity+) and Devops (Docker +). There has been collaborative work and communication among different stacks to ensure a coordinated development. We communicated by setting up weekly Discord meetings and monthly personal meetings, alongside regular text messages to keep up with each stack's work.  
 
 ### Tools: 
-Github, Visual Studio Code
+Github, Visual Studio Code, Google Drive. 
 
 ### Communication: 
-Discord, Slack, Whatsapp
+Discord, Slack, Whatsapp.
 
 ## Technical Stack
-- **Frontend**: [Tecnologías y frameworks]
+
+- **Frontend**: React, Vite, Tailwind, Pusher, Axios
 - **Backend**: Laravel, Reverb, Redis, Blade, Brevo, Laravel ecosystem dependences (Sanctum, Fortify, Phpunit) 
 - **Database**: We chose MariaDB as our primary database system due to the team's high level of familiarity and prior experience with its ecosystem.
-- **Other**: [Otras librerías o tecnologías significativas]
+- **Other**: Docker, Unity.
 
 ### Major Technical Choices Justification: 
-[Justificación de las decisiones técnicas principales]
 
-#### Frontend
+TODO: Justificaciones
 
-#### Backend
-
+- React:
+- Unity: 
 - Laravel is a PHP framework with a big community and a rich ecosystem that offers solutions to many of the problems an application like ours have.
 - Reverb is a Laravel-adjacent websocket server, which is fundamental for multiplayer features facilitating live interaction between browser users.
-
-#### Database
-
-#### Other
+- We used Docker as a container solution due to its easy-to-deploy capabilities and configuration system. Another reason is its compatibility with our testing environment and familiarity.
 
 ## Database Schema
 
@@ -245,14 +243,14 @@ This database supports a multiplayer card game with users, matches, achievements
 
 ### `card_user`: User card pivot table.
 
-- `user_id` → users.id
-- `card_id` → cards.id
+- `user_id` -> users.id
+- `card_id` -> cards.id
 
 ### `matches`: Finished matches.
 
-- `player_1_id` → users.id
-- `player_2_id` → users.id
-- `winner_id` → users.id
+- `player_1_id` -> users.id
+- `player_2_id` -> users.id
+- `winner_id` -> users.id
 - `p1_score`, `p2_score`
 
 ### `active_matches`
@@ -265,7 +263,7 @@ This database supports a multiplayer card game with users, matches, achievements
 
 #### `matchmaking_queue`: Players waiting for match.
 
-- `user_id` → users.id
+- `user_id` -> users.id
 - `game_mode`
 
 #### `achievements`
@@ -277,15 +275,15 @@ This database supports a multiplayer card game with users, matches, achievements
 
 #### `player_stats`
 
-- `user_id` → users.id
+- `user_id` -> users.id
 - `level`, `experience`
 - `wins`, `losses`, `draws`
 - `ranked_points`
 
 #### `friendships`
 
-- `user_id` → users.id
-- `friend_id` → users.id
+- `user_id` -> users.id
+- `friend_id` -> users.id
 - `status` (pending, accepted, rejected)
 
 #### `chats`
@@ -295,20 +293,20 @@ This database supports a multiplayer card game with users, matches, achievements
 
 #### `messages`: Chat messages.
 
-- `chat_id` → chats.id
-- `user_id` → users.id
+- `chat_id` -> chats.id
+- `user_id` -> users.id
 - `text`
 
 #### `user_chat`: Users in chats
 
-- `user_id` → users.id
-- `chat_id` → chats.id
+- `user_id` -> users.id
+- `chat_id` -> chats.id
 
 #### Other
 
-- `games`, `teams`, `team_user` → game structure
-- `jobs`, `failed_jobs`, `job_batches` → queues
-- `cache`, `sessions` → system
+- `games`, `teams`, `team_user` -> game structure
+- `jobs`, `failed_jobs`, `job_batches` -> queues
+- `cache`, `sessions` -> system
 
 #### Relationships Summary
 
@@ -334,47 +332,57 @@ This database supports a multiplayer card game with users, matches, achievements
 
 ## Modules
 
+TODO: Esto
+
 IMPORTANTE: PONER JUSTIFICACIÓN, COMO SE IMPLEMENTO Y QUIEN TRABAJÓ EN EL MODULO
-  
-Web
-- **Major**: Use a framework for both the frontend and backend.
-- **Minor**: Use a frontend framework (React, Vue, Angular, Svelte, etc.).
-- **Minor**: Use a backend framework (Express, Fastify, NestJS, Django, etc.).
-- **Major**: Implement real-time features using WebSockets or similar technology
-- **Major**: Allow users to interact with other users
-- **Minor**: Use an ORM for the database.
-- **Minor**: Custom-made design system with reusable components, including a proper color palette, typography, and icons (minimum: 10 reusable components).
-- **Minor**: Implement advanced search functionality with filters, sorting, and pagination.
+  ### 
 
-Accessibility and Internationalization
-- **Minor**: Support for multiple languages (at least 3 languages).
-- **Minor**: Support for additional browsers.
+###  
 
-User Management
-- **Major**: Standard user management and authentication.
-- **Minor**: Game statistics and match history (requires a game module).
-- **Minor**: Implement remote authentication with OAuth 2.0 (Google, GitHub, 42, etc.).
+### 
 
-Artificial Intelligence
-- **Major**: Introduce an AI Opponent for games
+### 
 
-Gaming and user experience
-- **Major**: Implement a complete web-based game where users can play against each other.
-- **Major**: Remote players — Enable two players on separate computers to play the same game in real-time.
-- **Minor**: Game customization options.
-- **Minor**: A gamification system to reward users for their actions
-- **Minor**: Implement spectator mode for games.
+### Web
+- **Major**: Use a framework for both the frontend and backend: mirifern, kseligma, daortega, igarcia2
+- **Minor**: Use a frontend framework (React, Vue, Angular, Svelte, etc.): mirifern, igarcia2, daortega
+- **Minor**: Use a backend framework (Express, Fastify, NestJS, Django, etc.): kseligma, igarcia2, daortega
+- **Major**: Implement real-time features using WebSockets or similar technology: mirifern, igarcia2
+- **Major**: Allow users to interact with other users: mirifern, igarcia2
+- **Minor**: Use an ORM for the database.: kseligma, igarcia2
+- **Minor**: Custom-made design system with reusable components, including a proper color palette, typography, and icons (minimum: 10 reusable components): mirifern, igarcia2
+- **Minor**: Implement advanced search functionality with filters, sorting, and pagination: mirifern, kseligma, igarcia2
 
-Total sin dudas: 19
-Total con dudas: 24
+### Accessibility and Internationalization
+- **Minor**: Support for multiple languages (at least 3 languages): kseligma, igarcia2, mirifern
+- **Minor**: Support for additional browsers: mirifern
+
+### User Management
+- **Major**: Standard user management and authentication: kseligma, mirifern
+- **Minor**: Game statistics and match history (requires a game module): igarcia2
+
+### Artificial Intelligence
+- **Major**: Introduce an AI Opponent for games: igarcia2
+
+### Gaming and user experience
+- **Major**: Implement a complete web-based game where users can play against each other: igarcia2
+- **Major**: Remote players — Enable two players on separate computers to play the same game in real-time: kseligma, igarcia2, mirifern, daortega 
+- **Minor**: Game customization options. TODO: ???
+- **Minor**: A gamification system to reward users for their actions: igarcia2, mirifern
+- **Minor**: Implement spectator mode for games. TODO: ???
 
 ## Individual Contributions
 
-### [login1]
+TODO: Rellenar 
 
-### Contributions: 
-[Desglose detallado]
+### mirifern
+
+### kseligma
+
+### daortega
+
+### igarcia2
 
 ### Challenges: 
-[Retos enfrentados y cómo se superaron]
 
+TODO: Challenges
