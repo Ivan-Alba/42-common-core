@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaGamepad, FaExclamationTriangle, FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { MdHistory, MdInsertChartOutlined } from "react-icons/md";
+import { MdHistory, MdInsertChartOutlined, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { HiOutlineTrophy } from "react-icons/hi2";
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import LoadingState from '../components/ui/LoadingState';
@@ -28,7 +28,13 @@ const Profile = () => {
     const [showAllAchievements, setShowAllAchievements] = useState(false);
     const [relationStatus, setRelationStatus] = useState<'none' | 'pending' | 'accepted' | 'outgoing' | 'rejected'>('none');
 
-    // Memorizamos la ordenación para evitar cálculos innecesarios
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 5;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [id]);
+
     const sortedAchievements = useMemo(() => {
         if (!profileData?.achievements) return [];
         return [...profileData.achievements].sort((a, b) => {
@@ -44,7 +50,6 @@ const Profile = () => {
         ? sortedAchievements
         : sortedAchievements.slice(0, 4);
 
-    // Función principal de carga de datos (Reutilizable)
     const fetchData = useCallback(async (isActive: boolean, showGlobalLoading: boolean) => {
         if (showGlobalLoading) setIsLoading(true);
 
@@ -97,13 +102,8 @@ const Profile = () => {
     useEffect(() => {
         if (isAuthLoading) return;
         let isActive = true;
-
-        // Cargamos con loading global solo la primera vez que no hay datos
         fetchData(isActive, !profileData);
-
-        return () => {
-            isActive = false;
-        };
+        return () => { isActive = false; };
     }, [fetchData, isAuthLoading, profileData === null]);
 
     const handleAddFriend = async (friendId: number | string) => {
@@ -120,8 +120,6 @@ const Profile = () => {
         try {
             const response = await userService.claimAchievement(achievementId);
             if (response) {
-                // Tras reclamar, refrescamos todos los datos del servidor de forma silenciosa
-                // Esto actualizará los puntos en el Header y el progreso de otros logros
                 await fetchData(true, false);
             }
         } catch (error) {
@@ -149,27 +147,35 @@ const Profile = () => {
         return rtf.format(-diffInYears, 'year');
     };
 
-    const formattedHistory = profileData?.match_history?.map(match => {
-        const isPlayer1 = match.player_1_id === profileData?.id;
-        const isWin = match.winner_id === profileData?.id;
-        const resultString = match.winner_id === null ? 'draw' : (isWin ? 'win' : 'loss');
-        const translatedResult = t(`profile.match_results.${resultString}`);
-        const opponentName = isPlayer1 ? match.player_2_name : match.player_1_name;
-        const rawAvatar = isPlayer1 ? match.player_2_avatar : match.player_1_avatar;
-        const opponentId = isPlayer1 ? match.player_2_id : match.player_1_id;
-        const opponentAvatar = rawAvatar === null ? undefined : rawAvatar;
-        const scoreFormatted = isPlayer1 ? `${match.p1_score} - ${match.p2_score}` : `${match.p2_score} - ${match.p1_score}`;
-        const dateFormatted = getRelativeTime(match.played_at);
+    const formattedHistory = useMemo(() => {
+        return profileData?.match_history?.map(match => {
+            const isPlayer1 = match.player_1_id === profileData?.id;
+            const isWin = match.winner_id === profileData?.id;
+            const resultString = match.winner_id === null ? 'draw' : (isWin ? 'win' : 'loss');
+            const translatedResult = t(`profile.match_results.${resultString}`);
+            const opponentName = isPlayer1 ? match.player_2_name : match.player_1_name;
+            const rawAvatar = isPlayer1 ? match.player_2_avatar : match.player_1_avatar;
+            const opponentId = isPlayer1 ? match.player_2_id : match.player_1_id;
+            const opponentAvatar = rawAvatar === null ? undefined : rawAvatar;
+            const scoreFormatted = isPlayer1 ? `${match.p1_score} - ${match.p2_score}` : `${match.p2_score} - ${match.p1_score}`;
+            const dateFormatted = getRelativeTime(match.played_at);
 
-        const getMatchStyles = (result: string) => {
-            if (result === 'draw') return { border: 'bg-warning', badge: 'bg-warning/10 text-warning border border-warning/20' };
-            return result === 'win'
-                ? { border: 'bg-success', badge: 'bg-success/10 text-success border border-success/20' }
-                : { border: 'bg-danger', badge: 'bg-danger/10 text-danger border border-danger/20' };
-        };
+            const getMatchStyles = (result: string) => {
+                if (result === 'draw') return { border: 'bg-warning', badge: 'bg-warning/10 text-warning border border-warning/20' };
+                return result === 'win'
+                    ? { border: 'bg-success', badge: 'bg-success/10 text-success border border-success/20' }
+                    : { border: 'bg-danger', badge: 'bg-danger/10 text-danger border border-danger/20' };
+            };
 
-        return { ...match, resultString, translatedResult, opponentId, opponentName, opponentAvatar, scoreFormatted, dateFormatted, styles: getMatchStyles(resultString) };
-    }) || [];
+            return { ...match, resultString, translatedResult, opponentId, opponentName, opponentAvatar, scoreFormatted, dateFormatted, styles: getMatchStyles(resultString) };
+        }) || [];
+    }, [profileData, t, i18n.language]);
+
+    const totalPages = Math.ceil(formattedHistory.length / ITEMS_PER_PAGE);
+    const paginatedHistory = useMemo(() => {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        return formattedHistory.slice(start, start + ITEMS_PER_PAGE);
+    }, [formattedHistory, currentPage]);
 
     if (isLoading) return <DashboardLayout isCentered={true}><LoadingState message={t('common.loading')} /></DashboardLayout>;
 
@@ -247,8 +253,9 @@ const Profile = () => {
                         </h3>
                         {formattedHistory.length > 0 ? (
                             <>
+                                {/* Mobile List */}
                                 <div className="grid gap-4 lg:hidden">
-                                    {formattedHistory.map((match) => (
+                                    {paginatedHistory.map((match) => (
                                         <div key={match.id} className="glass-panel p-4 relative overflow-hidden">
                                             <div className={`absolute left-0 top-0 bottom-0 w-1 ${match.styles.border}`}></div>
                                             <div className="flex justify-between items-center w-full pl-3 mb-3">
@@ -263,6 +270,8 @@ const Profile = () => {
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* Desktop Table */}
                                 <div className="hidden lg:block glass-panel overflow-hidden">
                                     <table className="w-full text-left text-sm text-slate-400">
                                         <thead className="bg-white/5 text-slate-200 uppercase text-xs font-bold">
@@ -275,7 +284,7 @@ const Profile = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-white/5">
-                                            {formattedHistory.map((match) => (
+                                            {paginatedHistory.map((match) => (
                                                 <tr key={match.id} className="hover:bg-white/5 transition-colors text-center relative group">
                                                     <td className={`absolute left-0 top-0 bottom-0 w-1 transition-all group-hover:w-1.5 ${match.styles.border}`}></td>
                                                     <td className="px-6 py-4"><span className={`px-2 py-1 rounded text-xs font-bold ${match.styles.badge}`}>{match.translatedResult.toUpperCase()}</span></td>
@@ -291,6 +300,42 @@ const Profile = () => {
                                         </tbody>
                                     </table>
                                 </div>
+
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="flex items-center justify-center gap-2 mt-6">
+                                        <button
+                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                            disabled={currentPage === 1}
+                                            className="p-2 rounded-lg bg-white/5 border border-white/10 text-white disabled:opacity-20 disabled:cursor-not-allowed hover:bg-brand-500/20 transition-colors"
+                                        >
+                                            <MdChevronLeft size={24} />
+                                        </button>
+
+                                        <div className="flex items-center gap-1">
+                                            {[...Array(totalPages)].map((_, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => setCurrentPage(i + 1)}
+                                                    className={`w-10 h-10 rounded-lg border transition-all font-bold text-sm
+                                                        ${currentPage === i + 1
+                                                            ? 'bg-brand-500 border-brand-400 text-white shadow-lg shadow-brand-500/20'
+                                                            : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}`}
+                                                >
+                                                    {i + 1}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <button
+                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                            disabled={currentPage === totalPages}
+                                            className="p-2 rounded-lg bg-white/5 border border-white/10 text-white disabled:opacity-20 disabled:cursor-not-allowed hover:bg-brand-500/20 transition-colors"
+                                        >
+                                            <MdChevronRight size={24} />
+                                        </button>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <div className="glass-panel p-10 text-center flex flex-col items-center justify-center bg-dark-800/40 border border-white/5 rounded-xl">
