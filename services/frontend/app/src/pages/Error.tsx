@@ -11,7 +11,7 @@ const Error = () => {
 	/* Redirect to home page if is not authenticated */
 		const handleClick = () => {
 			if (isAuthenticated) {
-				console.log(isAuthenticated);
+				//console.log(isAuthenticated);
 				navigate('/index');
 			}
 			else 

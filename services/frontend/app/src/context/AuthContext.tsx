@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             });
             setPendingFriendsCount(pending.length);
         } catch (error) {
-            console.error("Error al cargar notificaciones de amigos", error);
+            //console.error("Error al cargar notificaciones de amigos", error);
         }
     };
 
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             await authService.logout();
         } catch (error) {
-            console.error("Error: ", error);
+            //console.error("Error: ", error);
         } finally {
             setUser(null);
             setPendingFriendsCount(0); // Limpiar contador al salir

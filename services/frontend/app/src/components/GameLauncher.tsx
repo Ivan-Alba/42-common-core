@@ -18,10 +18,10 @@ const GameLauncher: React.FC = () => {
                 navigate(`/game/${data.match_uuid}`);
             } else {
                 // Si por alguna razón el servidor no devuelve el UUID inmediatamente
-                console.warn("Matchmaking iniciado, pero no se recibió UUID inmediato.");
+                //console.warn("Matchmaking iniciado, pero no se recibió UUID inmediato.");
             }
         } catch (error) {
-            console.error("Error al iniciar matchmaking:", error);
+            //console.error("Error al iniciar matchmaking:", error);
             alert("Error crítico: No se pudo conectar con el servicio de matchmaking.");
         } finally {
             setIsLoading(false);

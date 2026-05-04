@@ -56,7 +56,7 @@ const authService = {
         if (unityToken) {
             sessionStorage.setItem('unity_auth_token', unityToken);
         } else {
-            console.warn("[Auth] X-Unity-Token not found in response headers.");
+            //console.warn("[Auth] X-Unity-Token not found in response headers.");
         }
 
         return response.data;

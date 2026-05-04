@@ -61,7 +61,7 @@ const UnityGame: React.FC<UnityGameProps> = ({ token, matchId, userId, onGameLoa
 	useEffect(() => {
 		const handleMatchFinished = (json: string) => {
 			hasCleanedUp.current = true;
-			console.log("Match Over:", JSON.parse(json));
+			//console.log("Match Over:", JSON.parse(json));
 			setTimeout(() => {
 				navigate(`/index`);
 			}, 200);

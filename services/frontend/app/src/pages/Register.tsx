@@ -63,7 +63,7 @@ const Register = () => {
 
         if (validate(cleanData)) {
             try {
-				console.log(cleanData);
+				//console.log(cleanData);
                 await register(cleanData);
                 
                 setIsRegistered(true);
@@ -71,11 +71,11 @@ const Register = () => {
                 
             } catch (error: any) {
                 
-                console.error("Error: ", error);
+                //console.error("Error: ", error);
                 
 				if (error.response?.status === 404)
 				{
-					console.log("Error 404");
+					//console.log("Error 404");
 				}
 
                 if (error.response?.status === 422) {
@@ -88,7 +88,7 @@ const Register = () => {
                         setErrors(prev => ({ ...prev, username: t("validation.name_taken") }));
                     }
                 } else {
-                    console.log("Error", error);
+                    //console.log("Error", error);
                 }
             }
         }

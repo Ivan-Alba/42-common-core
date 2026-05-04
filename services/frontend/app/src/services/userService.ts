@@ -127,7 +127,7 @@ const userService = {
 	},
 
 	consoleLog: () => {
-		console.log("Servicio de usuario listo");
+		//console.log("Servicio de usuario listo");
 	}
 };
 

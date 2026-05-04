@@ -64,7 +64,7 @@ const Index = () => {
 					setProfileData(data);
 				}
 			} catch (error) {
-				console.error("Error: ", error);
+				//console.error("Error: ", error);
 			} finally {
 				if (isMounted) setIsLoading(false);
 			}
@@ -90,7 +90,7 @@ const Index = () => {
 				);
 				setFriendsList(friendList);
 			} catch (error) {
-				console.error("Error:", error);
+				//console.error("Error:", error);
 				setFriendsList([]);
 			}
 		};

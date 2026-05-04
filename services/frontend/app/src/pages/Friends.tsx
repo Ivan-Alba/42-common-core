@@ -100,7 +100,7 @@ const Friends = () => {
 			setOutgoingRequests(outgoing);
 
 		} catch (error) {
-			console.error("Error", error);
+			//console.error("Error", error);
 			setFriendsList([]);
 			setPendingRequests([]);
 			setOutgoingRequests([]);
@@ -124,7 +124,7 @@ const Friends = () => {
 
 					setSearchResults(filteredResults);
 				} catch (error) {
-					console.error("Error:", error);
+					//console.error("Error:", error);
 					setSearchResults([]);
 				} finally {
 					setIsSearching(false);
@@ -165,7 +165,6 @@ const Friends = () => {
 			return;
 		try {
 			await userService.sendFriendRequest(authUser.id, friendId);
-			console.log(`Solicitud enviada al ID ${friendId}`);
 
 			const friendData = searchResults.find(u => Number(u.id) === friendId);
 			if (friendData) {
@@ -194,7 +193,7 @@ const Friends = () => {
 			setShowDropdown(false);
 			setSearchQuery("");
 		} catch (error) {
-			console.error("Error", error);
+			//console.error("Error", error);
 		}
 	};
 
@@ -203,7 +202,6 @@ const Friends = () => {
 		if (!authUser) return;
 		try {
 			await userService.respondFriendRequest(authUser.id, friendId, action);
-			console.log(`Solicitud ${action} para el ID ${friendId}`);
 
 			if (action === 'accept') {
 				const acceptedFriend = pendingRequests.find(f => Number(f.id) === friendId);
@@ -217,7 +215,7 @@ const Friends = () => {
 			window.dispatchEvent(new CustomEvent('friendRequestHandled'));
 
 		} catch (error) {
-			console.error(`Error ${action}: `, error);
+			//console.error(`Error ${action}: `, error);
 		}
 	};
 
@@ -228,10 +226,9 @@ const Friends = () => {
 		if (friendToDelete === null || !authUser) return;
 		try {
 			await userService.removeFriend(authUser.id, friendToDelete);
-			console.log(`Amigo eliminado ID: ${friendToDelete}`);
 			setFriendsList(prev => prev.filter(friend => Number(friend.id) !== friendToDelete));
 		} catch (error) {
-			console.error("Error: ", error);
+			//console.error("Error: ", error);
 		} finally {
 			setFriendToDelete(null);
 		}
@@ -240,7 +237,7 @@ const Friends = () => {
 	/* Navigation */
 	const handleInvite = (username?: string) => {
 		if (!username) return;
-		console.log(`Sending invitation to ${username}...`);
+		//console.log(`Sending invitation to ${username}...`);
 		navigate(`/game/`);
 	};
 

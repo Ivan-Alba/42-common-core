@@ -72,7 +72,7 @@ const Collection = () => {
 				setCategories(Array.from(uniqueCategories));
 
 			} catch (error) {
-				console.error("Error: ", error);
+				//console.error("Error: ", error);
 				setAllCardsDB([]);
 				setUnlockedCardIds([]);
 				setCategories([]);

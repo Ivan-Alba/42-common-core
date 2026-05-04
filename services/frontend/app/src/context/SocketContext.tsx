@@ -26,7 +26,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 				}
 			};
 
-			console.log(`[SocketContext] Echo ready for user: ${userId}`);
+			//console.log(`[SocketContext] Echo ready for user: ${userId}`);
 
 			/* Manually trigger the connection if it was disconnected */
 			echo.connector.connect();
@@ -36,7 +36,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 			/* Listen for friend status changes (online/offline) */
 			channel.listen('.UserStatusChanged', (data: { userId: number, newStatus: string }) => {
-				console.log(`Reverb: El amigo ${data.userId} ha cambiado a ${data.newStatus}`);
+				//console.log(`Reverb: El amigo ${data.userId} ha cambiado a ${data.newStatus}`);
 
 				/* Throw event to the entire React window */
 				window.dispatchEvent(new CustomEvent('friendStatusChanged', {
@@ -46,7 +46,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 			/* Listen for incoming friend requests */
 			channel.listen('.FriendRequestReceived', (_data: any) => {
-				console.log(`Reverb: ¡Petición de amistad recibida!`);
+				//console.log(`Reverb: ¡Petición de amistad recibida!`);
 				
 				/* Throw event to the entire React window to show red badge notification */
 				window.dispatchEvent(new CustomEvent('friendRequestReceived'));
@@ -55,7 +55,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
 			/* Listen for friend request accepted events */
 			channel.listen('.FriendRequestAccepted', (_data: any) => {
-				console.log(`Reverb: ¡Alguien aceptó tu petición de amistad!`);
+				//console.log(`Reverb: ¡Alguien aceptó tu petición de amistad!`);
 				
 				/* Throw event to the entire React window to show red badge notification */
 				window.dispatchEvent(new Event('updateFriendNotifications'));
@@ -74,7 +74,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 		} else {
 			/* If the user logs out, we clean up the connection safely */
 			if (isReady) {
-				console.log("[SocketContext] User logged out. Disconnecting Reverb...");
+				//console.log("[SocketContext] User logged out. Disconnecting Reverb...");
 				echo.disconnect();
 				setIsReady(false);
 			}

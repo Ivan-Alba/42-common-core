@@ -94,7 +94,7 @@ const ResetPassword = () => {
                 navigate("/signin");
             }, 4000);
         } catch (error) {
-            console.error("Error pidiendo email:", error);
+            //console.error("Error pidiendo email:", error);
             // Si Laravel decide devolver 422 para emails no encontrados:
             if (axios.isAxiosError(error) && error.response?.status === 422) {
                 setErrors(prev => ({ ...prev, email: t("validation.email_not_registered_or_timeout") }));
@@ -128,7 +128,7 @@ const ResetPassword = () => {
             setTimeout(() => navigate("/signin"), 4000);
             
         } catch (error) {
-            console.error("Error:", error);
+            //console.error("Error:", error);
             if (axios.isAxiosError(error) && error.response?.status === 422) {
                 setServerError(t('errors.link_invalid'));
             } else {

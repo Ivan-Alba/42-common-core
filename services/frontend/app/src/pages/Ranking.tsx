@@ -30,7 +30,7 @@ const Ranking = () => {
 				/* Force typing here because we know the ranking endpoint DOES include stats */
 				setRankingData(data as UserProfile[]);
 			} catch (error) {
-				console.error("Error fetching ranking:", error);
+				//console.error("Error fetching ranking:", error);
 			} finally {
 				setIsLoading(false);
 			}

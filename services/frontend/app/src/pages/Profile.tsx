@@ -92,7 +92,7 @@ const Profile = () => {
                 setRelationStatus(userData.friendship_status || 'none');
             }
         } catch (error: any) {
-            console.error("Error al obtener los datos:", error);
+            //console.error("Error al obtener los datos:", error);
             if (isActive) setProfileData(null);
         } finally {
             if (isActive) setIsLoading(false);
@@ -112,7 +112,7 @@ const Profile = () => {
             await userService.sendFriendRequest(authUser.id, friendId);
             setRelationStatus('outgoing');
         } catch (error) {
-            console.error("Error al añadir amigo", error);
+            //console.error("Error al añadir amigo", error);
         }
     };
 
@@ -123,7 +123,7 @@ const Profile = () => {
                 await fetchData(true, false);
             }
         } catch (error) {
-            console.error("Error al reclamar recompensa:", error);
+            //console.error("Error al reclamar recompensa:", error);
         }
     };
 

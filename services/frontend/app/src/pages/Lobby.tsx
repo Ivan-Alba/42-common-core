@@ -50,11 +50,11 @@ const Lobby = () => {
         const channel = echo.private(privateChannel);
 
         // 2. REGISTER LISTENER IMMEDIATELY
-        console.log(`[Lobby] Registering listener for .match.found on ${privateChannel}`);
+        //console.log(`[Lobby] Registering listener for .match.found on ${privateChannel}`);
         channel.listen('.match.found', (data: any) => {
             if (!isMounted) return;
 
-            console.log("[Lobby] EVENT RECEIVED: .match.found", data);
+            //console.log("[Lobby] EVENT RECEIVED: .match.found", data);
             setIsMatchFound(true);
 
             if (data.opponent) {
@@ -77,9 +77,9 @@ const Lobby = () => {
             matchmakingStarted.current = true;
 
             try {
-                console.log(`[REST] Joining queue for mode: ${mode}`);
+                //console.log(`[REST] Joining queue for mode: ${mode}`);
                 await gameService.joinQueue(mode);
-                console.log("[REST] Successfully in queue.");
+                //console.log("[REST] Successfully in queue.");
             } catch (error: any) {
                 // IMPORTANT: If we get a 403 (penalty), we MUST navigate back
                 // regardless of isMounted if we want the user to be redirected out of the lobby.
@@ -92,7 +92,7 @@ const Lobby = () => {
                 }
 
                 if (isMounted) {
-                    console.error("[Lobby] Unexpected Queue Error:", error);
+                    //console.error("[Lobby] Unexpected Queue Error:", error);
                     navigate('/index');
                 }
             }
@@ -103,7 +103,7 @@ const Lobby = () => {
         // CLEANUP
         return () => {
             isMounted = false;
-            console.log(`[Lobby] Stopping listener on ${privateChannel}`);
+            //console.log(`[Lobby] Stopping listener on ${privateChannel}`);
             channel.stopListening('.match.found');
         };
     }, [echo, mode, navigate, user]);
@@ -115,7 +115,7 @@ const Lobby = () => {
             await gameService.leaveQueue();
             navigate('/index');
         } catch (error) {
-            console.error("Failed to leave queue:", error);
+            //console.error("Failed to leave queue:", error);
             setIsLeaving(false);
         }
     };

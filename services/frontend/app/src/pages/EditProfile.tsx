@@ -115,7 +115,7 @@ const EditProfile = () => {
                     i18n.changeLanguage(dbLang);
                 }
             } catch (error) {
-                console.error("Error:", error);
+                //console.error("Error:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -176,7 +176,7 @@ const EditProfile = () => {
             setShowCropModal(false);
             setImageToCrop(null);
         } catch (error) {
-            console.error(t('edit_profile.avatar_error_crop'), error);
+            //console.error(t('edit_profile.avatar_error_crop'), error);
             setAvatarError(t('edit_profile.avatar_error_crop'));
         }
     };
@@ -195,7 +195,7 @@ const EditProfile = () => {
 
             setFormData(prev => prev ? { ...prev, avatarFile: file } : null);
         } catch (error) {
-            console.error("Error:", error);
+            //console.error("Error:", error);
             setAvatarError(t('edit_profile.avatar_error_file'));
         }
     };
@@ -245,7 +245,7 @@ const EditProfile = () => {
             setShowSuccessModal(true);
 
         } catch (error: any) {
-            console.error("Error:", error.response?.data);
+            //console.error("Error:", error.response?.data);
             const errorMessage = error.response?.data?.message || "Error";
             setProfileError(errorMessage);
         } finally {
