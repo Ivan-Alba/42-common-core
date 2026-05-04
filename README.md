@@ -474,6 +474,7 @@ IMPORTANTE: PONER JUSTIFICACIÓN, COMO SE IMPLEMENTO Y QUIEN TRABAJÓ EN EL MODU
 - **Major**: Implement a complete web-based game where users can play against each other: igarcia2
 - **Major**: Remote players — Enable two players on separate computers to play the same game in real-time: kseligma, igarcia2, mirifern, daortega 
 - **Minor**: A gamification system to reward users for their actions: igarcia2, mirifern
+- **Minor**: Implement a tournament system. igarcia2, mirifern
 
 ## Individual Contributions
 
