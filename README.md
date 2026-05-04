@@ -185,14 +185,12 @@ Artificial Intelligence has been a key collaborator throughout the entire projec
 
 ## Team Information
 
-TODO: Team information
-
 **Importante**, poner los roles del subject (Product Owner (PO), Project Manager (PM) / Scrum Master, Technical Lead / Architect)
 | Member   | Assigned Role(s)                         | Responsibilities                                                                 |
 |----------|------------------------------------------|----------------------------------------------------------------------------------|
-| mirifern | Frontend Developer / Graphic Designer    | ___                                                                              |
+| mirifern | Frontend Developer / Graphic Designer    | Defined product vision and user experience; designed UI/UX and visual identity; implemented React frontend components; ensured consistency across design system and user flows; coordinated feature requirements with backend and game systems |
 | daortega | DevOps Engineer / System Architect       | Designed and implemented the project’s infrastructure using Docker and Docker Compose, ensuring a containerized and reproducible environment for all services. |
-| igarcia2 | Backend Developer / Unity developer / PM | ___                                                                              |
+| igarcia2 | Backend Developer / Unity developer / PM |Led project planning and task coordination; developed Unity WebGL game client and core gameplay systems; integrated frontend-backend communication; managed timelines, team synchronization, and sprint organization. |
 | kseligma | Backend Developer / Technical Architect  | Designed and implemented the project's backend; Laravel, API, database, Redis, Mailing, authentication, etc. |
 
 ## Project Management
