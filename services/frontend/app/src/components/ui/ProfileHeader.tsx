@@ -97,24 +97,6 @@ const ProfileHeader = ({ userData, isOwnProfile, friendshipStatus = 'none', onAd
                             </Link>
                         ) : (
                             <div className="w-full md:w-auto">
-                                {friendshipStatus === 'none' && userData.id && (
-                                    <button
-                                        onClick={() => onAddFriend && onAddFriend(userData.id!)}
-                                        className="btn-primary rounded-full px-8 py-2.5 w-full flex items-center justify-center gap-3 text-sm font-bold"
-                                    >
-                                        <FaUserPlus /> {t('friends.add_friend')}
-                                    </button>
-                                )}
-                                {friendshipStatus === 'accepted' && (
-                                    <div className="px-8 py-2.5 rounded-full border border-success/30 bg-success/10 text-success flex items-center justify-center gap-3 text-sm font-bold cursor-default">
-                                        <FaCheck /> {t('friends.already_friend')}
-                                    </div>
-                                )}
-                                {friendshipStatus === 'outgoing' && (
-                                    <div className="px-8 py-2.5 rounded-full border border-slate-500/30 bg-slate-500/10 text-slate-400 flex items-center justify-center gap-3 text-sm font-bold cursor-default">
-                                        <FaHourglassHalf /> {t('friends.sent')}
-                                    </div>
-                                )}
                             </div>
                         )}
                     </div>
