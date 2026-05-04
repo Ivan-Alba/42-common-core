@@ -217,104 +217,192 @@ TODO: Justificaciones
 
 ## Database Schema
 
-This database supports a multiplayer card game with users, matches, achievements, and chat.
+This database supports a multiplayer card game with a Laravel backend and Unity WebGL frontend, featuring real-time state management, matchmaking, and localized content.
 
-### `users`: Stores player accounts.
+### 1. User Management & Progress
 
-- `id` (PK)
-- `name`, `email`
-- `password`
-- `status` (online, offline, etc.)
-- `language`
+users: Player accounts and network status.
 
-### `cards`: Game cards with stats.
+    id (PK): Unique identifier.
 
-- `id` (PK)
-- `name`, `description`
-- `category` (human, animal, beast, artifact)
-- `top`, `bottom`, `left`, `right`
-- `rarity`
+    name, email: Unique credentials.
 
-### `card_translations`: Card localization.
+    password: Hashed access key.
 
-- `card_id` -> cards.id
-- `language`
-- `name`, `description`
+    avatar (nullable): Path to profile image.
 
-### `card_user`: User card pivot table.
+    bio (nullable): Short player description.
 
-- `user_id` -> users.id
-- `card_id` -> cards.id
+    language (enum): Preferred locale (ES, EN, CA).
 
-### `matches`: Finished matches.
+    status (enum): Current state (OFFLINE, ONLINE, PLAYING, AWAY).
 
-- `player_1_id` -> users.id
-- `player_2_id` -> users.id
-- `winner_id` -> users.id
-- `p1_score`, `p2_score`
+    penalty_until (timestamp): Matchmaking restriction end time.
 
-### `active_matches`
+    last_activity (timestamp): Last API interaction.
 
-- `match_uuid`
-- `player_1_id`, `player_2_id`
-- `current_turn_player_id`
-- `board_state` (JSON)
-- `hands_state` (JSON)
+    is_bot (boolean): Flag for AI-controlled users.
 
-#### `matchmaking_queue`: Players waiting for match.
+player_stats: Performance and progression.
 
-- `user_id` -> users.id
-- `game_mode`
+    user_id (FK): Relation 1:1 with users.
 
-#### `achievements`
+    level: Current player level.
 
-- `code` (unique)
-- `category`
-- `goal`
-- `points`
+    experience: Accumulated XP.
 
-#### `player_stats`
+    achievement_points: Points earned from achievements.
 
-- `user_id` -> users.id
-- `level`, `experience`
-- `wins`, `losses`, `draws`
-- `ranked_points`
+    ranked_points (indexed): League points (ELO).
 
-#### `friendships`
+    last_rank_pos (nullable): Last calculated leaderboard position.
 
-- `user_id` -> users.id
-- `friend_id` -> users.id
-- `status` (pending, accepted, rejected)
+    wins, losses, draws: Global match counters.
 
-#### `chats`
+    campaign: Current progress in single-player mode.
 
-- `id` (PK)
-- `visibility`
+### 2. Card Catalog & Localization
+cards: Master card dictionary.
 
-#### `messages`: Chat messages.
+    id (PK): Unique identifier.
 
-- `chat_id` -> chats.id
-- `user_id` -> users.id
-- `text`
+    name, description: Base content (English).
 
-#### `user_chat`: Users in chats
+    category (enum): HUMAN, ANIMAL, BEAST, ARTIFACT.
 
-- `user_id` -> users.id
-- `chat_id` -> chats.id
+    rarity (enum): COMMON, RARE, EPIC, LEGENDARY.
 
-#### Other
+    blue_artwork, red_artwork: Visual references for allied/rival states.
 
-- `games`, `teams`, `team_user` -> game structure
-- `jobs`, `failed_jobs`, `job_batches` -> queues
-- `cache`, `sessions` -> system
+    top, bottom, left, right: Cardinal power stats.
 
-#### Relationships Summary
+card_translations: Multi-language support for cards.
 
-- Users - Cards -> `card_user`
-- Users - Achievements -> `achievement_user`
-- Users - Matches -> `matches`, `active_matches`
-- Users - Users -> `friendships`
-- Users - Chats -> `user_chat`
+    id (PK): Unique identifier.
+
+    card_id (FK): Relation with cards.
+
+    language (enum): SPANISH, ENGLISH, CATALAN.
+
+    name, description: Localized text.
+
+card_user (Pivot): User card collection.
+
+    user_id (FK): Owner of the card.
+
+    card_id (FK): Card instance.
+
+### 3. Matchmaking & Game Logic
+matchmaking_queue: Temporary pool for pairing.
+
+    user_id (FK): Player searching for a match.
+
+    game_mode: CASUAL or RANKED.
+
+    joined_at: Timestamp of entry.
+
+active_matches: Volatile state for the Game State Machine.
+
+    id (PK): Unique identifier.
+
+    match_uuid (unique): Public ID for Unity communication.
+
+    player_1_id, player_2_id (FK): References to participants.
+
+    game_mode: Mode currently active.
+
+    status: PENDING, SELECTING, PLAYING, FINISHED.
+
+    first_player_id (FK): Starting player.
+
+    current_turn_player_id (FK): Player whose turn is active.
+
+    board_state (JSON): State of the 3x3 grid.
+
+    hands_state (JSON): Remaining cards in both players' hands.
+
+    p1_ready, p2_ready: Readiness flags for card selection.
+
+    p1_disconnected, p2_disconnected: Disconnection flags.
+
+    last_ping_p1, last_ping_p2: Last Unity-Backend heartbeat.
+
+    next_timeout_at: Precise timestamp for turn expiration.
+
+matches: Historical persistent records.
+
+    id (PK): Unique identifier.
+
+    player_1_id, player_2_id (FK): Match participants.
+
+    winner_id (FK, nullable): Match winner (Null if draw).
+
+    game_mode (enum): Type of match played.
+
+    p1_score, p2_score: Final scores.
+
+    created_at (indexed): Match completion timestamp.
+
+### 4. Achievements & Rewards
+achievements: Achievement definitions.
+
+    id (PK): Unique identifier.
+
+    code (unique): Internal code (e.g., 'LEVEL_10').
+
+    category: bronze, silver, gold.
+
+    goal: Required amount to complete.
+
+    points: Profile points rewarded.
+
+    card_reward_id (FK, nullable): Card granted as reward.
+
+achievement_translations: Localized achievement details.
+
+    id (PK): Unique identifier.
+
+    achievement_id (FK): Relation with achievements.
+
+    locale (indexed): es, en, ca.
+
+    title, description: Localized text.
+
+achievement_user (Pivot): User achievement progress.
+
+    user_id (FK): Player progressing.
+
+    achievement_id (FK): Target achievement.
+
+    progress: Current value towards the goal.
+
+    unlocked_at (nullable): Completion timestamp.
+
+    claimed: Boolean flag for reward collection.
+
+### 5. Social & Communication
+friendships: Player relations.
+
+    user_id, friend_id (FK): Relation participants.
+
+    status: pending, accepted, rejected.
+
+
+Relationships Summary
+
+    Users - Cards: Many-to-Many via card_user.
+
+    Users - Achievements: Many-to-Many via achievement_user.
+
+    Users - Stats: One-to-One via player_stats.
+
+    Users - Matches: One-to-Many via matches and active_matches.
+
+    Users - Users: Many-to-Many via friendships.
+
+    Cards - Translations: One-to-Many via card_translations.
+
+    Achievements - Translations: One-to-Many via achievement_translations.
 
 ## Features List
 | Feature                    | Member(s) | Description                                                                 |
@@ -383,7 +471,8 @@ TODO: Rellenar
 
 ### Challenges: 
 
-- igarcia2:
+#### igarcia2:
+
 Developing a cross-platform project that bridges a Unity WebGL frontend with a Laravel backend presented several unique hurdles. Below is a summary of the technical challenges encountered and how they were addressed.
 
 1. UI Architecture and Technical Debt
