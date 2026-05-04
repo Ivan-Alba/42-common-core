@@ -436,20 +436,9 @@ Relationships Summary
 
 ## Modules
 
-TODO: Esto
-
-IMPORTANTE: PONER JUSTIFICACIÓN, COMO SE IMPLEMENTO Y QUIEN TRABAJÓ EN EL MODULO
-  ### 
-
-###  
-
-### 
-
-### 
-
 ### Web
-- **Major**: Use a framework for both the frontend and backend: mirifern, kseligma, daortega, igarcia2
-- **Minor**: Use a frontend framework (React, Vue, Angular, Svelte, etc.): mirifern, igarcia2, daortega
+- **Major**: Use a framework for both the frontend and backend: mirifern, kseligma, daortega, igarcia2.
+- **Minor**: Use a frontend framework (React, Vue, Angular, Svelte, etc.): mirifern, igarcia2, daortega.
 - **Minor**: Use a backend framework (Express, Fastify, NestJS, Django, etc.): kseligma, igarcia2, daortega
 - **Major**: Implement real-time features using WebSockets or similar technology: mirifern, igarcia2
 - **Major**: Allow users to interact with other users: mirifern, igarcia2
@@ -667,5 +656,3 @@ Maintaining a "Source of Truth" between two players in an online environment was
     The Challenge: Preventing desynchronization (desync) between Player 1 and Player 2 while accounting for network latency.
 
     The Solution: I implemented server-side validation to oversee critical game moves. This ensures that even if one client experiences lag, the backend remains the final authority on the game state, preserving the integrity of the match.
-    
-TODO: Challenges
