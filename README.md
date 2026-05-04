@@ -478,17 +478,145 @@ IMPORTANTE: PONER JUSTIFICACIÓN, COMO SE IMPLEMENTO Y QUIEN TRABAJÓ EN EL MODU
 
 ## Individual Contributions
 
-TODO: Rellenar 
-
 ### mirifern
 
 ### kseligma
 
+1. Designing a Robust Authentication System
+
+    The Challenge:
+    Implementing a secure and scalable authentication flow that could reliably communicate with a Unity WebGL client was more complex than expected. Handling token-based authentication, session persistence, and cross-origin requests required careful coordination. Additionally, aligning authentication behavior between browser contexts and Unity introduced edge cases (e.g., token expiration, silent failures, inconsistent headers).
+    
+    The Solution:
+    I implemented a token-based system using Laravel’s authentication tools, refining middleware and guards to ensure consistent validation. A significant amount of time was spent debugging request flows and ensuring proper handling of headers and CORS policies. In the end, the system became stable and flexible enough to support both development and production scenarios.
+    
+    The Lesson:
+    Authentication should be treated as a core system early on. Small misconfigurations can cascade into major blockers later.
+
+2. Bootstrapping the Backend Infrastructure
+
+    The Challenge:
+    Setting up a cohesive backend environment involving Laravel, Redis, and real-time services required careful configuration. Ensuring all services communicated correctly—especially in a Dockerized setup—was not trivial.
+    
+    The Solution:
+    I established a modular service configuration, ensuring each component (API, cache, real-time messaging) was independently verifiable before integration. Environment variables and service discovery were standardized to reduce configuration errors.
+    
+    The Lesson:
+    Investing time in a clean, reproducible setup early saves significant debugging effort later in development.
+
+3. Integrating Real-Time Features with Reverb
+
+    The Challenge:
+    Enabling real-time communication between clients required integrating Laravel Reverb with Redis as a broadcasting driver. Debugging event propagation and ensuring messages were delivered reliably across connections proved difficult.
+    
+    The Solution:
+    I implemented structured event broadcasting and carefully monitored channel subscriptions. Testing with controlled scenarios helped isolate timing issues and message loss.
+    
+    The Lesson:
+    Real-time systems introduce non-deterministic behavior, making logging and observability essential.
+
+4. Model Design and Data Consistency
+
+    The Challenge:
+    Designing Eloquent models that accurately reflected game logic while maintaining database normalization required several iterations. Relationships between entities (users, matches, game states) had to be both efficient and flexible.
+    
+    The Solution:
+    I iteratively refined model relationships and introduced validation rules at both the application and database levels. This ensured consistency even when unexpected data flows occurred.
+    
+    The Lesson:
+    Good model design evolves alongside the application—early assumptions often need revisiting.
+
+5. Testing Strategy and Reliability
+
+    The Challenge:
+    Writing meaningful tests for backend logic—especially for authentication and API endpoints—was initially difficult due to dependencies on multiple services and asynchronous flows.
+    
+    The Solution:
+    I developed a combination of unit and feature tests, mocking external dependencies where necessary. Authentication flows were tested extensively to ensure edge cases (invalid tokens, expired sessions) were properly handled.
+    
+    The Lesson:
+    A solid testing strategy is essential for confidence in backend changes, particularly in systems that interact with external clients.
+
+6. Synchronizing Backend with Frontend Expectations
+
+    The Challenge:
+    Ensuring that Laravel APIs matched the expectations of the Unity client required constant alignment. Even small mismatches in DTO structures or response formats could break functionality.
+    
+    The Solution:
+    I maintained close coordination with the frontend logic, standardizing API responses and documenting expected formats. Iterative testing helped quickly identify mismatches.
+    
+    The Lesson:
+    Clear contracts between frontend and backend reduce integration friction and speed up development.
+
 ### daortega
 
-### igarcia2
+Working on the DevOps side of the project meant taking responsibility for orchestrating a fairly complex multi-service architecture using Docker. Ensuring that all services—from Nginx to Laravel, Redis, and WebSockets—worked together reliably introduced several non-trivial challenges.
 
-## Challenges: 
+1. Multi-Service Orchestration and Dependency Management
+
+    The Challenge:
+    Coordinating startup order and inter-service communication across a large Docker Compose setup was a constant source of issues. Many services depended on others being fully ready (not just running), particularly Laravel, Reverb, and the database.
+    
+    The Solution:
+    I implemented detailed depends_on conditions combined with healthchecks for each critical service. This ensured containers only started when their dependencies were actually healthy, not just initialized. Fine-tuning retry intervals and start periods was key to stabilizing the environment.
+    
+    The Lesson:
+    In containerized environments, “running” does not mean “ready.” Proper healthchecks are essential for real stability.
+
+2. Nginx Reverse Proxy and Routing Complexity
+    
+    The Challenge:
+    Configuring Nginx as a central reverse proxy for multiple services (Laravel API, React frontend, Unity game, and WebSocket server) required careful routing and SSL handling. Misconfigurations often resulted in hard-to-debug 502/504 errors or incorrect request forwarding.
+    
+    The Solution:
+    I structured Nginx configuration into modular files and carefully mapped upstream services. SSL certificates were mounted and configured to support HTTPS locally, while proxy rules were adjusted to correctly handle WebSocket upgrades and API routing.
+    
+    The Lesson:
+    Nginx becomes a critical single point of failure in this kind of architecture—clarity and modularity in config files make a huge difference.
+
+3. Volume Management and File Permissions
+
+    The Challenge:
+    Managing a mix of bind mounts and Docker volumes (for code, dependencies, and persistent data) led to frequent permission issues, especially with Laravel storage, vendor files, and database data.
+    
+    The Solution:
+    I separated concerns by using named volumes for dependencies (e.g., vendor, node_modules) and bind mounts for source code. For persistent services like MariaDB and Redis, bind mounts were configured with explicit driver options to maintain consistent     ownership and avoid corruption.
+    
+    The Lesson:
+    Volume strategy is not trivial—choosing the wrong type can break development workflows or corrupt stateful services.
+
+4. Environment Configuration and Secrets Handling
+
+    The Challenge:
+    Managing environment variables and sensitive data (like database credentials) across multiple containers while keeping the setup secure and reproducible was tricky.
+    
+    The Solution:
+    I leveraged Docker secrets for sensitive values and centralized configuration through .env files. This ensured credentials were not hardcoded while still being accessible where needed.
+    
+    The Lesson:
+    Separating configuration from code is essential, but it must be done in a way that remains developer-friendly.
+
+5. Real-Time and Background Processing Integration
+
+    The Challenge:
+    Running auxiliary services like Laravel queues, scheduler, and WebSocket server alongside the main application required ensuring they remained synchronized and didn’t silently fail.
+    
+    The Solution:
+    Dedicated containers were created for workers, scheduler, and Reverb, each with their own healthchecks and restart policies. This improved observability and made failures easier to detect and isolate.
+    
+    The Lesson:
+    Splitting responsibilities into separate containers increases complexity, but greatly improves reliability and maintainability.
+
+6. Debugging Distributed Failures
+
+    The Challenge:
+    When something broke, it was rarely obvious where the issue originated—errors could stem from networking, container state, misconfigured volumes, or service-level bugs.
+    
+    The Solution:
+    I developed a workflow for systematically debugging the stack using logs, container inspection, and incremental isolation of services. Healthchecks also helped quickly identify which component was failing.
+    
+    The Lesson:
+    Debugging in a distributed system requires structured thinking—guessing is inefficient when multiple layers are involved.
 
 ### igarcia2:
 
