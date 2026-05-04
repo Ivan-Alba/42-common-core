@@ -355,7 +355,7 @@ IMPORTANTE: PONER JUSTIFICACIÓN, COMO SE IMPLEMENTO Y QUIEN TRABAJÓ EN EL MODU
 
 ### Accessibility and Internationalization
 - **Minor**: Support for multiple languages (at least 3 languages): kseligma, igarcia2, mirifern
-- **Minor**: Support for additional browsers: mirifern
+- **Minor**: Support for additional browsers: mirifern, igarcia2
 
 ### User Management
 - **Major**: Standard user management and authentication: kseligma, mirifern
@@ -367,9 +367,7 @@ IMPORTANTE: PONER JUSTIFICACIÓN, COMO SE IMPLEMENTO Y QUIEN TRABAJÓ EN EL MODU
 ### Gaming and user experience
 - **Major**: Implement a complete web-based game where users can play against each other: igarcia2
 - **Major**: Remote players — Enable two players on separate computers to play the same game in real-time: kseligma, igarcia2, mirifern, daortega 
-- **Minor**: Game customization options. TODO: ???
 - **Minor**: A gamification system to reward users for their actions: igarcia2, mirifern
-- **Minor**: Implement spectator mode for games. TODO: ???
 
 ## Individual Contributions
 
@@ -385,4 +383,55 @@ TODO: Rellenar
 
 ### Challenges: 
 
+- igarcia2:
+Developing a cross-platform project that bridges a Unity WebGL frontend with a Laravel backend presented several unique hurdles. Below is a summary of the technical challenges encountered and how they were addressed.
+
+1. UI Architecture and Technical Debt
+
+During the development process, I realized that Unity's UI Toolkit would have been a more efficient choice for matching web-based frontend designs. However, by the time this was assessed, a significant portion of the interface was already built using the traditional uGUI (Canvas) system.
+
+    The Challenge: The existing UI was already deeply integrated with the game logic and event systems.
+
+    The Lesson: Switching systems mid-development would have introduced too much technical debt. I decided to stick with and optimize uGUI to meet deadlines, highlighting the importance of early-stage framework evaluation.
+
+2. Infrastructure and Docker on Windows
+
+Managing a full-stack environment using Docker Desktop on Windows proved to be a significant time sink.
+
+    The Challenge: Issues regarding file system permissions, WSL2 integration, and networking overhead between containers and the host machine caused frequent bottlenecks.
+
+    The Solution: Extensive troubleshooting and volume optimization were required to reach a stable state, emphasizing the need for environment-specific setup time in full-stack projects.
+
+3. SSL and Secure Networking (Unity to API)
+
+Ensuring secure communication between the Unity client and the Laravel API was a priority, specifically when dealing with self-signed certificates in a local environment.
+
+    The Challenge: Unity’s UnityWebRequest is highly restrictive regarding SSL validation. Getting the game to trust a local certificate while navigating browser-specific security policies was a complex task.
+
+    The Result: I successfully implemented a custom CertificateHandler to manage handshakes, ensuring the game remains functional across most modern browsers despite certificate eccentricities.
+
+4. Transitioning from Simulation to Real Integration
+
+In the early phases, I used a custom NetworkSimulationServer to develop game logic independently.
+
+    The Challenge: Moving from a local simulation to a real-time connection with the Laravel backend introduced complexities in data synchronization and DTO (Data Transfer Object) alignment.
+
+    The Solution: This transition required synchronizing the development pace of both the API and the game client to ensure that authentication flows and game states were perfectly mirrored.
+
+5. Robust Lifecycle Management in WebGL
+
+WebGL games are particularly sensitive to abrupt browser closures or "hard exits."
+
+    The Challenge: Force-closing a tab often left Coroutines and asynchronous loops in an unstable state, which could lead to console errors or memory leaks.
+
+    The Solution: I implemented a system of state flags and safety checks. By protecting sensitive code blocks and verifying object existence before execution, I ensured that the game handles abrupt disconnects gracefully without crashing the client-side logic.
+
+6. Network State Consistency and Synchronization
+
+Maintaining a "Source of Truth" between two players in an online environment was a primary concern for the gameplay experience.
+
+    The Challenge: Preventing desynchronization (desync) between Player 1 and Player 2 while accounting for network latency.
+
+    The Solution: I implemented server-side validation to oversee critical game moves. This ensures that even if one client experiences lag, the backend remains the final authority on the game state, preserving the integrity of the match.
+    
 TODO: Challenges
