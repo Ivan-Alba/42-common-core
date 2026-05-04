@@ -467,6 +467,28 @@ Relationships Summary
 
 ### mirifern
 
+1. Initial Concept & Architectural Management
+
+    My work began with defining the "Nexus Nine" aesthetic, moving from abstract ideas to a functional architecture. I focused on building a scalable frontend that could handle the complexity of a real-time multiplayer platform.
+    Design System & Corporate Identity: I created a comprehensive Corporate Identity Document to standardize the project's visual language. This included defining the color palette, typography, and UI patterns to ensure consistency across the entire application.
+    Visual Assets & Figma Prototyping: I designed the initial wireframes and interactive prototypes in Figma. Furthermore, I personally illustrated and designed all the digital cards and graphical assets found within the interface.
+    Decoupled Architecture: I managed the frontend architecture by implementing a Custom Hook pattern (e.g., useFriendActions). This allowed me to separate the business logic (API calls and data processing) from the UI components, making the code easier to maintain and test.
+
+2. Implemented Features
+ 
+    Profile & Social Hub: Developed the Profile.tsx and Friends.tsx views, implementing logic for player search, real-time status updates, and interactive user badges.
+    Match History & Pagination: Implemented a paginated history system to display match records in groups of 5, optimizing the rendering of the 15 most recent matches provided by the backend.
+    Global State Synchronization: Integrated the FriendsContext to ensure that friendship status changes were reflected globally throughout the application without requiring manual page reloads.
+
+3. Technical Challenges
+    The most significant hurdle was the integration of real-time notifications with React's state management, specifically regarding the friendship request flow:
+
+    - Reverb & React Race Conditions:
+    -- Problem: When a friendship request was sent or accepted, I encountered a race condition between the manual state update in React and the asynchronous broadcast from Laravel Reverb.
+    -- Solution: I implemented a strict event-handling logic within the AuthProvider and FriendsContext. I used a combination of unique identifiers for every event and a refined filtering system that cross-references current state with incoming socket data, ensuring that the UI only reacts to the first valid source of truth.
+      
+
+
 ### kseligma
 
 1. Designing a Robust Authentication System
