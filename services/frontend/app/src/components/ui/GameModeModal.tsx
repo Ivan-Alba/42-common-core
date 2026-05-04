@@ -14,18 +14,18 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();
-    
-	/* Get user stats from unified model */
-    const isRankedUnlocked = (user?.stats?.experience || 0) > 100;
+
+    /* Get user stats from unified model */
+    const isRankedUnlocked = (user?.stats?.campaign || 0) > 3;
     const maxCampaignPhase = user?.stats?.campaign || 1;
 
-	/* State to control the selected phase in the dropdown */
+    /* State to control the selected phase in the dropdown */
     const [selectedPhase, setSelectedPhase] = useState<number>(1);
 
-	/* Dropdown state for campaign phase selector */
-	const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    /* Dropdown state for campaign phase selector */
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
-	/* Update selected campaign phase to the max available each time the modal opens */
+    /* Update selected campaign phase to the max available each time the modal opens */
     useEffect(() => {
         if (isOpen) {
             setSelectedPhase(maxCampaignPhase);
@@ -43,7 +43,7 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
     return createPortal(
         <div className="modal-backdrop animate-fade-in-up">
             <div className="modal-content max-w-5xl">
-            
+
                 {/* Modal Header */}
                 <div className="flex justify-between items-center p-6 border-b border-white/10 sticky top-0 bg-dark-900/80 backdrop-blur-md z-10">
                     <div>
@@ -55,8 +55,8 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                             {t('game_modes.subtitle')}
                         </p>
                     </div>
-                    <button 
-                        onClick={onClose} 
+                    <button
+                        onClick={onClose}
                         className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors"
                     >
                         <FaTimes size={24} />
@@ -65,7 +65,7 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
 
                 {/* Modal Body - Grid of Game Modes */}
                 <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
+
                     {/* 1. CAMPAIGN MODE (PvE) */}
                     <div className="card-interactive group">
                         <div className="w-14 h-14 bg-brand-500/20 text-brand-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -75,14 +75,14 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         <p className="text-sm text-slate-400 flex-1 mb-6">
                             {t('game_modes.campaign_desc')}
                         </p>
-                        
+
                         <div className="bg-dark-900 border border-white/5 rounded-xl p-3 mb-6 text-xs text-slate-300 flex items-center justify-between">
                             <span>{t('game_modes.current_phase')}:</span>
-                            
+
                             {/* Dinamic Dropdown for the Phase Selector */}
                             <div className="relative">
-								{/* The "button" that shows the current phase and toggles the dropdown */}
-                                <button 
+                                {/* The "button" that shows the current phase and toggles the dropdown */}
+                                <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="flex items-center gap-2 bg-transparent text-brand-500 font-bold hover:text-brand-400 transition-colors focus:outline-none"
                                 >
@@ -90,16 +90,16 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                                     <span className="text-[10px]">▼</span>
                                 </button>
 
-								{/* List of options only if dropdown is open */}
+                                {/* List of options only if dropdown is open */}
                                 {isDropdownOpen && (
                                     <>
-										{/* Invisible background to close the menu when clicking outside */}
-                                        <div 
-                                            className="fixed inset-0 z-40" 
+                                        {/* Invisible background to close the menu when clicking outside */}
+                                        <div
+                                            className="fixed inset-0 z-40"
                                             onClick={() => setIsDropdownOpen(false)}
                                         ></div>
 
-										{/* Div to handle dropdown direction and positioning */}
+                                        {/* Div to handle dropdown direction and positioning */}
                                         <div className="absolute right-0 bottom-full mb-2 w-48 bg-dark-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col">
                                             {Array.from({ length: maxCampaignPhase }, (_, i) => i + 1).map((phaseNumber) => (
                                                 <button
@@ -108,9 +108,8 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                                                         setSelectedPhase(phaseNumber);
                                                         setIsDropdownOpen(false);
                                                     }}
-                                                    className={`w-full text-right px-4 py-3 text-sm font-bold transition-colors hover:bg-white/10 ${
-                                                        selectedPhase === phaseNumber ? 'text-brand-500 bg-white/5' : 'text-slate-300'
-                                                    }`}
+                                                    className={`w-full text-right px-4 py-3 text-sm font-bold transition-colors hover:bg-white/10 ${selectedPhase === phaseNumber ? 'text-brand-500 bg-white/5' : 'text-slate-300'
+                                                        }`}
                                                 >
                                                     {t(`game_modes.campaign${phaseNumber}`)}
                                                 </button>
@@ -121,7 +120,7 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                             </div>
                         </div>
 
-                        <button 
+                        <button
                             onClick={() => handleSelectMode(`CAMPAIGN_${selectedPhase}`)}
                             className="btn-primary w-full py-3 rounded-xl font-bold mt-auto"
                         >
@@ -138,16 +137,16 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         <p className="text-sm text-slate-400 flex-1 mb-6">
                             {t('game_modes.casual_desc')}
                         </p>
-                        
+
                         <div className="mt-auto space-y-3">
-                            <button 
+                            <button
                                 onClick={() => handleSelectMode('PVP_CASUAL_UNLIMITED')}
                                 className="w-full bg-dark-900 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl font-bold text-sm transition-colors flex justify-between items-center px-4"
                             >
                                 <span>{t('game_modes.unlimited')}</span>
                                 <span className="text-xs text-slate-500 font-normal">{t('game_modes.no_cost_limit')}</span>
                             </button>
-                            <button 
+                            <button
                                 onClick={() => handleSelectMode('PVP_CASUAL_LIMITED')}
                                 className="w-full bg-dark-900 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl font-bold text-sm transition-colors flex justify-between items-center px-4"
                             >
@@ -179,11 +178,11 @@ const GameModeModal: React.FC<GameModeModalProps> = ({ isOpen, onClose }) => {
                         </p>
 
                         <div className="bg-dark-900 border border-white/5 rounded-xl p-3 mb-6 text-xs text-slate-300 flex items-center justify-between">
-                            <span className="flex items-center gap-2"><FaShieldAlt className="text-slate-500"/> {t('game_modes.deck_limit')}:</span>
+                            <span className="flex items-center gap-2"><FaShieldAlt className="text-slate-500" /> {t('game_modes.deck_limit')}:</span>
                             <span className="font-bold text-white">4 pts</span>
                         </div>
 
-                        <button 
+                        <button
                             disabled={!isRankedUnlocked}
                             onClick={() => handleSelectMode('PVP_RANKED')}
                             className={`w-full py-3 rounded-xl font-bold mt-auto transition-colors ${isRankedUnlocked ? 'bg-warning hover:bg-warning/80 text-dark-900' : 'bg-dark-900 text-slate-500 border border-white/10'}`}

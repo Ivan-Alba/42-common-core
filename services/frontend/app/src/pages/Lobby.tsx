@@ -24,13 +24,15 @@ const Lobby = () => {
     const matchmakingStarted = useRef(false);
 
     const getModeDetails = () => {
-        if (mode === 'CAMPAIGN_1') return { title: 'Campaign 1 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
-        if (mode === 'CAMPAIGN_2') return { title: 'Campaign 2 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
-        if (mode === 'CAMPAIGN_3') return { title: 'Campaign 3 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
-        if (mode === 'CAMPAIGN_4') return { title: 'Campaign 4 PVE', icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
-        if (mode === 'PVP_RANKED') return { title: 'Ranked Match', icon: <FaTrophy className="text-warning text-4xl mb-2" /> };
-        if (mode === 'PVP_CASUAL_LIMITED') return { title: `Casual Match (Limited)`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
-        if (mode === 'PVP_CASUAL_UNLIMITED') return { title: `Casual Match (Unlimited)`, icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_1') return { title: t(`game_modes.campaign`) + ` - ` + t(`game_modes.campaign1`), icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_2') return { title: t(`game_modes.campaign`) + ` - ` + t(`game_modes.campaign2`), icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_3') return { title: t(`game_modes.campaign`) + ` - ` + t(`game_modes.campaign3`), icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'CAMPAIGN_4') return { title: t(`game_modes.campaign`) + ` - ` + t(`game_modes.campaign4`), icon: <FaRobot className="text-brand-500 text-4xl mb-2" /> };
+        if (mode === 'PVP_RANKED') return { title: t(`game_modes.ranked`), icon: <FaTrophy className="text-warning text-4xl mb-2" /> };
+        if (mode === 'PVP_CASUAL_LIMITED') return {
+            title: t(`game_modes.casual`) + ` - ` + t(`game_modes.limited`), icon: <FaUsers className="text-brand-500 text-4xl mb-2" />
+        };
+        if (mode === 'PVP_CASUAL_UNLIMITED') return { title: t(`game_modes.casual`) + ` - ` + t(`game_modes.unlimited`), icon: <FaUsers className="text-brand-500 text-4xl mb-2" /> };
         return { title: 'Unknown Mode', icon: null };
     };
 
@@ -139,8 +141,8 @@ const Lobby = () => {
                     <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">{title}</h1>
                     <p className="text-slate-400">
                         {isMatchFound
-                            ? "¡Partida lista! Preparando el tablero..."
-                            : isPvE ? "Cargando entorno de simulación..." : "Buscando oponente de tu nivel..."}
+                            ? t(`common.match_found`, 'Match found! Preparing your game...')
+                            : isPvE ? "Cargando entorno de simulación..." : t(`common.searching_opponent`, 'Searching opponent...')}
                     </p>
                 </div>
 
@@ -164,7 +166,7 @@ const Lobby = () => {
                             {user?.username}
                         </h3>
                         <span className="text-xs text-brand-400 font-medium bg-brand-500/10 px-3 py-1 rounded-full mt-2">
-                            Ready
+                            {t('common.ready', 'Ready')}
                         </span>
                     </div>
 
@@ -198,11 +200,11 @@ const Lobby = () => {
                             )}
                         </div>
                         <h3 className="text-lg font-bold text-white text-center w-full truncate">
-                            {isMatchFound && opponent ? opponent.username : 'Searching...'}
+                            {isMatchFound && opponent ? opponent.username : t('common.searching', 'Searching...')}
                         </h3>
                         <span className={`text-xs font-medium px-3 py-1 rounded-full mt-2 transition-colors duration-500
                             ${isMatchFound ? 'bg-danger/10 text-danger' : 'bg-white/5 text-slate-500'}`}>
-                            {isMatchFound ? 'Ready' : 'Waiting'}
+                            {isMatchFound ? t(`common_ready`) : t(`common.waiting`)}
                         </span>
                     </div>
                 </div>
@@ -228,7 +230,7 @@ const Lobby = () => {
                         ) : (
                             <>
                                 <FaTimes />
-                                {t('common.cancel', 'Cancelar Búsqueda')}
+                                {t('common.cancel_search', 'Cancel Search')}
                             </>
                         )}
                     </button>

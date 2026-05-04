@@ -14,14 +14,20 @@
     "avatar": "Avatar",
     "accept": "Accept",
     "decline": "Cancel",
-	"continue": "Continue",
+    "continue": "Continue",
     "you": "You",
     "all": "All",
     "player": "Player",
     "opponent": "Opponent",
     "exit": "Exit",
     "show_all": "Show all",
-    "show_less": "Show less"
+    "show_less": "Show less",
+    "searching_opponent": "Searching opponent...",
+    "match_found": "Match found! Preparing the board...",
+    "ready": "Ready",
+    "waiting": "Waiting",
+    "searching": "Searching...",
+    "cancel_search": "Cancel Search"
   },
   "validation": {
     "required": "This field is required.",
@@ -112,12 +118,12 @@
   "game_modes": {
     "title": "Select Game Mode",
     "subtitle": "Choose your battlepath to glory.",
-	"campaign": "Campaign (PvE)",
+    "campaign": "Campaign (PvE)",
     "campaign1": "1 - Basic",
-	"campaign2": "2 - Intermediate",
-	"campaign3": "3 - Advanced",
-	"campaign4": "4 - Expert",
-	"campaign5": "5 - Master",
+    "campaign2": "2 - Intermediate",
+    "campaign3": "3 - Advanced",
+    "campaign4": "4 - Expert",
+    "campaign5": "5 - Master",
     "campaign_desc": "Learn the rules, unlock cards, and master the mechanics. Perfect for beginners.",
     "current_phase": "Current Phase",
     "casual": "Casual Match (PvP)",
@@ -136,7 +142,7 @@
     "title": "Friends",
     "subtitle": "Your friends list",
     "search_placeholder": "Enter username",
-	"player_not_found": "Player not found.",
+    "player_not_found": "Player not found.",
     "no_friends": "You have no friends added yet.",
     "already_friend": "Friend",
     "pending": "Pending",
@@ -222,30 +228,30 @@
     "position": "Position",
     "trend": "Trend",
     "points": "Points",
-	"stats_initials": {
-		"win": "W",
-		"loss": "L",
-		"draw": "D"
-	}
+    "stats_initials": {
+      "win": "W",
+      "loss": "L",
+      "draw": "D"
+    }
   },
   "lobby": {
-	"waiting": "Waiting for opponent...",
-	"cancel": "Cancel",
-	"opponent_found": "Opponent found! Starting game...",
-	"opponent_left": "Opponent left the lobby. Returning to dashboard...",
-	"error": "An error occurred while finding a match. Please try again.",
-	"searching": "Searching for a match...",
-	"invite_sent": "Invitation sent! Waiting for opponent to accept...",
-	"invite_received": "You have received a game invitation from",
-	"accept_invite": "Accept",
-	"decline_invite": "Decline"
+    "waiting": "Waiting for opponent...",
+    "cancel": "Cancel",
+    "opponent_found": "Opponent found! Starting game...",
+    "opponent_left": "Opponent left the lobby. Returning to dashboard...",
+    "error": "An error occurred while finding a match. Please try again.",
+    "searching": "Searching for a match...",
+    "invite_sent": "Invitation sent! Waiting for opponent to accept...",
+    "invite_received": "You have received a game invitation from",
+    "accept_invite": "Accept",
+    "decline_invite": "Decline"
   },
   "game": {
-	"loading": "Starting Nexus Nine...",
-	"rotate_device": "Rotate your device.",
-	"landscape_required": "Nexus Nine is designed to be played in landscape mode.",
-	"penalized": "You cannot play",
-	"time_remaining": "Time remaining: "
+    "loading": "Starting Nexus Nine...",
+    "rotate_device": "Rotate your device.",
+    "landscape_required": "Nexus Nine is designed to be played in landscape mode.",
+    "penalized": "You cannot play",
+    "time_remaining": "Time remaining: "
   },
   "privacy": {
     "1": "Introduction",
