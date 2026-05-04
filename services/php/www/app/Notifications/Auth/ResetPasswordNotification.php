@@ -29,7 +29,7 @@ class ResetPasswordNotification extends ResetPasswordNotificationBase
     {
         app()->setLocale($this->language->value);
 
-        $spaUrl = "https://localhost:7999";
+        $spaUrl = env("SPA_URL");
         $url = $spaUrl . '/reset_password?token=' . $this->token . '&email=' . $notifiable->getEmailForPasswordReset();
 
         return (new MailMessage)
