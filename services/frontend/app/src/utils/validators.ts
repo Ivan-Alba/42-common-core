@@ -22,7 +22,7 @@ export const validateEmail = (email: string, t: any): string => {
 /* Validate password */
 export const validatePassword = (password: string, t: any): string => {
     if (!password) return t("validation.password_required");
-    if (password.length < 6) return t("validation.password_short");
+    if (password.length < 8) return t("validation.password_short");
     if (!PASSWORD_UPPERCASE_REGEX.test(password)) return t("validation.password_capital");
     if (!PASSWORD_NUMBER_REGEX.test(password)) return t("validation.password_number");
     if (!PASSWORD_SPECIAL_REGEX.test(password)) return t("validation.password_special");
