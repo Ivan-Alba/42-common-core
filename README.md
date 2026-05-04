@@ -423,15 +423,15 @@ Relationships Summary
 ## Features List
 | Feature                    | Member(s) | Description                                                                 |
 |---------------------------|-----------|-----------------------------------------------------------------------------|
-| Unified Authentication    |           | Secure login system including password recovery via email and profile-based password updates. |
-| Real-time Matchmaking     |           | Automated system that connects two online players for a live competitive session. |
-| Versus AI Mode            |           | A single-player mode where users can practice against an artificial intelligence with adjustable difficulty. |
-| Multiple Game Modes       |           | Different gameplay variations (e.g., ranked, no card point limit for maximum flexibility) to enhance the core experience. |
-| Global Ranking System     |           | A dynamic leaderboard that calculates and displays player standings based on match results. |
-| Achievement System        |           | A collection of unlockable rewards and milestones based on specific gameplay performance. |
-| Friend Management         |           | A social interface to find, add, and track the online status of other players. |
-| Personal Match History    |           | A dedicated section in the user profile to review past performance and scores. |
-| Containerized Deployment  |           | Full orchestration of all the features above using Docker to ensure system stability. |
+| Unified Authentication    | kseligma / mirifern | Secure login system including password recovery via email and profile-based password updates. |
+| Real-time Matchmaking     | igarcia2          | Automated system that connects two online players for a live competitive session. |
+| Versus AI Mode            | igarcia2   | A single-player mode where users can practice against an artificial intelligence with adjustable difficulty. |
+| Multiple Game Modes       | igarcia2 / mirifern          | Different gameplay variations (e.g., ranked, no card point limit for maximum flexibility) to enhance the core experience. |
+| Global Ranking System     | igarcia2 / mirifern          | A dynamic leaderboard that calculates and displays player standings based on match results. |
+| Achievement System        | igarcia2 / mirifern          | A collection of unlockable rewards and milestones based on specific gameplay performance. |
+| Friend Management         | kseligma / mirifern          | A social interface to find, add, and track the online status of other players. |
+| Personal Match History    | igarcia2 / mirifern          | A dedicated section in the user profile to review past performance and scores. |
+| Containerized Deployment  | daortega          | Full orchestration of all the features above using Docker to ensure system stability. |
 
 
 ## Modules
