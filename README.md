@@ -16,12 +16,13 @@ Progression is a core element of the experience, driven by an achievement system
 
 ### Key Features:
 
-- Competitive Multiplayer: Core interactive gameplay optimized for real-time competition between users.
+- PvP & PvE Game Modes: Choose your challenge by competing against other users in real-time PvP battles or testing your skills in PvE mode.
+- Dynamic AI Opponents: The PvE experience features an intelligent AI system with variable difficulty levels that adapt based on the selected game mode, providing a fair challenge for beginners and a true test for veterans.
 - Automated Matchmaking: An efficient system that pairs available players for immediate game sessions.
-- Achievement System: A set of unlockable milestones that recognize and reward specific Paso 1player accomplishments and milestones.
-- Social Connectivity: A streamlined friend management system to build a network of competitive peers and track their activity.
-- Global Ranking: A dynamic leaderboard that displays player standings and performance metrics across the platform.
-- Profile & Progress Tracking: Secure user accounts that store detailed match history, statistics, and earned rewards.
+- Achievement System: A robust set of unlockable milestones that recognize and reward player accomplishments, offering exclusive rewards as you progress.
+- Social Connectivity: A streamlined friend management system to build a network of competitive peers, manage requests, and track friend activity.
+- Global Leaderboards: A dynamic ranking system that displays top player standings and performance metrics across the entire platform.
+- Profile & Progress Tracking: Personalized user accounts that securely store detailed match history, performance statistics, and earned collections.
 
 ## Instructions
 
@@ -123,7 +124,15 @@ You can `make clean` for clearing up the whole project. (Use carefully)
 
 #### Unity
 
-TODO: Unity references
+- [Unity Manual (2022.3 LTS)](https://docs.unity3d.com/2022.3/Documentation/Manual/index.html)
+- [Unity WebGL Documentation](https://docs.unity3d.com/Manual/webgl-gettingstarted.html)
+- [UnityWebRequest (Networking)](https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest.html)
+- [JSON Serialization in Unity](https://docs.unity3d.com/Manual/JSONSerialization.html)
+- [Interacting with Browser JavaScript](https://docs.unity3d.com/Manual/webgl-interactingwithbrowserscripting.html)
+- [Unity uGUI (Canvas System)](https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/index.html)
+- [ScriptableObjects (Data Management)](https://docs.unity3d.com/Manual/class-ScriptableObject.html)
+- [WebGL: Server configuration (Nginx/Apache)](https://docs.unity3d.com/Manual/webgl-server-configuration-code-samples.html)
+- [Coroutine Lifecycle & Management](https://docs.unity3d.com/Manual/Coroutines.html)
 
 #### Frontend
 
@@ -163,16 +172,16 @@ TODO: Unity references
 - [Nginx](https://nginx.org/en/docs/http/ngx_http_proxy_module.h)
 - [Unity-Nginx](https://docs.unity3d.com/2022.3/Documentation/Manual/web-server-config-nginx.html)
 
-### AI Usage: 
+### AI Usage
 
-Artificial intelligence has been used through the whole project in different manners. 
+Artificial Intelligence has been a key collaborator throughout the entire project lifecycle, serving as a versatile tool for both technical development and creative production:
 
-- Code generation assistance through autocomplete and code snippet generation.
-- Assistance on the architectural design of the backend.
-- Search engine to find resources on internet.
-- Assistance by answering questions, helping the developers understand the tools integrated into the project.
-- Quality assurance. (QA)
-- Debugging assistance. 
+* **Creative Asset Generation**: Leveraged generative AI models to design high-fidelity game backgrounds, unique card illustrations, and various UI elements, ensuring a cohesive visual style across the game.
+* **Code Assistance & Optimization**: Utilized for logic implementation, code snippet generation, and refactoring to improve performance and maintainability.
+* **Architectural Design**: Provided guidance on backend structuring, database normalization, and the design of scalable system architectures.
+* **Advanced Research**: Acted as a specialized search and reference tool to quickly locate documentation, industry best practices, and technical resources.
+* **Educational Support**: Assisted in bridging knowledge gaps by explaining complex concepts and the inner workings of the various frameworks integrated into the project.
+* **Quality Assurance (QA) & Debugging**: Instrumental in identifying potential edge cases, detecting bugs, and providing efficient solutions for complex runtime errors.
 
 ## Team Information
 
@@ -193,27 +202,36 @@ TODO: Team information
 The project has been organized by distributing the tasks by development stack in four parts: Frontend (React+), Backend (Laravel+), Game Development (Unity+) and Devops (Docker +). There has been collaborative work and communication among different stacks to ensure a coordinated development. We communicated by setting up weekly Discord meetings and monthly personal meetings, alongside regular text messages to keep up with each stack's work.  
 
 ### Tools: 
-Github, Visual Studio Code, Google Drive. 
+Unity, Github, Visual Studio Code, Google Drive. 
 
 ### Communication: 
 Discord, Slack, Whatsapp.
 
 ## Technical Stack
 
-- **Frontend**: React, Vite, Tailwind, Pusher, Axios
-- **Backend**: Laravel, Reverb, Redis, Blade, Brevo, Laravel ecosystem dependences (Sanctum, Fortify, Phpunit) 
-- **Database**: We chose MariaDB as our primary database system due to the team's high level of familiarity and prior experience with its ecosystem.
-- **Other**: Docker, Unity.
+- **Frontend**: React, Vite, Tailwind CSS, Axios.
+- **Backend**: Laravel, Redis, Blade, Brevo (Mail), and Laravel ecosystem (Sanctum, Fortify, PHPUnit).
+- **Real-time Communication**: 
+  - **Server-side**: Laravel Reverb (WebSockets).
+  - **Frontend-side**: Laravel Echo / Pusher JS.
+- **Game Engine (Unity)**: 
+  - **Version**: Unity 2022.3 LTS (WebGL).
+  - **Networking**: [NativeWebSockets](https://github.com/endel/NativeWebSocket) for reliable WebGL-compatible WebSocket communication.
+  - **Data Handling**: [Newtonsoft.Json](https://www.newtonsoft.com/json) for robust JSON serialization and DTO mapping between C# and Laravel.
+- **Database**: MariaDB (chosen for its reliability and team expertise).
+- **DevOps & Infrastructure**: Docker, Nginx.
 
 ### Major Technical Choices Justification: 
 
-TODO: Justificaciones
+- **React**: Chosen for the dashboard and non-game interface due to its component-based architecture and efficient state management. It allows for a fast, responsive UI for social features, profile management, and the marketplace, perfectly complementing the Unity game client.
 
-- React:
-- Unity: 
-- Laravel is a PHP framework with a big community and a rich ecosystem that offers solutions to many of the problems an application like ours have.
-- Reverb is a Laravel-adjacent websocket server, which is fundamental for multiplayer features facilitating live interaction between browser users.
-- We used Docker as a container solution due to its easy-to-deploy capabilities and configuration system. Another reason is its compatibility with our testing environment and familiarity.
+- **Unity (WebGL)**: Selected as the core game engine for its industry-standard WebGL export capabilities. The Unity lead, **igarcia2**, holds an official **Unity Basic Developer** certification, providing a solid technical foundation that facilitated an accelerated development cycle. This expertise allowed the project to move quickly beyond basic implementation to focus on custom networking solutions (such as NativeWebSockets) and the creation of complex game rules. Furthermore, the use of C# provided a strictly-typed, object-oriented framework that ensures the game logic remains robust and maintainable.
+
+- **Laravel**: A PHP framework with a vast community and a rich ecosystem. We leveraged its built-in features for authentication (Sanctum), database management (Eloquent), and task scheduling to handle the complex backend logic required for a persistent multiplayer world.
+
+- **Reverb**: As a Laravel-native WebSocket server, Reverb is the backbone of our multiplayer functionality. It provides the low-latency, real-time communication necessary for synchronizing turns, card moves, and chat messages between players and the backend.
+
+- **Docker**: Used as our containerization solution to ensure environment parity between development and production. Its "write once, run anywhere" philosophy simplifies deployment and ensures that the entire stack—from Redis to MariaDB—works seamlessly across different machines.
 
 ## Database Schema
 
@@ -469,9 +487,9 @@ TODO: Rellenar
 
 ### igarcia2
 
-### Challenges: 
+## Challenges: 
 
-#### igarcia2:
+### igarcia2:
 
 Developing a cross-platform project that bridges a Unity WebGL frontend with a Laravel backend presented several unique hurdles. Below is a summary of the technical challenges encountered and how they were addressed.
 
