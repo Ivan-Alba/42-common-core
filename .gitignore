@@ -1,5 +1,16 @@
+# Compilation prerequisites and temporaries
 *.swp
 *.o
 *.d
 *.a
-cub3d
+*.out
+
+# Debugging and memory analysis
+*.dSYM/
+valgrind-out*
+.vscode/
+.idea/
+
+# System and garbage files
+.DS_Store
+Thumbs.db
