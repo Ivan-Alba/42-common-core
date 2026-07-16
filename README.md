@@ -84,7 +84,7 @@ This section highlights the three most complex and multidisciplinary engineering
 > **Security, Integrity & Edge Cases**<br>
 > Beyond core gameplay, I implemented multiple security layers to protect session state, including strict matchmaking queue penalties for "rage-quits" or sudden disconnections, idempotent validations on deck confirmations to prevent duplicate packet injection, and rigorous API request auditing. 
 > 
-> 🔗 *[Read the complete Technical & Socket Contract Documentation here](./path_to_transcendence_folder/README.md)*
+> 🔗 *[Read the complete Technical & Socket Contract Documentation here](./transcendence/README.md)*
 
 ---
 
@@ -119,7 +119,7 @@ This section highlights the three most complex and multidisciplinary engineering
 > **Strict Memory Management & Rigor**<br>
 > Operating at the systems level in C, this project enforces strict memory tracking. Any dynamic allocation (`malloc`) is monitored to prevent memory leaks. The entire codebase is audited with Valgrind and compiler flags to ensure total stability, flawless garbage collection on execution failure, and absolute safety.
 > 
-> 🔗 *[Explore the complete Lexer & Parser implementation here](./path_to_minishell_folder/README.md)*
+> 🔗 *[Explore the complete Lexer & Parser implementation here](./minishell/README.md)*
 
 ---
 
@@ -156,7 +156,7 @@ This section highlights the three most complex and multidisciplinary engineering
 > **Performance Tuning & Math Optimization**<br>
 > Operating at the systems level in C, this project enforces strict memory tracking. Any dynamic allocation (`malloc`) is monitored to prevent memory leaks. To achieve a stable and smooth rendering loop at native retro resolutions, the engine corrects the "fisheye" distortion using angle-offset cosine scaling and performs direct pixel manipulation on the MinilibX image buffer before pushing the frames to the screen.
 > 
-> 🔗 *[Explore the mathematical raycasting and rendering implementation here](./path_to_cub3d_folder/README.md)*
+> 🔗 *[Explore the mathematical raycasting and rendering implementation here](./cub3d/README.md)*
 
 ---
 
@@ -167,13 +167,13 @@ Below is the complete index of the other fundamental projects I developed throug
 | Project / Repository | Grade / Performance | Tech Stack | Core Focus & Engineering Architecture |
 | :--- | :---: | :--- | :--- |
 | [📁 ft_irc](./ft_irc) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C++98` `Sockets` `IRC` | Developed a fully functional Internet Relay Chat (IRC) server from scratch using non-blocking I/O multiplexing (`poll()`) and TCP/IP stream sockets. |
-| [📁 Inception](./Inception) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `Docker` `Nginx` `WordPress` `MariaDB` | Built a multi-container microservice system administration environment, configuring secure TLS/SSL termination, persistent volumes, and custom Dockerfiles. |
-| [📁 CPP Modules (00 - 09)](./cpp_modules) | <img src="https://img.shields.io/badge/100%20%2F%20100-Perfect-2EA043?style=flat-square&logo=42&logoColor=white" alt="100/100" /> | `C++98` `OOP` `STL` | A rigorous 10-module series mastering Object-Oriented Programming, Ad-hoc polymorphism, Orthodox Canonical Form, memory casts, templates, and STL containers. |
-| [📁 Philosophers](./Philosophers) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C` `Threads` `Mutex` | Solved the Dining Philosophers problem to master multi-threading and concurrency, preventing deadlocks, data races, and managing strict resource synchronization via mutexes and semaphores. |
+| [📁 Inception](./inception) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `Docker` `Nginx` `WordPress` `MariaDB` | Built a multi-container microservice system administration environment, configuring secure TLS/SSL termination, persistent volumes, and custom Dockerfiles. |
+| [📁 CPP Modules (00 - 09)](./cpp_module) | <img src="https://img.shields.io/badge/100%20%2F%20100-Perfect-2EA043?style=flat-square&logo=42&logoColor=white" alt="100/100" /> | `C++98` `OOP` `STL` | A rigorous 10-module series mastering Object-Oriented Programming, Ad-hoc polymorphism, Orthodox Canonical Form, memory casts, templates, and STL containers. |
+| [📁 Philosophers](./philosophers) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C` `Threads` `Mutex` | Solved the Dining Philosophers problem to master multi-threading and concurrency, preventing deadlocks, data races, and managing strict resource synchronization via mutexes and semaphores. |
 | [📁 push_swap](./push_swap) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C` `Algorithms` `Complexity` | Engineered a highly optimized sorting algorithm using two stacks, minimizing the number of atomic instructions required (achieving top efficiency limits). |
 | [📁 pipex](./pipex) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C` `Unix` `Processes` | Recreated the behavior of Unix pipelines (`cmd1 \| cmd2`) managing environment paths, execution forks, and strict file descriptor redirections. |
-| [📁 Born2beroot](./Born2beroot) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `Linux` `Debian` `LVM` `AppArmor` | System administration challenge setup of a secure Debian server, configuring strict password policies, sudo groups, LVM partitions, SSH keys, and lighttpd. |
-| [📁 NetPractice](./NetPractice) | <img src="https://img.shields.io/badge/100%20%2F%20100-Perfect-2EA043?style=flat-square&logo=42&logoColor=white" alt="100/100" /> | `Networking` `TCP/IP` `Subnetting` | Evaluated and resolved complex network topology issues, managing IP routing tables, CIDR subnetting masking, and interface configuration. |
+| [📁 Born2beroot](./born2beroot) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `Linux` `Debian` `LVM` `AppArmor` | System administration challenge setup of a secure Debian server, configuring strict password policies, sudo groups, LVM partitions, SSH keys, and lighttpd. |
+| [📁 NetPractice](./netpractice) | <img src="https://img.shields.io/badge/100%20%2F%20100-Perfect-2EA043?style=flat-square&logo=42&logoColor=white" alt="100/100" /> | `Networking` `TCP/IP` `Subnetting` | Evaluated and resolved complex network topology issues, managing IP routing tables, CIDR subnetting masking, and interface configuration. |
 | [📁 FdF](./fdf) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C` `MinilibX` `Graphics` | Implemented a 3D wireframe isometric graphics engine by parsing geographical map coordinates and programming Bresenham's line rendering algorithms. |
 | [📁 get_next_line](./get_next_line) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C` `Memory` `I/O` | Programmed a highly optimized algorithm to read line-by-line from any active file descriptor, managing dynamic buffer sizing and custom static variables. |
 | [📁 ft_printf](./ft_printf) | <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" /> | `C` `Variadic_FX` `I/O` | Recreated the standard C `printf` function from scratch, managing variadic arguments (`stdarg.h`) and standard output conversions. |
