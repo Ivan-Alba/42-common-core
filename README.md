@@ -54,8 +54,7 @@ This section highlights the three most complex and multidisciplinary engineering
 ### 1. 🃏 ft_transcendence — The Ultimate Web & Game Integration
 <!-- TRANSCENDENCE CARD PLACEHOLDER -->
 <p align="center">
-  <!-- When available, replace with your custom GIF/screenshot: <img src="./path_to_gif/transcendence.gif" width="800" alt="NexusNine Gameplay" /> -->
-  <img src="https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?auto=format&fit=crop&w=800&q=80" width="600" alt="NexusNine Platform" />
+  <img src="./.github/README_assets/transcendence-collection.gif" width="550" alt="NexusNine Card Collection & Flip" />
 </p>
 
 #### 📊 Project Specification & Performance
