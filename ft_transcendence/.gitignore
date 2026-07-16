@@ -1,0 +1,22 @@
+/database/*
+/private/*
+/certs/*
+/secrets/*
+/php_storage/logs/*
+/php_storage/views/*
+/php_storage/cache/*
+/php_storage/sessions/*
+
+
+
+# Laravel public storage
+/services/php/www/public/storage
+
+# Local environment
+.env
+
+# Visual Studio files
+.vs/
+*.vsidx
+*.suo
+*.user

@@ -1,0 +1,293 @@
+services:
+# Web Server (Proxy)
+  nginx: 
+    build: ./services/nginx
+    image: nginx
+    container_name: nginx 
+    ports:
+      - "7999:7999"
+    volumes:
+      - ${PWD}/services/nginx/conf:/etc/nginx/conf.d 
+      - ${PWD}/certs:/etc/ssl/certs
+      - ${PWD}/private:/etc/ssl/private
+      #- ${PWD}/services/php/www:/var/www/
+      - ${PWD}/services/php/www/public:/var/www/public
+      - php_vm:/var/www/storage/
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD-SHELL", "curl -k -f https://localhost:7999 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      laravel:
+        condition: service_healthy
+      reverb:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+      game:
+        condition: service_healthy
+    restart: always
+
+# Frontend (React)
+  frontend:
+    build: ./services/frontend
+    image: frontend
+    container_name: frontend
+    environment:
+      - VITE_APP_NAME=${VITE_APP_NAME}
+      - VITE_REVERB_APP_KEY=${VITE_REVERB_APP_KEY}
+      - VITE_REVERB_HOST=${VITE_REVERB_HOST}
+      - VITE_REVERB_PORT=${VITE_REVERB_PORT}
+      - VITE_REVERB_SCHEME=${VITE_REVERB_SCHEME}
+      - SPA_URL=${SPA_URL}
+    volumes:
+      - ./services/frontend/app:/app
+      - node_modules_vm:/app/node_modules # To keep the container internal modules
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5173 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: always
+
+# Backend (Laravel)
+  laravel:
+    build: ./services/php
+    image: php
+    container_name: laravel
+    secrets:
+    - db_password
+    environment:
+      - RUN_SETUP=true
+    volumes:
+      - .env:/var/www/.env
+      - ${PWD}/services/php/www:/var/www
+      - php_vendor_vm:/var/www/vendor # To keep the container internal modules
+      - php_vm:/var/www/storage
+      - ${PWD}/services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+    - transcendence
+    healthcheck:
+      test: ["CMD-SHELL", "cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+
+  laravel_scheduler:
+    build: ./services/php
+    image: php
+    container_name: laravel_scheduler
+    secrets:
+    - db_password
+    environment:
+      - RUN_SETUP=false
+    # 'schedule:work' is the command that runs the scheduler every minute automatically
+    command: php artisan schedule:work
+    volumes:
+      - .env:/var/www/.env
+      - ${PWD}/services/php/www:/var/www
+      - php_vendor_vm:/var/www/vendor
+      - php_vm:/var/www/storage
+      - ${PWD}/services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - transcendence
+    healthcheck:
+      # Check if the schedule:work process is alive
+      test: ["CMD-SHELL", "php artisan about || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      laravel:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+    restart: always
+  
+# Game (Nginx)
+  game:
+    build: ./services/game
+    image: game
+    container_name: game
+    volumes:
+    - ${PWD}/services/game/conf:/etc/nginx/conf.d 
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
+
+# Websocket (Reverb)
+  reverb:
+    build: ./services/php
+    image: php
+    container_name: reverb
+    secrets:
+    - db_password
+    environment:
+      - RUN_SETUP=false
+    command: php artisan reverb:start --host=0.0.0.0 --port=6001 --debug
+    volumes:
+      - .env:/var/www/.env
+      - ${PWD}/services/php/www:/var/www
+      - php_vendor_vm:/var/www/vendor # To keep the container internal modules
+      - php_vm:/var/www/storage
+    networks:
+    - transcendence
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:6001 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      laravel:
+        condition: service_healthy
+    restart: always
+
+  laravel_worker:
+    build: ./services/php
+    image: php  
+    container_name: laravel_worker
+    secrets:
+    - db_password
+    environment:
+      - RUN_SETUP=false
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    volumes:
+      - .env:/var/www/.env
+      - ${PWD}/services/php/www:/var/www
+      - php_vendor_vm:/var/www/vendor # To keep the container internal modules
+      - php_vm:/var/www/storage
+      - ${PWD}/services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD-SHELL", "php artisan about || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      laravel:
+        condition: service_healthy
+    restart: always
+
+ # Cache & Queue (Redis)
+  redis:
+    build: ./services/redis
+    image: redis
+    container_name: redis
+    volumes:
+      - redis_vm:/data
+    networks:
+    - transcendence
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: always
+
+  adminer:
+    build: ./services/adminer
+    image: adminer
+    container_name: adminer
+    networks:
+      - transcendence
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: always
+
+  # Database
+  mariadb:
+    build: ./services/mariadb
+    image: mariadb
+    container_name: mariadb
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD_FILE: /run/secrets/db_password
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+    secrets:
+      - db_password
+      - db_root_password
+    volumes:
+      - mariadb_vm:/var/lib/mysql
+    networks:
+      - transcendence
+    healthcheck:
+      test: ["CMD-SHELL", "test -s /var/lib/mysql/${DB_DATABASE} && mysqladmin ping -u root -p$$(cat /run/secrets/db_root_password)" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    env_file: .env
+    restart: always
+
+secrets:
+  db_password:
+    file: ${PWD}/secrets/db_password.txt
+  db_root_password:
+    file: ${PWD}/secrets/db_root_password.txt
+
+volumes:
+  node_modules_vm:
+  php_vendor_vm:
+  
+  # We use Bind Mount Volumes when targeting databases to keep container permissions,
+  # user owner and group owner of the files
+  php_vm:
+    driver: local
+    driver_opts:
+      device: "${PWD}/php_storage"
+      o: bind
+      type: none
+
+  redis_vm:
+    driver: local
+    driver_opts:
+      device: "${PWD}/redis_data"
+      o: bind
+      type: none
+  
+  mariadb_vm:
+    driver: local
+    driver_opts:
+      device: "${PWD}/database"
+      o: bind
+      type: none
+
+networks:
+  transcendence:
+    name: transcendence
+    driver: bridge
+
+
+# Volumes and bind mounts that have to be removed when develompent ends:
+#   - ./services/nginx/conf:/etc/nginx/conf.d
+#   - ./services/frontend/app:/app
+#   - node_modules_vm:/app/node_modules 
+#   - /services/php/www:/var/www
+#   - php_vendor_vm:/var/www/vendor
+#   - /services/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
+#   - .env:/var/www/.env

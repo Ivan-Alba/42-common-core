@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Nexus Nine</title>
+    <style>
+      /* Fondo negro puro para las franjas (letterboxing) */
+      html, body {
+        background: #000000;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Contenedor del Canvas con relaci�n de aspecto fija */
+      #unity-canvas {
+        /* Definimos la proporci�n 16:9 */
+        aspect-ratio: 16 / 9; 
+        
+        /* Priorizamos que quepa en pantalla sin importar la orientaci�n */
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100vw;
+        max-height: 100vh;
+        
+        /* Mantiene el renderizado interno limpio */
+        object-fit: contain; 
+        background: #231F20;
+        box-shadow: 0 0 30px rgba(0,0,0,0.7); /* Sombra sutil para separar del fondo */
+      }
+
+      /* Ajuste espec�fico para cuando la pantalla es muy ancha (Ultrawide) */
+      @media (min-aspect-ratio: 16/9) {
+        #unity-canvas {
+          width: auto !important;
+          height: 100% !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+
+    <script src="Build/NexusNineBuild.loader.js"></script>
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+
+      createUnityInstance(canvas, {
+        arguments: [],
+        dataUrl: "Build/NexusNineBuild.data.unityweb",
+        frameworkUrl: "Build/NexusNineBuild.framework.js.unityweb",
+        codeUrl: "Build/NexusNineBuild.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Trascendence",
+        productName: "Nexus Nine",
+        productVersion: "0.5",
+        // Detectamos la resoluci�n real para evitar que se vea borroso en pantallas 4K/Retina
+        devicePixelRatio: window.devicePixelRatio || 1, 
+      }).then((unityInstance) => {
+        // Ready for server communication
+      }).catch((message) => {
+        alert(message);
+      });
+    </script>
+  </body>
+</html>
