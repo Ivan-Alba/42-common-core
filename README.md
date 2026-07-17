@@ -45,13 +45,13 @@ To pass any project, the codebase must survive an automated evaluation system al
 
 ---
 
-## 🏆 Featured Projects
+## ⚖️ Featured Projects
 
 This section highlights the three most complex and multidisciplinary engineering challenges I solved during my time at 42. These projects demonstrate system design, high-performance graphics, real-time networking, and full-stack architecture.
 
 ---
 
-### 1. 🃏 ft_transcendence — The Ultimate Web & Game Integration
+### 1. 🃏 ft_transcendence — The Ultimate Web & Game Integration (Nexus Nine)
 
 <table align="center">
   <tr>
@@ -131,12 +131,20 @@ This section highlights the three most complex and multidisciplinary engineering
 
 ---
 
-### 3. 🎮 cub3D — Raycasting Graphics Engine from Scratch
-<!-- CUB3D CARD PLACEHOLDER -->
-<p align="center">
-  <!-- When available, replace with your custom GIF/screenshot: <img src="./path_to_gif/cub3d.gif" width="800" alt="cub3D Gameplay" /> -->
-  <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" width="600" alt="Retro Graphics Engine Concept" />
-</p>
+### 3. 🎮 cub3D — Raycasting Graphics Engine from Scratch (Four Seasons Adventures)
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <b>Game Title Menu (Concept Art)</b><br />
+      <img src="./cub3d/assets/title.gif" width="100%" alt="Four Seasons Adventures Title Menu" />
+    </td>
+    <td align="center" width="50%">
+      <b>Gameplay Loop (Winter Maze & Victory)</b><br />
+      <img src="./cub3d/assets/winter-end.gif" width="100%" alt="Winter Season Gameplay and Win State" />
+    </td>
+  </tr>
+</table>
 
 #### 📊 Project Specification & Performance
 *   **Grade:** <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" align="top" /> *(Full validation + Advanced bonus)*
