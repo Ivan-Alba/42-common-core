@@ -137,11 +137,11 @@ This section highlights the three most complex and multidisciplinary engineering
   <tr>
     <td align="center" width="50%">
       <b>Game Title Menu (Concept Art)</b><br />
-      <img src="./cub3d/assets/title.gif" width="100%" alt="Four Seasons Adventures Title Menu" />
+      <img src="./cub3d/README_assets/title.gif" width="100%" alt="Four Seasons Adventures Title Menu" />
     </td>
     <td align="center" width="50%">
       <b>Gameplay Loop (Winter Maze & Victory)</b><br />
-      <img src="./cub3d/assets/winter-end.gif" width="100%" alt="Winter Season Gameplay and Win State" />
+      <img src="./cub3d/README_assets/winter-end.gif" width="100%" alt="Winter Season Gameplay and Win State" />
     </td>
   </tr>
 </table>
