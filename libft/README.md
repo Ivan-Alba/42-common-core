@@ -1,4 +1,4 @@
-bft — Recreating the C Standard Library
+# libft — Recreating the C Standard Library
 
 <p align="center">
   <img src="https://img.shields.io/badge/Project-Libft-000000?style=for-the-badge&logo=42&logoColor=white" alt="Libft" />
@@ -23,11 +23,11 @@ The library is segmented into three distinct logical phases: standard libc funct
 ### 1. Standard Libc Functions
 Re-engineering of core POSIX and ISO C standard functions, preserving exact behavior, edge-case safety, and return values.
 
-| Character Verification | Memory Manipulation | String Operations |
+| Character Verification | Memory Manipulation | String Operations & Conversions |
 | :--- | :--- | :--- |
-| ft_isalpha / ft_isdigit | ft_memset / ft_bzero | ft_strlen / ft_strchr |
+| ft_isalpha / ft_isdigit | ft_memset / ft_bzero | ft_strlen / ft_strchr / ft_atoi |
 | ft_isalnum / ft_isascii | ft_memcpy / ft_memmove | ft_strrchr / ft_strncmp |
-| ft_isprint / ft_toupper | ft_memchr / ft_memcmp | ft_strnstr / ft_strdup |
+| ft_isprint / ft_toupper | ft_memchr / ft_memcmp / ft_memrchr | ft_strnstr / ft_strdup |
 | ft_tolower | ft_calloc (Dynamic allocation) | ft_strlcpy / ft_strlcat |
 
 ### 2. Non-Standard Utilities
@@ -69,11 +69,11 @@ The repository includes a modular automation script (Makefile) designed for safe
 
 ### ⚙️ Compilation Commands
 
-* **make**: Compile the core standard and utility functions into libft.a
-* **make bonus**: Compile the library including the advanced Linked List bonus data structures
-* **make clean**: Remove all transitional object (.o) compilation files
-* **make fclean**: Force a full clean-up removing object files and the libft.a binary
-* **make re**: Trigger a complete clean re-build of the entire library
+*   **make**: Compile the core standard and utility functions into libft.a
+*   **make bonus**: Compile the library including the advanced Linked List bonus data structures
+*   **make clean**: Remove all transitional object (.o) compilation files
+*   **make fclean**: Force a full clean-up removing object files and the libft.a binary
+*   **make re**: Trigger a complete clean re-build of the entire library
 
 ### 🔗 Linking the Library to Your Project
 
