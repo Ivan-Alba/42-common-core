@@ -52,10 +52,19 @@ This section highlights the three most complex and multidisciplinary engineering
 ---
 
 ### 1. 🃏 ft_transcendence — The Ultimate Web & Game Integration
-<!-- TRANSCENDENCE CARD PLACEHOLDER -->
-<p align="center">
-  <img src="./ft_transcendence/assets/transcendence-collection.gif" width="550" alt="NexusNine Card Collection & Flip" />
-</p>
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <b>Dynamic Web Dashboard & Collection</b><br />
+      <img src="./ft_transcendence/assets/transcendence-collection.gif" width="100%" alt="NexusNine Card Collection & Flip" />
+    </td>
+    <td align="center" width="50%">
+      <b>Real-Time Unity WebGL Gameplay (PLUS! Match)</b><br />
+      <img src="./ft_transcendence/assets/match-plus.gif" width="100%" alt="Real-time Match Plus Rule" />
+    </td>
+  </tr>
+</table>
 
 #### 📊 Project Specification & Performance
 *   **Grade:** <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" align="top" /> *(Full validation + Advanced bonus)*
@@ -71,7 +80,7 @@ This section highlights the three most complex and multidisciplinary engineering
 *   **Authoritative Game Server & Recursive Rule Engine:** 
     To guarantee game state integrity and prevent client-side manipulation, I implemented an authoritative game server model in Laravel. The backend acts as the single "Source of Truth" (`active_matches` schema). When a player plays a card (`POST /play-card`), the server validates the move, processes the core card-flip mathematics, resolves advanced **"Same" (Igual)** and **"Plus" (Suma)** rules, and calculates the resulting cascading flip chains before pushing the resolved state back to the clients.
 *   **Dynamic Database Architecture & Match History:** 
-    I designed and normalized a robust relational database schema (MariaDB) consisting of 11 tables. It features separate tables for high-performance operations (like volatile `active_matches` state tracking) and persistent records (historical `matches` and localized translations), optimizing matchmaking queue times and leaderboard queries.
+    I designed and normalized a comprehensive relational database schema (MariaDB). It segregates operations into high-performance structures for active match tracking (handling volatile states such as active gameplay data) and persistent structures for long-term storage (such as match histories, achievements, and localized translations). This architecture ensures rapid matchmaking queues and optimizes execution times for leaderboard queries.
 *   **Event-Driven Synchronization & Low-Latency Sockets:** 
     Using Laravel Reverb and Redis as the broadcast driver, I developed a low-latency pipeline to synchronize matches. To prevent race conditions, Unity does not execute visual states based on REST responses; instead, it remains entirely event-driven, waiting for the global `match.card_played` WebSocket broadcast. This ensures both players witness board updates and flip animations in perfect, real-time synchronization.
 *   **Millisecond-Accurate Sync (NetworkTimeProvider):** 
@@ -143,7 +152,7 @@ This section highlights the three most complex and multidisciplinary engineering
 *   **Conceptual Level Design & Dynamic Map Linker:**
     I designed an infinite-level chaining system driven by custom `.cub` map configuration files. Rather than hardcoding transitions, I expanded the parser to read a dynamic `NEXT_MAP` attribute. When the player steps into a portal, the engine hot-unloads the current memory structures, validates the new file, and seamlessly initialises the next zone, terminating the loop only when a map lacks the parameter. Using this architecture, we built a thematic campaign based on **Vivaldi's Four Seasons**, where each of the 4 maps visually represented a season.
 *   **Horizontal Plane Texturing & Dynamic Depth Shading:**
-    While vertical walls only require 1D texture mapping, rendering textured floors and ceilings demands complex 2D plane projections. I formulated mathematical translation layers to map horizontal textures (like grass and starry skies) relative to the player's spatial angle. Additionally, I built a dynamic software-based depth shading system. The engine calculates the distance of every single ray collision, blending the RGB channels of wall, floor, and ceiling textures toward black to achieve an atmospheric fade-to-darkness effect.
+    While vertical walls only require 1D texture mapping, rendering textured floors and ceilings demands complex 2D plane projections. I formulated mathematical translation layers to map horizontal textures (like grass and starry skies) relative to the player's spatial angle. Additionally, I built a software-based depth shading system. The engine calculates the distance of every single ray collision, blending the RGB channels of wall, floor, and ceiling textures toward black to achieve an atmospheric fade-to-darkness effect.
 *   **2D Layer Blitting (Dynamic Minimap & HUD Overlay):**
     To provide spatial awareness and progression tracking, I implemented a custom render overlay. The engine draws a dynamic 2D minimap in the top-right corner, translating the map's grid layout and the player's viewing vector into a real-time vector representation. Above the viewport, I designed a retro HUD that parses and blits custom alphanumeric assets and status icons directly onto the MinilibX frame buffer, tracking levels, keys, and collected items.
 *   **Multi-Threaded Audio Integration (BASS Library) & Chiptune Soundscapes:**
