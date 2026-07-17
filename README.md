@@ -1,4 +1,4 @@
-# 42 Common Core Portfolio
+ommon Core Portfolio
 
 <p align="center">
   <img src="https://img.shields.io/badge/School-42%20Barcelona-000000?style=for-the-badge&logo=42&logoColor=white" alt="42 Barcelona" />
@@ -21,7 +21,7 @@ As a developer passionate about low-level systems, architecture, and high-perfor
   <img src="https://img.shields.io/badge/C%20%23-%23239120.svg?style=flat-square&logo=c-sharp&logoColor=white" alt="C#" />
   <img src="https://img.shields.io/badge/Unity-%23000000.svg?style=flat-square&logo=unity&logoColor=white" alt="Unity" />
   <img src="https://img.shields.io/badge/Docker-%232496ED.svg?style=flat-square&logo=docker&logoColor=white" alt="Docker" />
-  <img src="https://img.shields.io/badge/Postgres-%23316192.svg?style=flat-square&logo=postgresql&logoColor=white" alt="SQL" />
+  <img src="https://img.shields.io/badge/Postgres-%23316192.svg?style=flat-square&logo=postgresql&omegaColor=white" alt="SQL" />
   <img src="https://img.shields.io/badge/Bash-%23121011.svg?style=flat-square&logo=gnu-bash&logoColor=white" alt="Bash" />
   <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white" alt="Git" />
 </p>
@@ -96,42 +96,7 @@ This section highlights the three most complex and multidisciplinary engineering
 
 ---
 
-### 2. 🐚 minishell — As Close to the Kernel as It Gets
-<!-- MINISHELL CARD PLACEHOLDER -->
-<p align="center">
-  <!-- When available, replace with your custom GIF/screenshot: <img src="./path_to_gif/minishell.gif" width="800" alt="Minishell Terminal" /> -->
-  <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&w=800&q=80" width="600" alt="Terminal Shell Concept" />
-</p>
-
-#### 📊 Project Specification & Performance
-*   **Grade:** <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" align="top" /> *(Full validation + Advanced bonus)*
-*   **Tech Stack:**
-    <img src="https://img.shields.io/badge/C-A8B9CC?style=flat-square&logo=c&logoColor=black" alt="C" /> <img src="https://img.shields.io/badge/Bash-121011?style=flat-square&logo=gnu-bash&logoColor=white" alt="Bash" /> <img src="https://img.shields.io/badge/Unix-0071C5?style=flat-square&logo=intel&logoColor=white" alt="Unix" /> <img src="https://img.shields.io/badge/Valgrind-191919?style=flat-square&logo=linux&logoColor=white" alt="Valgrind" />
-*   **My Role (Systems & Algorithms Developer):**
-    *   **Core Parser & Lexer Architect:** Designed the state machine responsible for tokenizing raw user input, handling nested quotes, environment variables, and building an abstract execution tree.
-    *   **Process Control Engineer:** Managed the lifecycle of multiple concurrent processes, file descriptor redirections, and Unix signal handling.
-    *   **Bonus Features Developer:** Engineered the recursive subprocess engine for logical grouping, conditional operators, and the directory wildcard expansion algorithm.
-
-#### 🧠 Key Engineering Challenges Solved
-
-*   **Recursive Execution Engine for Parentheses & Logical Operators:**
-    To implement nested command grouping and conditional logic (e.g., `(cat file && ls) || echo "failed"`), I designed a recursive execution engine. When the parser detects parenthesis blocks or logical operators (`&&` and `||`), the shell isolates execution into dedicated subshell processes. These processes recursively evaluate the inner commands and propagate the precise exit status of each instruction to solve complex boolean command chains.
-*   **Authoritative Process Lifecycle & I/O Multiplexing:**
-    Handling complex multi-pipeline streams (`cmd1 | cmd2 | cmd3`) required managing file descriptors with absolute precision. I implemented robust pipeline execution using `pipe()` and bidirectional redirections with `dup2()`. By carefully tracking and closing unused write/read ends in both parent and child contexts, I prevented hanging inputs and file descriptor leaks.
-*   **Unix Signal Handling & Volatile State Restoration:**
-    A major challenge in shells is maintaining an interactive prompt that gracefully reacts to user signals. I configured terminal attributes and implemented custom handlers for `SIGINT` (Ctrl+C), `SIGQUIT` (Ctrl+\), and `EOF` (Ctrl+D). This ensures that background processes terminate cleanly while the main shell prompt is immediately repainted without losing the shell's volatile environmental state.
-*   **Dynamic Wildcard (*) Expansion:**
-    I implemented path-pattern matching (Wildcards) from scratch. The algorithm scans active directories, evaluates system structures, and dynamically replaces the wildcard token `*` with sorted, matching file paths before executing the command, mirroring native Bash expansion.
-
-> [!NOTE]
-> **Strict Memory Management & Rigor**<br>
-> Operating at the systems level in C, this project enforces strict memory tracking. Any dynamic allocation (`malloc`) is monitored to prevent memory leaks. The entire codebase is audited with Valgrind and compiler flags to ensure total stability, flawless garbage collection on execution failure, and absolute safety.
-> 
-> 🔗 *[Explore the complete Lexer & Parser implementation here](./minishell/README.md)*
-
----
-
-### 3. 🎮 cub3D — Raycasting Graphics Engine from Scratch (Four Seasons Adventures)
+### 2. 🎮 cub3D — Raycasting Graphics Engine from Scratch (Four Seasons Adventures)
 
 <table align="center">
   <tr>
@@ -173,6 +138,49 @@ This section highlights the three most complex and multidisciplinary engineering
 > Operating at the systems level in C, this project enforces strict memory tracking. Any dynamic allocation (`malloc`) is monitored to prevent memory leaks. To achieve a stable and smooth rendering loop at native retro resolutions, the engine corrects the "fisheye" distortion using angle-offset cosine scaling and performs direct pixel manipulation on the MinilibX image buffer before pushing the frames to the screen.
 > 
 > 🔗 *[Explore the mathematical raycasting and rendering implementation here](./cub3d/README.md)*
+
+---
+
+### 3. 🐚 minishell — As Close to the Kernel as It Gets
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <b>Advanced Custom Parser & Logic Chains</b><br />
+      <img src="./minishell/README_assets/minishell-custom-parser.gif" width="100%" alt="Minishell Custom Parser Workflow" />
+    </td>
+    <td align="center" width="50%">
+      <b>Wildcard Expansions & Unix Signal Interceptions</b><br />
+      <img src="./minishell/README_assets/minishell-signals.gif" width="100%" alt="Minishell Signals and Wildcard Logic" />
+    </td>
+  </tr>
+</table>
+
+#### 📊 Project Specification & Performance
+*   **Grade:** <img src="https://img.shields.io/badge/125%20%2F%20100-Outstanding-2EA043?style=flat-square&logo=42&logoColor=white" alt="125/100" align="top" /> *(Full validation + Advanced bonus)*
+*   **Tech Stack:**
+    <img src="https://img.shields.io/badge/C-A8B9CC?style=flat-square&logo=c&logoColor=black" alt="C" /> <img src="https://img.shields.io/badge/Bash-121011?style=flat-square&logo=gnu-bash&logoColor=white" alt="Bash" /> <img src="https://img.shields.io/badge/Unix-0071C5?style=flat-square&logo=intel&logoColor=white" alt="Unix" /> <img src="https://img.shields.io/badge/Valgrind-191919?style=flat-square&logo=linux&logoColor=white" alt="Valgrind" />
+*   **My Role (Systems & Algorithms Developer):**
+    *   **Core Parser & Lexer Architect:** Designed the state machine responsible for tokenizing raw user input, handling nested quotes, environment variables, and building an abstract execution tree.
+    *   **Process Control Engineer:** Managed the lifecycle of multiple concurrent processes, file descriptor redirections, and Unix signal handling.
+    *   **Bonus Features Developer:** Engineered the recursive subprocess engine for logical grouping, conditional operators, and the directory wildcard expansion algorithm.
+
+#### 🧠 Key Engineering Challenges Solved
+
+*   **Recursive Execution Engine for Parentheses & Logical Operators:**
+    To implement nested command grouping and conditional logic (e.g., `(cat file && ls) || echo "failed"`), I designed a recursive execution engine. When the parser detects parenthesis blocks or logical operators (`&&` and `||`), the shell isolates execution into dedicated subshell processes. These processes recursively evaluate the inner commands and propagate the precise exit status of each instruction to solve complex boolean command chains.
+*   **Authoritative Process Lifecycle & I/O Multiplexing:**
+    Handling complex multi-pipeline streams (`cmd1 | cmd2 | cmd3`) required managing file descriptors with absolute precision. I implemented robust pipeline execution using `pipe()` and bidirectional redirections with `dup2()`. By carefully tracking and closing unused write/read ends in both parent and child contexts, I prevented hanging inputs and file descriptor leaks.
+*   **Unix Signal Handling & Volatile State Restoration:**
+    A major challenge in shells is maintaining an interactive prompt that gracefully reacts to user signals. I configured terminal attributes and implemented custom handlers for `SIGINT` (Ctrl+C), `SIGQUIT` (Ctrl+\), and `EOF` (Ctrl+D). This ensures that background processes terminate cleanly while the main shell prompt is immediately repainted without losing the shell's volatile environmental state.
+*   **Dynamic Wildcard (*) Expansion:**
+    I implemented path-pattern matching (Wildcards) from scratch. The algorithm scans active directories, evaluates system structures, and dynamically replaces the wildcard token `*` with sorted, matching file paths before executing the command, mirroring native Bash expansion.
+
+> [!NOTE]
+> **Strict Memory Management & Rigor**<br>
+> Operating at the systems level in C, this project enforces strict memory tracking. Any dynamic allocation (`malloc`) is monitored to prevent memory leaks. The entire codebase is audited with Valgrind and compiler flags to ensure total stability, flawless garbage collection on execution failure, and absolute safety.
+> 
+> 🔗 *[Explore the complete Lexer & Parser implementation here](./minishell/README.md)*
 
 ---
 

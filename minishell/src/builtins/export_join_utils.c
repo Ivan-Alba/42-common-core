@@ -65,7 +65,7 @@ void	join_values(t_data *data, char *join_var, int var_in_env)
 
 	value_to_add = NULL;
 	value_joined = NULL;
-	if (ft_strchr(join_var, '=') + 1)
+	if (ft_strchr(join_var, '='))
 	{
 		value_to_add = ft_substr(ft_strchr(join_var, '='), 1,
 				ft_strlen(ft_strchr(join_var, '=') - 1));
