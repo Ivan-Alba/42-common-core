@@ -41,12 +41,73 @@ The parser safely evaluates and handles any combined implementation of the follo
 
 ---
 
+## 🛠️ Project Architecture
+
+```text
+.
+├── libft/                  # Core library containing basic utility functions
+├── Makefile                # Automation build script compiling both mandatory and bonus files
+├── ft_printf.c             # Primary engine core and mandatory router logic
+├── ft_printf.h             # Header file containing t_flags structure and prototypes
+├── ft_check_flags_bonus.c  # Parser that decodes bonus width, precision, and alignment attributes
+├── ft_print_flags_bonus.c  # Format routing controls for characters, strings, and pointers under bonus rules
+├── ft_int_flags_bonus.c    # Sign, space, zero-fill, and truncation layouts for integers (%d, %i, %u)
+├── ft_hexa_flags_bonus.c   # Prefix injection, width padding, and alignment for hex values (%x, %X)
+├── ft_utils_bonus.c        # Internal layout math, padding calculations, and specialized bonus helpers
+├── ft_free_bonus.c         # Clean memory release routers for string buffers during error interruptions
+├── ft_utils.c              # Protected system write wrappers and standard string/pointer readers
+└── ft_utoa.c               # Dedicated allocator translating unsigned integers into safe string buffers
+```
+---
+
 ## 🚀 Compilation & Usage
 
 The project builds a static library archive called `libftprintf.a`. The `Makefile` relies on optimized rules to compile only modified source items.
 
 ### Compilation Commands
 
-To compile the entire codebase including all mandatory and bonus functionalities:
+To compile the mandatory part:
 ```bash
 make
+```
+
+To compile including the bonus features:
+```bash
+make bonus
+```
+
+To strip down and clear all middle object files (.o) generated during build operations:
+```bash
+make clean
+```
+
+To clean out both intermediate object files and the resulting static archive file:
+```bash
+make fclean
+```
+
+To perform a complete project cleanup and rebuild all modules from the ground up:
+```bash
+make re
+```
+
+### Source Integration
+
+To integrate this library within an external project development, include its prototype definitions header and link the archive binaries at compilation:
+
+```c
+#include "ft_printf.h"
+
+int main(void)
+{
+    // Combined implementation example using both mandatory and bonus features
+    ft_printf("Hello %-10s number: %+05d in hex: %#x\n", "World", 42, 255);
+    return (0);
+}
+```
+
+Compile your code linking against the libftprintf.a static archive path:
+```bash
+gcc main.c libftprintf.a -o project_run
+```
+
