@@ -47,14 +47,15 @@ This project is not packaged into an archive library; instead, it is compiled di
 
 To compile the mandatory requirements using the regular source files, pass the source components directly to your C compiler:
 
-    gcc -Wall -Wextra -Werror -D BUFFER_SIZE=42 main.c get_next_line.c get_next_line_utils.c -o gnl_run
-
+```bash
+gcc -Wall -Wextra -Werror -D BUFFER_SIZE=42 main.c get_next_line.c get_next_line_utils.c -o gnl_run
+```
 ### Bonus Compilation (Multiple Descriptors)
 
 To test the multi-descriptor capabilities using the bonus files, swap out the file paths during compilation:
 
 ```bash
-    gcc -Wall -Wextra -Werror -D BUFFER_SIZE=32 main.c get_next_line_bonus.c get_next_line_utils_bonus.c -o gnl_bonus_run
+gcc -Wall -Wextra -Werror -D BUFFER_SIZE=32 main.c get_next_line_bonus.c get_next_line_utils_bonus.c -o gnl_bonus_run
 ```
 
 ### Source Integration
@@ -62,22 +63,22 @@ To test the multi-descriptor capabilities using the bonus files, swap out the fi
 To interact with this library inside an external project environment, include the respective header file and pass your targeted open stream descriptor directly into the reader routine:
 
 ```c
-    #include "get_next_line.h"
-    #include <fcntl.h>
-    #include <stdio.h>
+#include "get_next_line.h"
+#include <fcntl.h>
+#include <stdio.h>
+   
+int main(void)
+{
+    int     fd;
+    char    *line;
     
-    int main(void)
+    fd = open("sample.txt", O_RDONLY);
+    while ((line = get_next_line(fd)) != NULL)
     {
-        int     fd;
-        char    *line;
-        
-        fd = open("sample.txt", O_RDONLY);
-        while ((line = get_next_line(fd)) != NULL)
-        {
-            printf("%s", line);
-            free(line);
-        }
-        close(fd);
-        return (0);
+        printf("%s", line);
+        free(line);
     }
+    close(fd);
+    return (0);
+}
 ```
