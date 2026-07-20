@@ -12,7 +12,11 @@
 
 #include "get_next_line.h"
 
-//Comprueba si hay un '\n' en la string y devuelve true (1) o false (0)
+/*
+** @brief  Scans the given string to look for a newline character.
+** @param  str: Pointer to the null-terminated string to be checked.
+** @return 1 if a newline '\n' is found, 0 otherwise or if str is NULL.
+*/
 int	is_next_line(char *str)
 {
 	int	i;
@@ -29,7 +33,11 @@ int	is_next_line(char *str)
 	return (0);
 }
 
-//Libera la memoria de la string recibida, le asigna NULL y devuelve NULL
+/*
+** @brief  Frees the memory allocation of a string pointer and nulls it out.
+** @param  str: Double pointer to the allocated memory area to clear.
+** @return Always returns NULL to clean up return flows in parent functions.
+*/
 char	*free_and_out(char **str)
 {
 	if (*str)
@@ -40,7 +48,14 @@ char	*free_and_out(char **str)
 	return (NULL);
 }
 
-//Comprueba si hay contenido en *saved tras la posicion i y lo guarda o libera
+/*
+** @brief  Verifies if text remains in saved after an index, trimming or
+**         clearing.
+** @param  saved: Double pointer to the static accumulated data stack.
+** @param  i: The index position tracking the end of the extracted line chunk.
+** @param  res: Double pointer to the line result to clear if allocation fails.
+** @return 1 on successful extraction management, or 0 on sub-allocation error.
+*/
 int	check_stack(char **saved, int i, char **res)
 {
 	if ((*saved)[i] != '\0')

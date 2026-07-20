@@ -12,7 +12,11 @@
 
 #include "get_next_line.h"
 
-//Elimina el contenido hasta un salto de linea y retorna el resto.
+/*
+** @brief  Trims the static string, removing the extracted line up to '\n'.
+** @param  str: Double pointer to the static accumulated string buffer.
+** @return The newly allocated remainder string, or NULL on error/empty.
+*/
 char	*cut_after_next_line(char **str)
 {
 	int		i;
@@ -39,7 +43,11 @@ char	*cut_after_next_line(char **str)
 	return (res);
 }
 
-//Busca y retorna el contenido hasta el \n incluido
+/*
+** @brief  Scans the accumulated buffer to extract a single line up to '\n'.
+** @param  saved: Double pointer to the static accumulated string buffer.
+** @return The allocated line string containing '\n', or NULL on error.
+*/
 char	*search_for_next_line(char **saved)
 {
 	int		i;
@@ -65,7 +73,13 @@ char	*search_for_next_line(char **saved)
 	return (free_and_out(&*saved));
 }
 
-//Funcion que concatena lo almacenado en saved con la nueva lectura de buffer
+/*
+** @brief  Concatenates the current static buffer with newly read chunk.
+** @param  saved: Double pointer to the static accumulated string buffer.
+** @param  buff: Pointer to the temporary read buffer.
+** @param  buff_size: Exact number of bytes successfully read into buff.
+** @return A newly allocated combined string, or NULL on allocation error.
+*/
 char	*ft_strcat(char **saved, char *buff, int buff_size)
 {
 	char	*res;
@@ -91,7 +105,12 @@ char	*ft_strcat(char **saved, char *buff, int buff_size)
 	return (res);
 }
 
-//Funcion que lee del archivo BUFFER_SIZE caracteres
+/*
+** @brief  Loop reader that fetches chunks from fd until a '\n' is found.
+** @param  saved: Double pointer to the static data stack for the given fd.
+** @param  fd: The file descriptor target to perform read operations on.
+** @return The extracted line up to '\n', or NULL on error or EOF.
+*/
 char	*read_next_line(char **saved, int fd)
 {
 	int		readed;
@@ -121,7 +140,11 @@ char	*read_next_line(char **saved, int fd)
 	return (search_for_next_line(&*saved));
 }
 
-//Funcion principal
+/*
+** @brief  Main entry point to fetch the next available line from a file.
+** @param  fd: The file descriptor to read from.
+** @return The line read from fd including '\n', or NULL if empty or error.
+*/
 char	*get_next_line(int fd)
 {
 	char			*next_line;
@@ -143,46 +166,3 @@ char	*get_next_line(int fd)
 		saved[fd].line = NULL;
 	return (next_line);
 }
-
-/*
-int	main(void)
-{
-	int	i = 1;
-	int	fd1 = open("a", O_RDONLY);
-	int	fd2 = open("b", O_RDONLY);
-
-	printf("FD: %d\n", fd1);
-	printf("FD: %d\n", fd2);
-
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-}*/

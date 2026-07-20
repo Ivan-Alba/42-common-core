@@ -23,6 +23,10 @@
 # include <stdio.h>
 # include <fcntl.h>
 
+/*
+** @struct s_list
+** @brief  Structure holding the residual line content linked to its descriptor.
+*/
 typedef struct s_list
 {
 	char	*line;
