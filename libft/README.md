@@ -33,16 +33,16 @@ Re-engineering of core POSIX and ISO C standard functions, preserving exact beha
 ### 2. Non-Standard Utilities
 Advanced functional extensions mapping to complex memory allocations and high-level string manipulation.
 
-*   ft_substr: Allocates and returns a substring from a precise index string pointer.
-*   ft_strjoin: Concatenates two distinct strings into a new dynamically allocated buffer.
-*   ft_strtrim: Trims a specific set of characters from both the prefix and suffix of a string.
-*   ft_split: Tokenizes a string into a null-terminated array of strings using a delimiter character.
-*   ft_itoa: Converts an integer arithmetic primitive into a dynamically allocated string representation.
-*   ft_strmapi / ft_striteri: Map and iterative function pointers applied abstractly across string indices.
-*   ft_putchar_fd / ft_putstr_fd / ft_putendl_fd / ft_putnbr_fd: Safe I/O descriptor writers.
+*   **ft_substr:** Allocates and returns a substring from a precise index string pointer.
+*   **ft_strjoin:** Concatenates two distinct strings into a new dynamically allocated buffer.
+*   **ft_strtrim:** Trims a specific set of characters from both the prefix and suffix of a string.
+*   **ft_split:** Tokenizes a string into a null-terminated array of strings using a delimiter character.
+*   **ft_itoa:** Converts an integer arithmetic primitive into a dynamically allocated string representation.
+*   **ft_strmapi / ft_striteri:** Map and iterative function pointers applied abstractly across string indices.
+*   **ft_putchar_fd / ft_putstr_fd / ft_putendl_fd / ft_putnbr_fd:** Safe I/O descriptor writers.
 
 ### 3. Bonus Phase: Dynamic Data Structures (Linked Lists)
-Implementation of structural nodes to transition from static arrays to dynamic, heap-allocated singly linked lists. El nodo base (t_list) está compuesto por un puntero genérico (*content) para almacenar los datos del elemento y un puntero estructural (*next) que enlaza directamente con la siguiente dirección de memoria de la lista.
+Implementation of structural nodes to transition from static arrays to dynamic, heap-allocated singly linked lists. The base node (`t_list`) is composed of a generic pointer (`*content`) to store elements polymorphically and a structural pointer (`*next`) that links directly to the next memory address in the chain.
 
 *   **List Lifecycles:** ft_lstnew (Instantiation), ft_lstadd_front / ft_lstadd_back (Node insertion).
 *   **Inspections:** ft_lstsize (Length counting), ft_lstlast (Tail pointer retrieval).
@@ -57,8 +57,8 @@ Implementation of structural nodes to transition from static arrays to dynamic, 
 > **Pointer Arithmetic & Boundary Security**<br>
 > Recreating functions like ft_memmove demanded precise handling of overlapping memory segments (where the source pointer and destination pointer reside in the same block). I resolved this by checking buffer orientation bounds and implementing back-to-front byte copying loops whenever memory collision risk was present.
 
-*   **Defensive Design & Null Checking:** To prevent segmentation faults in high-level modules, every single function is engineered defensively to safely handle NULL pointers, string boundary overflows, and integer wrapping limits.
-*   **Heap Protection:** Every dynamic allocation allocation (malloc) inside functions like ft_split or ft_itoa is strictly guarded. In case of a mid-execution allocation failure (e.g., memory exhaustion), the engine executes an immediate cascading clean-up loop to free all previously allocated nodes, completely preventing memory leaks before returning NULL.
+*   **Defensive Design & Standards Alignment:** To ensure strict standard compliance, core Libc functions intentionally mimic native system behaviors when receiving invalid data. Conversely, custom utility extensions (Part 2 & Bonus APIs) are engineered defensively to safely guard against NULL pointers, string boundary overflows, and integer wrapping limits.
+*   **Heap Protection:** Every dynamic allocation (malloc) inside functions like ft_split or ft_itoa is strictly guarded. In case of a mid-execution allocation failure (e.g., memory exhaustion), the engine executes an immediate cascading clean-up loop to free all previously allocated nodes, completely preventing memory leaks before returning NULL.
 *   **Compilation Strictness:** Adheres entirely to the 42 Norminette style guide and compiles flawlessly with -Wall -Wextra -Werror flags.
 
 ---
@@ -79,4 +79,5 @@ The repository includes a modular automation script (Makefile) designed for safe
 
 Once the static library has been compiled using the commands above, you can implement it inside an external C application. Include the library header file (#include "libft.h") in your source code and link the generated binary during the compilation phase by pointing to the library folder:
 
+```bash
 gcc -Wall -Wextra -Werror main.c -I./libft -L./libft -lft -o my_program
