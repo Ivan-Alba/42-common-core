@@ -10,9 +10,9 @@
 
 ## 📋 Project Overview
 
-This project focuses on the installation, configuration, and secure administration of a standalone server using **Debian** inside a virtualized environment. It introduces core systems engineering concepts such as storage partitioning via **LVM (Logical Volume Manager)**, strict access control tracking, network filtering with a firewall, and basic automated shells.
+This project focuses on the installation, configuration, and secure administration of a standalone, non-graphical server using **Debian** inside a virtualized environment. It introduces core systems engineering concepts such as storage partitioning via **LVM (Logical Volume Manager)**, strict access control tracking, network filtering with a firewall, and basic automated shells.
 
-> This repository hosts exclusively the validation `signature.txt` file and the automated monitoring shell script required by the 42 evaluation curriculum.
+> This repository hosts exclusively the validation `signature.txt` file containing the virtual disk's unique cryptographic signature and the automated monitoring shell script required by the 42 evaluation curriculum.
 
 ---
 
@@ -20,36 +20,32 @@ This project focuses on the installation, configuration, and secure administrati
 
 ### Security Policies
 
-*   **Sudo Configuration**: Strict tracking mechanics restricting execution limits, keeping dedicated TTY records, custom warning headers, and a strict log path at `/var/log/sudo/`.
-*   **Password Quality Controls**: Enforced using `libpam-pwquality` requiring a minimum length of 10 characters, mixed casing, integers, strict maximum repetition thresholds, and a 30-day expiration lifetime policy.
-*   **Network Filtering (UFW)**: Firewalled perimeter blocking all traffic by default, opening port **4242** for custom SSH tunnels and port **80** / **443** for secure web traffic features.
+*   **Sudo Configuration**: Strict tracking mechanics restricting execution limits to 3 validation attempts. It displays a custom password warning header, enables strict TTY environments, isolates binary paths, and logs entries inside `/var/log/sudo/`.
+*   **Password Quality Controls**: Enforced using `libpam-pwquality` requiring a minimum length of 10 characters, mixed casing, integers, strict maximum repetition thresholds ($\le$ 3 consecutive identical characters), and a 30-day expiration lifetime policy.
+*   **Network Filtering (UFW)**: Firewalled perimeter blocking all traffic by default. Only port **4242** (SSH), port **80** (HTTP), and port **443** (HTTPS) are exposed. Root login over SSH is explicitly forbidden.
 
-### Mandatory & Bonus Partitioning Layout (LVM)
+### Bonus Storage Partitioning Layout (LVM + LUKS Encryption)
 
-The layout isolates systems partitions into separate physical-backed boundaries using logical structures, expanding space allocations to support the database and web infrastructure securely:
+The full storage layout uses an encrypted physical partition boundary (`sda5_crypt`) containing the following Logical Volume Manager mappings:
 
-| Partition Target | Logical Volume Name | Size | Description |
+| Logical Volume Name | Mount Point | Size | Description |
 | :--- | :--- | :--- | :--- |
-| `/` | `root` | ~10G | Main operational system root boundary. |
-| `/home` | `home` | ~5G | Dedicated volume isolating specific user files. |
-| `/var` | `var` | ~4G | Dynamic logs and variable caching data storage. |
-| `/tmp` | `tmp` | ~2G | Volatile scratch space automatically wiped on boot. |
-| `/var/log` | `log` | ~2G | Dedicated, isolated containment field for system logs. |
+| `LVMGroup-root` | `/` | 10G | Main operational system root filesystem boundary. |
+| `LVMGroup-swap` | `[SWAP]` | 2.3G | Volatile storage used when physical RAM limits clear out. |
+| `LVMGroup-home` | `/home` | 5G | Isolated space dedicated to non-root user file persistence. |
+| `LVMGroup-var` | `/var` | 3G | Dynamic application caching and runtime variables. |
+| `LVMGroup-srv` | `/srv` | 3G | Dedicated site data isolation for web services. |
+| `LVMGroup-tmp` | `/tmp` | 3G | Temporary scratch space auto-wiped during reboots. |
+| `LVMGroup-var--log` | `/var/log` | 4G | Hardened containment space for system and sudo logs. |
 
 ---
 
 ## 🌟 Bonus Features Implementation
 
-The server is fully provisioned with a secure, production-ready **LNMP/LLMP Stack** alongside automated active defense systems:
+The server is fully provisioned with a secure, production-ready web stack architecture:
 
-### 1. Secure Web Server Infrastructure
-*   **Web Daemon**: Implemented via a lightweight web server engine (**Lighttpd** or **Nginx**) running securely on standard HTTP/HTTPS channels.
-*   **Database Management System**: Structured using **MariaDB (MySQL)**, fully hardened using `mysql_secure_installation` routines to restrict remote root entry points.
-*   **Dynamic Processing**: Native support for **PHP-FPM** processors communicating directly via UNIX sockets to restrict unauthorized port exposure.
-
-### 2. Active Defense Integration (Fail2ban)
-*   Monitors systemic authorization failures inside the local environment.
-*   Automatically drops adversarial source nodes at the `ufw` layer if brute-force thresholds are triggered on port **4242**.
+*   **Functional WordPress Site**: Powered by a lightweight **Lighttpd** engine working alongside a localized **MariaDB** SQL container and **PHP** processors.
+*   **Active Intrusion Defense (Fail2ban)**: Monitors authorization failures over the network, automatically adding malicious actors to the `ufw` blocklist if brute-force attempts target port **4242**.
 
 ---
 
@@ -63,7 +59,7 @@ To inspect the live operation parameters of the security firewall, web services,
 
     sudo ufw status numbered
     sudo systemctl status ssh
-    sudo systemctl status lighttpd  # or nginx
+    sudo systemctl status lighttpd
     sudo systemctl status mariadb
     sudo systemctl status fail2ban
 
