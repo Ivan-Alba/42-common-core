@@ -1,4 +1,14 @@
-# ft_printf - 42 Project
+# ft_printf — Recreating the C Standard Library printf
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Project-ft__printf-000000?style=for-the-badge&logo=42&logoColor=white" alt="ft_printf" />
+  <img src="https://img.shields.io/badge/Language-C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C" />
+  <img src="https://img.shields.io/badge/Grade-125%20%2F%20100-success?style=for-the-badge" alt="125/100" />
+</p>
+
+---
+
+## 📖 Overview
 
 An implementation of a custom `ft_printf` function that replicates the behavior of the standard C library's `printf`. This project introduces variadic arguments in C using the `<stdarg.h>` library, strict system write evaluation, and meticulous heap memory management. 
 
