@@ -12,36 +12,27 @@
 
 #include "libft.h"
 
+/*
+** @brief  Allocates and returns a new string, which is the result
+**         of the concatenation of 's1' and 's2'.
+** @param  s1: The prefix string.
+** @param  s2: The suffix string.
+** @return The new string, or NULL if the allocation fails.
+*/
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*joined;
-	int		i;
+	size_t	len1;
+	size_t	len2;
 
-	i = 0;
-	joined = (char *) malloc((ft_strlen(s1) + ft_strlen(s2) + 1)
-			* sizeof(char));
-	if (joined == NULL)
+	if (!s1 || !s2)
 		return (NULL);
-	while (*s1 != '\0')
-	{
-		joined[i] = *s1;
-		s1++;
-		i++;
-	}
-	while (*s2 != '\0')
-	{
-		joined[i] = *s2;
-		s2++;
-		i++;
-	}
-	joined[i] = '\0';
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	joined = (char *)malloc((len1 + len2 + 1) * sizeof(char));
+	if (!joined)
+		return (NULL);
+	ft_memcpy(joined, s1, len1);
+	ft_memcpy(joined + len1, s2, len2 + 1);
 	return (joined);
 }
-/*
-#include <stdio.h>
-int	main(void)
-{
-	char	str[] = "Hello ";
-	char	str2[] = "world!";
-	printf("%s", ft_strjoin(str, str2));
-}*/

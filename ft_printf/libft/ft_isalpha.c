@@ -10,24 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_isalpha(int c)
-{
-	if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122))
-	{
-		return (1);
-	}
-	else
-	{
-		return (0);
-	}
-}
+#include "libft.h"
 
 /*
-#include <stdio.h>
-
-int	main(void)
+** @brief  Checks for an alphabetic character; it is equivalent to
+**         (isupper(c) || islower(c)).
+** @param  c: The character to be checked, passed as an int.
+** @return 1 if the character is alphabetic, 0 otherwise.
+*/
+int	ft_isalpha(int c)
 {
-	printf("%d: %s\n", ft_isalpha('H'), "H");
-	printf("%d: %s\n", ft_isalpha('4'), "4");
-	printf("%d: %s\n", ft_isalpha('*'), "*");
-}*/
+	return ((c >= 65 && c <= 90) || (c >= 97 && c <= 122));
+}

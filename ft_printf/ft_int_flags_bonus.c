@@ -12,7 +12,13 @@
 
 #include "ft_printf.h"
 
-//Funcion que gestiona %d, %i y %u con flag '-'. Retorna length
+/*
+** @brief  Handles formatting for integers with left-justify flag ('-').
+** @param  num: The integer value to print cast to long.
+** @param  flags: A pointer to the formatting status structure.
+** @param  sign: Sign flag indicator (-1 if negative, 0 otherwise).
+** @return The total length printed, or -1 on failure.
+*/
 int	print_int_justify(long num, t_flags *flags, int sign)
 {
 	int		len;
@@ -39,7 +45,13 @@ int	print_int_justify(long num, t_flags *flags, int sign)
 		return (print_str_width(s, flags, len - ft_strlen(s)));
 }
 
-//Funcion que gestiona %d, %i y %u con flag '.'. Retorna length
+/*
+** @brief  Handles formatting for integers with precision flag ('.').
+** @param  num: The integer value to print cast to long.
+** @param  flags: A pointer to the formatting status structure.
+** @param  sign: Sign flag indicator (-1 if negative, 0 otherwise).
+** @return The total length printed, or -1 on failure.
+*/
 int	print_int_truncate(long num, t_flags *flags, int sign)
 {
 	int		len;
@@ -68,26 +80,42 @@ int	print_int_truncate(long num, t_flags *flags, int sign)
 	return (len);
 }
 
-//Funcion que gestiona %d, %i y %u con flag '+' o ' '. Retorna length
+/*
+** @brief  Outputs the appropriate sign modifier ('+', '-', or ' ').
+** @param  num: Sign indicator state value.
+** @param  flags: A pointer to the formatting status structure.
+** @return The number of bytes printed (1), or -1 on system failure.
+*/
 int	print_int_sign(int num, t_flags *flags)
 {
-	int	check;
-
-	check = 0;
 	if (flags->sign && num >= 0)
-		check = ft_putchar_fd('+', 1);
-	else if (flags->sign)
-		check = ft_putchar_fd('-', 1);
-	else if (flags->space && num >= 0)
-		check = ft_putchar_fd(' ', 1);
-	else if (flags->space)
-		check = ft_putchar_fd('-', 1);
-	else if (num < 0)
-		check = ft_putchar_fd('-', 1);
-	return (check);
+	{
+		if (write(1, "+", 1) == -1)
+			return (-1);
+	}
+	else if (flags->sign || flags->space || num < 0)
+	{
+		if (flags->space && num >= 0)
+		{
+			if (write(1, " ", 1) == -1)
+				return (-1);
+		}
+		else
+		{
+			if (write(1, "-", 1) == -1)
+				return (-1);
+		}
+	}
+	return (1);
 }
 
-//Funcion que gestiona %d, %i y %u con flag '0'. Retorna length
+/*
+** @brief  Handles formatting for integers with zero-fill flag ('0').
+** @param  num: The integer value to print cast to long.
+** @param  flags: A pointer to the formatting status structure.
+** @param  sign: Sign flag indicator (-1 if negative, 0 otherwise).
+** @return The total length printed, or -1 on failure.
+*/
 int	print_int_zero(long num, t_flags *flags, int sign)
 {
 	char	*s;
@@ -111,7 +139,13 @@ int	print_int_zero(long num, t_flags *flags, int sign)
 	return (len);
 }
 
-//Funcion que gestiona %d, %i y %u con flag "width". Retorna length
+/*
+** @brief  Handles formatting for integers with standard width.
+** @param  num: The integer value to print cast to long.
+** @param  flags: A pointer to the formatting status structure.
+** @param  sign: Sign flag indicator (-1 if negative, 0 otherwise).
+** @return The total length printed, or -1 on failure.
+*/
 int	print_int_width(long num, t_flags *flags, int sign)
 {
 	char	*s;

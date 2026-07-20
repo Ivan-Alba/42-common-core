@@ -12,15 +12,22 @@
 
 #include "ft_printf.h"
 
-//Funcion que comprueba flags de %c y printa lo necesario
+/*
+** @brief  Validates flags for %c and outputs padding and character.
+** @param  c: The unsigned character value to print.
+** @param  flags: A pointer to the formatting status structure.
+** @return The total length printed, or -1 on failure.
+*/
 int	print_char_flags(unsigned int c, t_flags *flags)
 {
-	int	len;
+	int		len;
+	char	ch;
 
 	len = 0;
+	ch = (char)c;
 	if (flags->left_justify && flags->width > 1)
 	{
-		if (ft_putchar_fd(c, 1) == -1)
+		if (write(1, &ch, 1) == -1)
 			return (-1);
 		if (flags->width > 1)
 			len = print_x_char(flags->width - 1, ' ');
@@ -29,12 +36,17 @@ int	print_char_flags(unsigned int c, t_flags *flags)
 		return (len + 1);
 	}
 	len = print_x_char(flags->width - 1, ' ');
-	if (len == -1 || ft_putchar_fd(c, 1) == -1)
+	if (len == -1 || write(1, &ch, 1) == -1)
 		return (-1);
 	return (len + 1);
 }
 
-//Funcion que comprueba flags de %p y llama funcion necesaria
+/*
+** @brief  Evaluates format flags for %p and routes representation.
+** @param  ptr: The raw memory pointer address to process.
+** @param  flags: A pointer to the formatting status structure.
+** @return The total length printed, or -1 on failure.
+*/
 int	print_ptr_flags(uintptr_t ptr, t_flags *flags)
 {
 	char	*print;
@@ -48,13 +60,16 @@ int	print_ptr_flags(uintptr_t ptr, t_flags *flags)
 		return (ft_print_str(print, 1));
 }
 
-//Funcion que comprueba flags de %s y llama funcion necesaria.
+/*
+** @brief  Evaluates flags for %s, handles sizing and output.
+** @param  s: The original string pointer to process.
+** @param  flags: A pointer to the formatting status structure.
+** @return The total length printed, or -1 on failure.
+*/
 int	print_str_flags(char *s, t_flags *flags)
 {
 	char	*str;
-	int		len;
 
-	len = 0;
 	if (!s)
 		s = ft_read_string(s);
 	else
@@ -74,7 +89,12 @@ int	print_str_flags(char *s, t_flags *flags)
 		return (ft_print_str(str, 1));
 }
 
-//Funcion que comprueba flags de %i, %d y %u y llama funcion necesaria.
+/*
+** @brief  Checks formatting flags for integers and delegates logic.
+** @param  num: The integer value cast to long.
+** @param  flags: A pointer to the formatting status structure.
+** @return The total length printed, or -1 on failure.
+*/
 int	print_int_flags(long num, t_flags *flags)
 {
 	int	sign;
@@ -97,7 +117,13 @@ int	print_int_flags(long num, t_flags *flags)
 		return (print_int_width(num, flags, sign));
 }
 
-//Funcion que comprueba flags de %x y %X y llama funcion necesaria.
+/*
+** @brief  Checks formatting flags for hex and routes execution.
+** @param  num: The unsigned long value to convert.
+** @param  flags: A pointer to the formatting status structure.
+** @param  caps: Uppercase flag (1 for %X, 0 for %x).
+** @return The total length printed, or -1 on failure.
+*/
 int	print_hexa_flags(unsigned long num, t_flags *flags, int caps)
 {
 	int		len;

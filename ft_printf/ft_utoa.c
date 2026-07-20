@@ -12,7 +12,11 @@
 
 #include "ft_printf.h"
 
-//Cuenta digitos de un entero sin signo
+/*
+** @brief  Counts the number of digits in an unsigned integer.
+** @param  n: The unsigned integer to process.
+** @return The total number of digits.
+*/
 static int	count_char(unsigned int n)
 {
 	int	dig;
@@ -26,7 +30,11 @@ static int	count_char(unsigned int n)
 	return (dig);
 }
 
-//Devuelve potencias de 10 en base a los digitos
+/*
+** @brief  Calculates a power of ten based on a digit count.
+** @param  dig: The exponent determining the power level.
+** @return The calculated power of ten.
+*/
 static int	pow_ten(int dig)
 {
 	int	res;
@@ -40,13 +48,17 @@ static int	pow_ten(int dig)
 	return (res);
 }
 
-//Transforma unsigned int en char* y devuelve el valor.
+/*
+** @brief  Fills an allocated buffer with characters from an unsigned int.
+** @param  n: The unsigned integer value to extract digits from.
+** @param  res: The destination character buffer string.
+** @param  dig: The length size of the numeric representation.
+** @return A pointer to the filled string buffer.
+*/
 static char	*put_string(unsigned int n, char *res, int dig)
 {
 	int	i;
-	int	num;
 
-	num = 0;
 	i = 0;
 	while (dig > 0)
 	{
@@ -58,7 +70,11 @@ static char	*put_string(unsigned int n, char *res, int dig)
 	return (res);
 }
 
-//Funcion que recibe un unsigned int y la transforma en char*
+/*
+** @brief  Converts an unsigned integer into a allocated string.
+** @param  n: The unsigned integer value to convert.
+** @return A pointer to the newly allocated string, or NULL if it fails.
+*/
 char	*ft_utoa(unsigned int n)
 {
 	char	*res;
@@ -82,11 +98,3 @@ char	*ft_utoa(unsigned int n)
 		return (put_string(n, res, dig));
 	}
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	printf("%s", ft_utoa(-2147483647));
-}*/

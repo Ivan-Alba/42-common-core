@@ -12,34 +12,29 @@
 
 #include "libft.h"
 
+/*
+** @brief  Scans the initial n bytes of the memory area pointed to by s
+**         for the first instance of c. Both c and the bytes of the
+**         memory area pointed to by s are interpreted as unsigned char.
+** @param  s: Pointer to the memory area to be scanned.
+** @param  c: Character to be located, passed as an int.
+** @param  n: Number of bytes to analyze.
+** @return A pointer to the matching byte or NULL if the character does
+**         not occur in the given memory area.
+*/
 void	*ft_memchr(const void *s, int c, size_t n)
 {
 	unsigned char	*tmp;
 	unsigned char	ch;
 
-	tmp = (unsigned char *) s;
-	ch = (unsigned char) c;
+	tmp = (unsigned char *)s;
+	ch = (unsigned char)c;
 	while (n > 0)
 	{
 		if (*tmp == ch)
-			return (tmp);
+			return ((void *)tmp);
 		tmp++;
 		n--;
 	}
 	return (NULL);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	int tab[7] = {-49, 49, 1, -1, 0, -2, 2};
-	char	*result;
-	char	*result2;
-
-	result2 = memchr(str, '-1', 7);
-	result = ft_memchr(str, '-1', 7);
-	printf("%s\n", result);
-	printf("%s\n", result2);
-}*/

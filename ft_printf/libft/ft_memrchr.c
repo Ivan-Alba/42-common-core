@@ -12,34 +12,25 @@
 
 #include "libft.h"
 
+/*
+** @brief  Scans the memory area pointed to by s backwards for the first
+**         instance of c, looking only at the first n bytes.
+** @param  s: Pointer to the memory area to be scanned.
+** @param  c: Character to be located, passed as an int.
+** @param  n: Number of bytes to analyze.
+** @return A pointer to the matching byte or NULL if the character does
+**         not occur in the given memory area.
+*/
 void	*ft_memrchr(const void *s, int c, size_t n)
 {
-	int				len;
 	unsigned char	*tmp;
 
-	tmp = (unsigned char *) s;
-	len = 0;
-	while (tmp[len] != '\0')
+	tmp = (unsigned char *)s;
+	while (n > 0)
 	{
-		len++;
-	}
-	while (len >= 0 && n > 0)
-	{
-		if (tmp[len] == c)
-			return (&tmp[len]);
-		len--;
 		n--;
+		if (tmp[n] == (unsigned char)c)
+			return ((void *)&tmp[n]);
 	}
 	return (NULL);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	char	str[12] = "Hello world";
-	char	*result;
-	result = ft_memrchr(str, 'o', 6 * sizeof(char));
-	printf("%s", result);
-}*/

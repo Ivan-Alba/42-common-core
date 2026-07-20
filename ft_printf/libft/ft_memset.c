@@ -12,28 +12,24 @@
 
 #include "libft.h"
 
+/*
+** @brief  Fills the first len bytes of the memory area pointed to by ptr
+**         with the constant byte c.
+** @param  ptr: Pointer to the memory area to fill.
+** @param  c: Value to be set, passed as an int (converted to an unsigned char).
+** @param  len: Number of bytes to be set to the value.
+** @return A pointer to the memory area ptr.
+*/
 void	*ft_memset(void *ptr, int c, size_t len)
 {
-	char	*tmp;
+	unsigned char	*tmp;
 
-	tmp = ptr;
+	tmp = (unsigned char *)ptr;
 	while (len > 0)
 	{
-		*tmp = c;
+		*tmp = (unsigned char)c;
 		tmp++;
 		len--;
 	}
 	return (ptr);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	char	ptr[] = "Hello world";
-	char	c = 'H';
-	size_t	len = 5 * sizeof(char);
-
-	printf("%s", ft_memset(ptr, c, len));
-}*/

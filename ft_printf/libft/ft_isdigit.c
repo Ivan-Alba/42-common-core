@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
+
+/*
+** @brief  Checks for a digit (0 through 9).
+** @param  c: The character to be checked, passed as an int.
+** @return 1 if the character is a digit, 0 otherwise.
+*/
 int	ft_isdigit(int c)
 {
-	if (c >= 48 && c <= 57)
-	{
-		return (1);
-	}
-	else
-	{
-		return (0);
-	}
+	return (c >= 48 && c <= 57);
 }

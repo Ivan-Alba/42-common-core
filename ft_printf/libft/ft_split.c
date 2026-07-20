@@ -12,44 +12,43 @@
 
 #include "libft.h"
 
+/*
+** @brief  Counts the number of words delimited by 'c' in the string 's'.
+*/
 static int	count_words(char const *s, char c)
 {
 	int	count;
-	int	pos;
+	int	i;
 
-	pos = 0;
 	count = 0;
-	while (s[pos] != '\0')
+	i = 0;
+	while (s[i] != '\0')
 	{
-		if (s[pos] == c && pos > 0)
+		while (s[i] == c)
+			i++;
+		if (s[i] != '\0')
 		{
 			count++;
-			s += pos + 1;
-			pos = 0;
+			while (s[i] != '\0' && s[i] != c)
+				i++;
 		}
-		else if (s[pos] == c)
-		{
-			s++;
-			pos = 0;
-		}
-		else
-			pos++;
 	}
-	if (pos > 0)
-		count++;
 	return (count);
 }
 
-static char	*get_word(const char *s, int pos)
+/*
+** @brief  Allocates memory and copies a word of length 'len' from string 's'.
+*/
+static char	*get_word(const char *s, int len)
 {
 	char	*res;
 	int		j;
 
-	j = 0;
-	res = (char *) malloc((pos + 1) * sizeof(char));
+	res = (char *)malloc((len + 1) * sizeof(char));
 	if (!res)
 		return (NULL);
-	while (j < pos)
+	j = 0;
+	while (j < len)
 	{
 		res[j] = s[j];
 		j++;
@@ -58,77 +57,69 @@ static char	*get_word(const char *s, int pos)
 	return (res);
 }
 
-static char	*read_word(const char *s, char c, int word)
+/*
+** @brief  Locates the word at index 'word_idx' and returns its copy.
+*/
+static char	*read_word(const char *s, char c, int word_idx)
 {
-	int		i;
-	int		x;
+	int	i;
+	int	w_count;
+	int	start;
 
-	x = 0;
 	i = 0;
+	w_count = 0;
 	while (s[i] != '\0')
 	{
-		if (s[i] == c)
-		{
-			if (i > 0)
-			{
-				if (x == word)
-					return (get_word(s, i));
-				x++;
-			}
-			s += i + 1;
-			i = 0;
-		}
-		else
+		while (s[i] == c)
 			i++;
+		if (s[i] != '\0')
+		{
+			if (w_count == word_idx)
+			{
+				start = i;
+				while (s[i] != '\0' && s[i] != c)
+					i++;
+				return (get_word(&s[start], i - start));
+			}
+			w_count++;
+			while (s[i] != '\0' && s[i] != c)
+				i++;
+		}
 	}
-	if (i > 0)
-		return (get_word(s, i));
 	return (NULL);
 }
 
+/*
+** @brief  Splits 's' into an array of strings using 'c' as a delimiter.
+** @param  s: The string to be split.
+** @param  c: The delimiter character.
+** @return The array of new strings, or NULL if allocation fails.
+*/
 char	**ft_split(char const *s, char c)
 {
 	char	**result;
 	int		i;
 	int		words;
 
+	if (!s)
+		return (NULL);
 	words = count_words(s, c);
-	i = 0;
-	result = (char **) malloc((words +1) * sizeof(char *));
+	result = (char **)malloc((words + 1) * sizeof(char *));
 	if (!result)
 		return (NULL);
-	while (words > 0)
+	i = 0;
+	while (i < words)
 	{
 		result[i] = read_word(s, c, i);
-		if (result[i] == NULL)
+		if (!result[i])
 		{
-			while (i >= 0)
-				free(result[i--]);
-			free (result);
+			while (i > 0)
+				free(result[--i]);
+			free(result);
 			return (NULL);
 		}
 		i++;
-		words--;
 	}
 	result[i] = NULL;
 	return (result);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	char	str[] = " ,Hello, world, 87, how are you,,    2u , 3498";
-	char	c = ' ';
-	char	**res;
-	int		i;
-
-	i = 0;
-	res = ft_split(str, c);
-	while(res[i] != NULL)
-	{
-		printf("%d: %s\n", i, res[i]);
-		i++;
-	}
-}*/

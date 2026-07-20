@@ -12,7 +12,11 @@
 
 #include "ft_printf.h"
 
-//Funcion que libera la memoria de char *s y retorna -1
+/*
+** @brief  Safely deallocates memory of a string and returns an error code.
+** @param  s: The dynamically allocated string to be freed.
+** @return Always returns -1 to signal a stream or system failure.
+*/
 int	free_and_out(char *s)
 {
 	free(s);

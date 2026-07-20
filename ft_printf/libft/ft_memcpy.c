@@ -12,15 +12,24 @@
 
 #include "libft.h"
 
+/*
+** @brief  Copies n bytes from memory area src to memory area dest.
+**         The memory areas must not overlap.
+** @param  dest: Pointer to the destination array where the content is to be
+**         copied.
+** @param  src: Pointer to the source of data to be copied.
+** @param  n: Number of bytes to copy.
+** @return A pointer to the destination memory area (dest).
+*/
 void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
 	unsigned char	*tmp_dest;
 	unsigned char	*tmp_src;
 
-	if (!dest && !src && n > 0)
-		return (0);
-	tmp_dest = (unsigned char *) dest;
-	tmp_src = (unsigned char *) src;
+	if (!dest && !src)
+		return (NULL);
+	tmp_dest = (unsigned char *)dest;
+	tmp_src = (unsigned char *)src;
 	while (n > 0)
 	{
 		*tmp_dest = *tmp_src;
@@ -30,15 +39,3 @@ void	*ft_memcpy(void *dest, const void *src, size_t n)
 	}
 	return (dest);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	char	src[] = "Hello world";
-	char	dest[] = "How are you";
-
-	printf("%s\n", memcpy(dest, src, 6));
-	printf("%s\n", ft_memcpy(dest, src, 6));
-}*/

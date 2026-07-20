@@ -12,7 +12,25 @@
 
 #include "ft_printf.h"
 
-//Comprueba tipo de dato y llama funcion encargada. Retorna length
+/*
+** @brief  Outputs a single character to the given file descriptor.
+** @param  c: The character to write.
+** @param  fd: The target file descriptor.
+** @return Returns 1 on success, or -1 if the system write fails.
+*/
+static int	ft_putchar_len(char c, int fd)
+{
+	if (write(fd, &c, 1) == -1)
+		return (-1);
+	return (1);
+}
+
+/*
+** @brief  Evaluates the mandatory format type and routes execution.
+** @param  s: Pointer to the specific format specifier character.
+** @param  args: The va_list containing the variadic arguments.
+** @return The total length successfully printed, or -1 on failure.
+*/
 int	ft_check_args(const char *s, va_list args)
 {
 	char	*content;
@@ -21,7 +39,7 @@ int	ft_check_args(const char *s, va_list args)
 	if (*s == 's')
 		content = ft_read_string(va_arg(args, char *));
 	else if (*s == 'c')
-		return (ft_putchar_fd(va_arg(args, unsigned int), 1));
+		return (ft_putchar_len(va_arg(args, unsigned int), 1));
 	else if (*s == 'p')
 		content = ft_read_ptr((uintptr_t) va_arg(args, void *),
 				"0123456789abcdef");
@@ -36,16 +54,20 @@ int	ft_check_args(const char *s, va_list args)
 	else if (*s == 'X')
 		content = ft_uitobase(va_arg(args, unsigned int), "0123456789ABCDEF");
 	else if (*s == '%')
-		return (ft_putchar_fd('%', 1));
+		return (ft_putchar_len('%', 1));
 	return (ft_print_str(content, 1));
 }
 
-//Funcion principal
+/*
+** @brief  The primary printf clone engine mimicking the libc behavior.
+** @param  s: The initial format string containing specifiers and text.
+** @return The total amount of bytes successfully written to stdout.
+*/
 int	ft_printf(const char *s, ...)
 {
-	va_list		args;
-	int			total;
-	int			sum;
+	va_list	args;
+	int		total;
+	int		sum;
 
 	va_start(args, s);
 	if (!s || !*s)
@@ -67,39 +89,3 @@ int	ft_printf(const char *s, ...)
 	va_end(args);
 	return (total);
 }
-
-/*
-int	main(void)
-{
-	
-	char	s[] = " que tal ";
-	int		d[] = {1, 2};
-	
-	
-	printf("Length: %d\n", ft_printf("hola%+05smundo %c %p %d, %i %u %x %X %%",
-		"", '-', 0, 27292873, -2147483647, -2147483646, 0, 0));
-
-	printf("\n01234567890123456789012345678901234567890\n\n");
-
-	printf("Lenght: %d\n", printf("hola%smundo %c %p %d, %i %u %x %X %%",
-		"", '-', 0, 27292873, -2147483647, -2147483646, 0, 0));
-
-	printf("Lenght: %d\n", ft_printf(" NULL %s NULL ", NULL));
-	printf("Lenght: %d\n", printf(" NULL %s NULL ", NULL));
-
-	printf("Lenght: %d\n", ft_printf(" %c %c %c ", '2', '1', 0));
-	printf("Lenght: %d\n", printf(" %c %c %c ", '2', '1', 0));
-
-	printf("Lenght: %d\n", ft_printf("%%"));
-	printf("Lenght: %d\n", printf("%%"));
-
-
-	//FLAGS
-	
-	//printf("Lenght: %d\n", printf("%7chola", 'g'));
-	//printf("Lenght: %d\n", ft_printf("%7chola", 'g'));
-	printf("Lenght: %d\n", printf("%-20phola%-7cque%-9%tal%-s",
-		"hola que tal", 'y', "-"));
-	printf("Lenght: %d\n", ft_printf("%-20phola%-7cque%-9%tal%-s",
-		"hola que tal", 'y', "-"))
-}*/

@@ -12,33 +12,31 @@
 
 #include "libft.h"
 
+/*
+** @brief  Allocates and returns a copy of 's1' with the characters
+**         specified in 'set' removed from the beginning and the end
+**         of the string.
+** @param  s1: The string to be trimmed.
+** @param  set: The reference set of characters to trim.
+** @return The trimmed string, or NULL if the allocation fails.
+*/
 char	*ft_strtrim(char const *s1, char const *set)
 {
+	size_t	start;
+	size_t	end;
 	char	*trimmed;
-	int		start;
-	int		end;
 
+	if (!s1 || !set)
+		return (NULL);
 	start = 0;
-	end = ft_strlen(s1) - 1;
-	while (ft_strchr(set, s1[start]) && start <= end)
+	end = ft_strlen(s1);
+	while (s1[start] != '\0' && ft_strchr(set, s1[start]))
 		start++;
-	if (start > end)
-		return (ft_strdup(s1 + end + 1));
-	while (ft_strrchr(set, s1[end]) && end >= 0)
+	while (end > start && ft_strchr(set, s1[end - 1]))
 		end--;
-	trimmed = (char *) malloc ((end - start + 2) * sizeof(char));
+	trimmed = (char *)malloc((end - start + 1) * sizeof(char));
 	if (!trimmed)
 		return (NULL);
-	ft_strlcpy(trimmed, &s1[start], end - start + 2);
+	ft_strlcpy(trimmed, &s1[start], end - start + 1);
 	return (trimmed);
 }
-
-/*
-#include <stdio.h>
-int	main(void)
-{
-	char	s1[] = "Hello worldHeHeHe";
-	char	s2[] = "eHl";
-
-	printf("%s", ft_strtrim(s1, s2));
-}*/

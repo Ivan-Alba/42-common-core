@@ -18,7 +18,12 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <stdint.h>
 
+/*
+** @struct s_flags
+** @brief  Structure holding the formatting configuration flags for bonus data.
+*/
 typedef struct s_flags
 {
 	int		fill_zero;
@@ -31,34 +36,68 @@ typedef struct s_flags
 	char	command;
 }	t_flags;
 
+/*
+** =========================================================================
+** MANDATORY FUNCTIONS
+** =========================================================================
+*/
+
 int		ft_printf(const char *s, ...);
-char	*ft_read_string(char *s);
-char	*ft_read_ptr(uintptr_t num, char *base);
-char	*ft_utoa(unsigned int n);
-char	*ft_uitobase(unsigned int num, char *base);
-int		ft_print_str(char *s, int fd);
+int		ft_check_args(const char *s, va_list args);
+
+/*
+** =========================================================================
+** BONUS FORMAT ROUTERS & PARSERS
+** =========================================================================
+*/
+
 int		ft_check_flags(const char **s, va_list args);
-int		print_x_char(int qty, unsigned int c);
-int		print_ptr_flags(uintptr_t ptr, t_flags *flags);
-int		print_str_width(char *s, t_flags *flags, int flags_len);
 int		print_char_flags(unsigned int c, t_flags *flags);
 int		print_ptr_flags(uintptr_t ptr, t_flags *flags);
 int		print_str_flags(char *s, t_flags *flags);
 int		print_int_flags(long num, t_flags *flags);
+int		print_hexa_flags(unsigned long num, t_flags *flags, int caps);
+
+/*
+** =========================================================================
+** INT FORMAT SPECIFIC SUB-FUNCTIONS
+** =========================================================================
+*/
+
 int		print_int_justify(long num, t_flags *flags, int sign);
 int		print_int_sign(int num, t_flags *flags);
 int		print_int_truncate(long num, t_flags *flags, int sign);
 int		print_int_zero(long num, t_flags *flags, int sign);
 int		print_int_width(long num, t_flags *flags, int sign);
-int		print_hexa_flags(unsigned long num, t_flags *flags, int caps);
+
+/*
+** =========================================================================
+** HEX FORMAT SPECIFIC SUB-FUNCTIONS
+** =========================================================================
+*/
+
 int		print_hexa_truncate(char *s, t_flags *flags, int caps);
 int		print_hexa_format(int caps);
 int		print_hexa_zero(char *s, t_flags *flags, int caps);
 int		print_hexa_width(char *s, t_flags *flags, int caps);
 int		print_hexa_justify(char *s, t_flags *flags, int caps);
 int		print_hexa_format_str(char *s, int caps);
-int		print_num_zero(t_flags *flags);
+
+/*
+** =========================================================================
+** STRING & MEMORY UTILITIES
+** =========================================================================
+*/
+
+char	*ft_read_string(char *s);
+char	*ft_read_ptr(uintptr_t num, char *base);
+char	*ft_utoa(unsigned int n);
+char	*ft_uitobase(unsigned int num, char *base);
 char	*transform_number(long num);
+int		ft_print_str(char *s, int fd);
+int		print_x_char(int qty, unsigned int c);
+int		print_str_width(char *s, t_flags *flags, int flags_len);
+int		print_num_zero(t_flags *flags);
 int		free_and_out(char *s);
 
 #endif

@@ -12,38 +12,27 @@
 
 #include "libft.h"
 
+/*
+** @brief  Locates the last occurrence of c (converted to a char) in the
+**         string pointed to by s. The terminating null character is
+**         considered to be part of the string.
+** @param  s: The string to be scanned.
+** @param  c: The character to be located, passed as an int.
+** @return A pointer to the located character, or NULL if the character
+**         does not occur in the string.
+*/
 char	*ft_strrchr(const char *s, int c)
 {
-	int				len;
-	char			*tmp;
-	unsigned char	ch;
+	size_t	len;
 
-	tmp = (char *) s;
-	ch = (unsigned char) c;
-	len = 0;
-	while (s[len] != '\0')
+	len = ft_strlen(s);
+	while (1)
 	{
-		len++;
-	}
-	if (ch == '\0')
-	{
-		return (&tmp[len]);
-	}
-	while (len >= 0)
-	{
-		if (s[len] == ch)
-			return (&tmp[len]);
+		if (s[len] == (char)c)
+			return ((char *)&s[len]);
+		if (len == 0)
+			break ;
 		len--;
 	}
-	tmp = 0;
-	return (tmp);
+	return (NULL);
 }
-
-/*
-#include <stdio.h>
-int	main(void)
-{
-	char	str[] = "Hello world";
-
-	printf("%s", ft_strrchr(str, 'x'));
-}*/

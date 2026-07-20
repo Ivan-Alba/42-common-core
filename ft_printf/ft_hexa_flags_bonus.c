@@ -12,7 +12,13 @@
 
 #include "ft_printf.h"
 
-//Funcion que gestiona %x y %X con flag '.'. Retorna length
+/*
+** @brief  Handles formatting for %x and %X with precision flag.
+** @param  s: The hexadecimal string to format and print.
+** @param  flags: A pointer to the formatting status structure.
+** @param  caps: Uppercase flag (1 for %X, 0 for %x).
+** @return The total length printed, or -1 on error.
+*/
 int	print_hexa_truncate(char *s, t_flags *flags, int caps)
 {
 	int	len;
@@ -24,7 +30,7 @@ int	print_hexa_truncate(char *s, t_flags *flags, int caps)
 		len += flags->truncate - (int)ft_strlen(s);
 	while (len < flags->width)
 	{
-		if (ft_putchar_fd(' ', 1) == -1)
+		if (write(1, " ", 1) == -1)
 			return (free_and_out(s));
 		len++;
 	}
@@ -40,23 +46,33 @@ int	print_hexa_truncate(char *s, t_flags *flags, int caps)
 	return (len);
 }
 
-//Funcion que gestiona %x y %X con flag '#'. Retorna length
+/*
+** @brief  Outputs the alternate form prefix ("0x" or "0X").
+** @param  caps: Uppercase indicator (1 for "0X", 0 for "0x").
+** @return The number of bytes written (2), or -1 on error.
+*/
 int	print_hexa_format(int caps)
 {
 	if (caps)
 	{
-		if (ft_putchar_fd('0', 1) == -1 || ft_putchar_fd('X', 1) == -1)
+		if (write(1, "0X", 2) == -1)
 			return (-1);
 	}
 	else
 	{
-		if (ft_putchar_fd('0', 1) == -1 || ft_putchar_fd('x', 1) == -1)
+		if (write(1, "0x", 2) == -1)
 			return (-1);
 	}
 	return (2);
 }
 
-//Funcion que gestiona %x y %X con flag '0'. Retorna length
+/*
+** @brief  Handles formatting for %x and %X with zero-fill flag ('0').
+** @param  s: The hexadecimal string to format and print.
+** @param  flags: A pointer to the formatting status structure.
+** @param  caps: Uppercase flag (1 for %X, 0 for %x).
+** @return The total length printed, or -1 on error.
+*/
 int	print_hexa_zero(char *s, t_flags *flags, int caps)
 {
 	int	len;
@@ -77,7 +93,13 @@ int	print_hexa_zero(char *s, t_flags *flags, int caps)
 	return (len);
 }
 
-//Funcion que gestiona %x y %X con flag '-'. Retorna length
+/*
+** @brief  Handles formatting for %x and %X with left-justify flag ('-').
+** @param  s: The hexadecimal string to format and print.
+** @param  flags: A pointer to the formatting status structure.
+** @param  caps: Uppercase flag (1 for %X, 0 for %x).
+** @return The total length printed, or -1 on error.
+*/
 int	print_hexa_justify(char *s, t_flags *flags, int caps)
 {
 	int	len;
@@ -106,7 +128,13 @@ int	print_hexa_justify(char *s, t_flags *flags, int caps)
 	return (len);
 }
 
-//Funcion que gestiona %x y %X con flag "width". Retorna length
+/*
+** @brief  Handles formatting for %x and %X with standard width.
+** @param  s: The hexadecimal string to format and print.
+** @param  flags: A pointer to the formatting status structure.
+** @param  caps: Uppercase flag (1 for %X, 0 for %x).
+** @return The total length printed, or -1 on error.
+*/
 int	print_hexa_width(char *s, t_flags *flags, int caps)
 {
 	int	len;

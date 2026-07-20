@@ -12,7 +12,13 @@
 
 #include "ft_printf.h"
 
-//Transforma unsigned int en char*
+/*
+** @brief  Converts an unsigned int into a dynamically
+**         allocated string representation based on a base.
+** @param  num: The unsigned integer value to convert.
+** @param  base: The character array for the numerical base.
+** @return A pointer to the allocated string, or NULL if fails.
+*/
 char	*ft_uitobase(unsigned int num, char *base)
 {
 	int				len;
@@ -40,7 +46,13 @@ char	*ft_uitobase(unsigned int num, char *base)
 	return (res);
 }
 
-//Crea un char* con el valor de s o crea uno con "(null)" si s == null
+/*
+** @brief  Duplicates a string or produces a fallback
+**         representation for NULL inputs.
+** @param  s: The original string pointer to be duplicated.
+** @return A pointer to the newly allocated string representation,
+**         or NULL if the allocation fails.
+*/
 char	*ft_read_string(char *s)
 {
 	char	*content;
@@ -55,25 +67,33 @@ char	*ft_read_string(char *s)
 	return (content);
 }
 
-//Printa una string y devuelve length. -1 si write falla 
+/*
+** @brief  Outputs a string to a file descriptor and safely
+**         deallocates its buffer memory.
+** @param  s: The dynamically allocated string to print and free.
+** @param  fd: The file descriptor target for the output stream.
+** @return The total length printed on success, or -1 if the
+**         system write fails (triggering cleanup).
+*/
 int	ft_print_str(char *s, int fd)
 {
-	int	i;
+	int	len;
 
 	if (!s)
 		return (-1);
-	i = 0;
-	while (s[i] != '\0')
-	{
-		if (ft_putchar_fd(s[i], fd) == -1)
-			return (free_and_out(s));
-		i++;
-	}
+	len = ft_strlen(s);
+	if (write(fd, s, len) == -1)
+		return (free_and_out(s));
 	free(s);
-	return (i);
+	return (len);
 }
 
-//Devuelve length esperada al transformar una direccion de memoria a hexadecimal
+/*
+** @brief  Calculates the digit length of a memory address
+**         when converted to hexadecimal format.
+** @param  num: The unsigned pointer-sized integer value.
+** @return The total amount of numeric hex characters required.
+*/
 static int	ptr_length(uintptr_t num)
 {
 	int	len;
@@ -87,7 +107,15 @@ static int	ptr_length(uintptr_t num)
 	return (len);
 }
 
-//Transforma una direccion de memoria en formato numerico a char* en hexadecimal
+/*
+** @brief  Converts a raw memory address into a fully formatted
+**         hexadecimal layout string. Explicitly catches NULL
+**         pointers to produce the standard "(nil)" output.
+** @param  num: The raw pointer address cast to uintptr_t.
+** @param  base: The character array for the hex dictionary.
+** @return A pointer to the allocated hex layout string,
+**         or NULL if malloc fails.
+*/
 char	*ft_read_ptr(uintptr_t num, char *base)
 {
 	int			len;
@@ -95,7 +123,7 @@ char	*ft_read_ptr(uintptr_t num, char *base)
 	uintptr_t	x;
 
 	if (!num)
-		return (ft_strdup("0x0"));
+		return (ft_strdup("(nil)"));
 	x = num;
 	len = ptr_length(num) + 2;
 	res = (char *) malloc((len + 1) * sizeof(char));

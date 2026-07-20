@@ -10,36 +10,30 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h" 
+#include "libft.h"
 
+/*
+** @brief  Copies up to size - 1 characters from the NUL-terminated string src
+**         to dst, NUL-terminating the result.
+** @param  dst: The destination string.
+** @param  src: The source string.
+** @param  size: The total size of the destination buffer.
+** @return The total length of the string they tried to create (length of src).
+*/
 size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 {
-	int	i;
+	size_t	i;
+	size_t	src_len;
 
-	i = 0;
+	src_len = ft_strlen(src);
 	if (size == 0)
-		return (ft_strlen(src));
-	while ((size - 1) > 0 && src[i] != '\0')
+		return (src_len);
+	i = 0;
+	while (src[i] != '\0' && i < (size - 1))
 	{
 		dst[i] = src[i];
-		size--;
 		i++;
 	}
 	dst[i] = '\0';
-	return (ft_strlen(src));
+	return (src_len);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	char	src[] = "Hello world!, 3";
-	char	dest[7];
-	char	src2[] = "Hello world!, 3";
-	char	dest2[7];
-
-
-	printf("%d\n", (int) ft_strlcpy(dest, src, 7));
-	printf("%d", (int) strlcpy(dest2, src2, 7));
-}*/
