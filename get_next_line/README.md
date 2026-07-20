@@ -1,5 +1,14 @@
-# get_next_line - 42 Project
+# get_next_line — Reading a File Descriptor Line by Line
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Project-get__next__line-000000?style=for-the-badge&logo=42&logoColor=white" alt="get_next_line" />
+  <img src="https://img.shields.io/badge/Language-C-00599C?style=for-the-badge&logo=c&logoColor=white" alt="C" />
+  <img src="https://img.shields.io/badge/Grade-125%20%2F%20100-success?style=for-the-badge" alt="125/100" />
+</p>
+
+---
+
+## 📖 Overview
 An implementation of a custom C function that reads a file descriptor line by line, dynamic buffer allocation handling, and static array multi-descriptor operations. This project provides deep control over file input streams, data persistence across subsequent dynamic calls using static variables, and runtime heap safety.
 
 This version supports execution under arbitrary variable sizes (`BUFFER_SIZE`) as well as simultaneous tracking of multiple individual streams required by the **Bonus** section of the 42 subject.
