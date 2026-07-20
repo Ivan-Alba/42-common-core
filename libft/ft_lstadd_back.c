@@ -12,20 +12,23 @@
 
 #include "libft.h"
 
+/*
+** @brief  Adds the node 'new' at the end of the list.
+** @param  lst: A pointer to the first link of a list.
+** @param  new: A pointer to the node to be added to the list.
+** @return None.
+*/
 void	ft_lstadd_back(t_list **lst, t_list *new)
 {
 	t_list	*last;
 
-	if (!lst)
-		lst = &new;
-	else
+	if (!lst || !new)
+		return ;
+	if (!*lst)
 	{
-		if (!*lst)
-			*lst = new;
-		else
-		{
-			last = ft_lstlast(*lst);
-			last -> next = new;
-		}
+		*lst = new;
+		return ;
 	}
+	last = ft_lstlast(*lst);
+	last->next = new;
 }

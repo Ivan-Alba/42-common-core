@@ -12,24 +12,28 @@
 
 #include "libft.h"
 
+/*
+** @brief  Allocates memory for an array of nelem elements of elsize bytes each
+**         and returns a pointer to the allocated memory. The memory is set
+**         to zero. If nelem or elsize is 0, it returns a unique pointer value
+**         that can be safely passed to free().
+** @param  nelem: Number of elements to allocate.
+** @param  elsize: Size of each element in bytes.
+** @return A pointer to the allocated memory, or NULL if the allocation fails.
+*/
 void	*ft_calloc(size_t nelem, size_t elsize)
 {
 	void	*res;
+	size_t	total_size;
 
-	res = malloc(nelem * elsize);
+	total_size = nelem * elsize;
+	if (nelem != 0 && total_size / nelem != elsize)
+		return (NULL);
+	if (total_size == 0)
+		total_size = 1;
+	res = malloc(total_size);
 	if (res == NULL)
-		return (res);
-	else
-		ft_bzero(res, nelem * elsize);
+		return (NULL);
+	ft_bzero(res, total_size);
 	return (res);
 }
-
-/*
-int	main(void)
-{
-	char	*ptr;
-	char	*ptr2;
-
-	ptr = (char *)calloc(5, sizeof(char));
-	ptr2 = (char *)ft_calloc(5, sizeof(char));
-}*/

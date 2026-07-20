@@ -10,23 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-static int	pow_ten(int exp)
-{
-	int	res;
+#include "libft.h"
 
-	res = 1;
-	while (exp-- > 0)
-		res *= 10;
-	return (res);
-}
-
+/*
+** @brief  Converts the initial portion of the string pointed to by str to int.
+** @param  str: The string representation of the integer to convert.
+** @return The converted integer value.
+*/
 int	ft_atoi(const char *str)
 {
 	int	res;
 	int	sign;
-	int	i;
 
-	i = 0;
 	sign = 1;
 	res = 0;
 	while ((*str >= 9 && *str <= 13) || (*str == 32))
@@ -37,22 +32,10 @@ int	ft_atoi(const char *str)
 			sign = -1;
 		str++;
 	}
-	while (str[i] >= 48 && str[i] <= 57)
-		i++;
-	while (*str >= 48 && *str <= 57)
+	while (*str >= '0' && *str <= '9')
 	{
-		res += (*str - '0') * pow_ten(i-- - 1);
+		res = (res * 10) + (*str - '0');
 		str++;
 	}
 	return (res * sign);
 }
-
-/*
-#include <stdio.h>
-#include <stdlib.h>
-
-int	main(void)
-{
-	printf("%d\n", ft_atoi("-2147483650"));
-	printf("%d\n", atoi("-2147483650"));
-}*/

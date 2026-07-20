@@ -12,29 +12,24 @@
 
 #include "libft.h"
 
+/*
+** @brief  Locates the first occurrence of c (converted to a char) in the
+**         string pointed to by s. The terminating null character is
+**         considered to be part of the string.
+** @param  s: The string to be scanned.
+** @param  c: The character to be located, passed as an int.
+** @return A pointer to the located character, or NULL if the character
+**         does not occur in the string.
+*/
 char	*ft_strchr(const char *s, int c)
 {
-	char			*tmp;
-	unsigned char	ch;
-
-	tmp = (char *) s;
-	ch = (unsigned char) c;
-	while (*tmp != '\0')
+	while (*s != '\0')
 	{
-		if (*tmp == ch)
-			return (tmp);
-		tmp++;
+		if (*s == (char)c)
+			return ((char *)s);
+		s++;
 	}
-	if (ch == '\0')
-		return (tmp);
+	if (*s == (char)c)
+		return ((char *)s);
 	return (NULL);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	printf("%s\n", ft_strchr("Hello world", '\0'));
-	printf("%s\n", strchr("Hello world", '\0'));
-}*/

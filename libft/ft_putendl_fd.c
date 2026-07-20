@@ -10,25 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h" 
-
-void	ft_putendl_fd(char *s, int fd)
-{
-	int	i;
-
-	i = 0;
-	if (!s || !fd)
-		return ;
-	while (s[i])
-	{
-		write(fd, s + i, 1);
-		i++;
-	}
-	write(fd, "\n", 1);
-}
+#include "libft.h"
 
 /*
-int	main(void)
+** @brief  Outputs the string 's' to the given file descriptor,
+**         followed by a newline.
+** @param  s: The string to output.
+** @param  fd: The file descriptor on which to write.
+** @return None.
+*/
+void	ft_putendl_fd(char *s, int fd)
 {
-	ft_putendl_fd("Hello world", 1);
-}*/
+	if (!s)
+		return ;
+	ft_putstr_fd(s, fd);
+	ft_putchar_fd('\n', fd);
+}

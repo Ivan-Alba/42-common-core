@@ -12,43 +12,34 @@
 
 #include "libft.h"
 
+/*
+** @brief  Locates the first occurrence of the null-terminated string little
+**         in the string big, where not more than len characters are searched.
+** @param  big: The string to be searched.
+** @param  little: The substring to locate.
+** @param  len: The maximum number of characters to search.
+** @return If little is an empty string, big is returned; if little occurs
+**         nowhere in big, NULL is returned; otherwise a pointer to the
+**         first character of the first occurrence of little is returned.
+*/
 char	*ft_strnstr(const char *big, const char *little, size_t len)
 {
-	int		i;
-	int		j;
-	char	*res;
+	size_t	i;
+	size_t	j;
 
+	if (*little == '\0')
+		return ((char *)big);
 	i = 0;
-	res = (char *) big;
-	if (ft_strlen(little) == 0)
-		return (res);
-	while (big[i] != '\0' && len > 0)
+	while (big[i] != '\0' && i < len)
 	{
 		j = 0;
-		while (big[i] == little[j])
+		while (big[i + j] == little[j] && (i + j) < len)
 		{
-			len--;
-			i++;
+			if (little[j + 1] == '\0')
+				return ((char *)&big[i]);
 			j++;
-			if (little[j] == '\0')
-				return (&res[i - j]);
-			if (len == 0)
-				return (NULL);
 		}
-		len += j - 1;
-		i -= j - 1;
+		i++;
 	}
 	return (NULL);
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	const char	*largestring = "Foo Bar Baz";
-	const char	*smallstring = "o Bar Ba";
-
-	printf("%s\n", ft_strnstr(largestring, smallstring, 10));
-//	printf("%s\n", strnstr(largestring, smallstring, 10));
-}*/

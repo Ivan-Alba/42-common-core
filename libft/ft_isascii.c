@@ -10,24 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_isascii(int c)
-{
-	if (c >= 0 && c <= 127)
-	{
-		return (1);
-	}
-	else
-	{
-		return (0);
-	}
-}
+#include "libft.h"
 
 /*
-#include <stdio.h>
-
-int	main(void)
+** @brief  Checks whether c is a 7-bit unsigned char value that
+**         fits into the ASCII character set.
+** @param  c: The character to be checked, passed as an int.
+** @return 1 if the character is inside the ASCII set, 0 otherwise.
+*/
+int	ft_isascii(int c)
 {
-	printf("%d: %s\n", ft_isascii('H'), "H");
-	printf("%d: %s\n", ft_isascii('4'), "4");
-	printf("%d: %s\n", ft_isascii('*'), "*");
-}*/
+	return (c >= 0 && c <= 127);
+}

@@ -12,29 +12,24 @@
 
 #include "libft.h"
 
+/*
+** @brief  Lexicographically compares not more than n characters of the
+**         null-terminated strings s1 and s2.
+** @param  s1: The first string to be compared.
+** @param  s2: The second string to be compared.
+** @param  n: The maximum number of characters to compare.
+** @return An integer greater than, equal to, or less than 0, according
+**         as the string s1 is greater than, equal to, or less than s2.
+*/
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	unsigned char	*c1;
-	unsigned char	*c2;
-	int				i;
-
-	i = 0;
-	c1 = (unsigned char *) s1;
-	c2 = (unsigned char *) s2;
 	if (n == 0)
 		return (0);
-	while (s1[i] != '\0' && s2[i] != '\0' && n-- > 1 && s1[i] == s2[i])
-		i++;
-	return (c1[i] - c2[i]);
+	while (*s1 != '\0' && *s2 != '\0' && *s1 == *s2 && n > 1)
+	{
+		s1++;
+		s2++;
+		n--;
+	}
+	return ((unsigned char)*s1 - (unsigned char)*s2);
 }
-
-/*
-#include <stdio.h>
-int	main(void)
-{
-	char	s1[] = "test\200";
-	char	s2[] = "test\0";
-
-	printf("%d\n", ft_strncmp(s1, s2, 6));
-	printf("%d\n", strncmp(s1, s2, 6));
-}*/

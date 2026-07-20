@@ -10,16 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	ft_striteri(char *s, void (*f)(unsigned int, char*))
-{
-	int		i;
+#include "libft.h"
 
-	i = 0;
+/*
+** @brief  Applies the function 'f' on each character of the string 's',
+**         passing its index as first argument and the address of the
+**         character itself as second argument. Each character may be
+**         modified.
+** @param  s: The string to iterate on.
+** @param  f: The function to apply to each character.
+** @return None.
+*/
+void	ft_striteri(char *s, void (*f)(unsigned int, char *))
+{
+	unsigned int	i;
+
 	if (!s || !f)
 		return ;
+	i = 0;
 	while (s[i])
 	{
-		f(i, s + i);
+		f(i, &s[i]);
 		i++;
 	}
 }

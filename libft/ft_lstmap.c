@@ -12,35 +12,37 @@
 
 #include "libft.h"
 
-t_list	*clear_all(t_list	*first, void (*del)(void *))
-{
-	ft_lstclear(&first, del);
-	return (NULL);
-}
-
+/*
+** @brief  Iterates the list 'lst' and applies the function 'f' on the content
+**         of each node. Creates a new list resulting from the successive
+**         applications of the function 'f'. The 'del' function is used to
+**         destroy the content of a node if needed.
+** @param  lst: A pointer to the first link of a list.
+** @param  f: A pointer to the function used to iterate on the list.
+** @param  del: A pointer to the function used to delete the content if needed.
+** @return The new list, or NULL if the allocation fails.
+*/
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {
-	int		size;
-	t_list	*first;
-	t_list	*curr;
+	t_list	*new_list;
+	t_list	*new_node;
+	void	*new_content;
 
 	if (!lst || !f || !del)
 		return (NULL);
-	size = ft_lstsize(lst);
-	first = (t_list *) malloc(sizeof(t_list));
-	if (!first)
-		return (NULL);
-	first -> content = f(lst -> content);
-	curr = first;
-	while (--size > 0)
+	new_list = NULL;
+	while (lst)
 	{
-		lst = lst -> next;
-		curr -> next = (t_list *) malloc(sizeof(t_list));
-		if (!curr -> next)
-			return (clear_all(first, del));
-		curr = curr -> next;
-		curr -> content = f(lst -> content);
+		new_content = f(lst->content);
+		new_node = ft_lstnew(new_content);
+		if (!new_node)
+		{
+			del(new_content);
+			ft_lstclear(&new_list, del);
+			return (NULL);
+		}
+		ft_lstadd_back(&new_list, new_node);
+		lst = lst->next;
 	}
-	curr -> next = NULL;
-	return (first);
+	return (new_list);
 }

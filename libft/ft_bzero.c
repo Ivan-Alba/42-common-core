@@ -12,11 +12,19 @@
 
 #include "libft.h"
 
+/*
+** @brief  Erases the data in the n bytes of the memory starting at the location
+**         pointed to by s, by writing zeros (bytes containing '\0') to that
+**         area.
+** @param  s: Pointer to the memory block to be zeroed.
+** @param  n: Number of bytes to set to zero.
+** @return None.
+*/
 void	ft_bzero(void *s, size_t n)
 {
-	char	*tmp;
+	unsigned char	*tmp;
 
-	tmp = s;
+	tmp = (unsigned char *)s;
 	while (n > 0)
 	{
 		*tmp = 0;
@@ -24,16 +32,3 @@ void	ft_bzero(void *s, size_t n)
 		n--;
 	}
 }
-
-/*
-#include <stdio.h>
-
-int	main(void)
-{
-	char	str[] = "Hello world";
-	char	str2[] = "Hello world";
-	size_t	n = 5 * sizeof(char);
-
-	bzero(str, n);
-	ft_bzero(str2, n);
-}*/

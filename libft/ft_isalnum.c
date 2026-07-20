@@ -10,24 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_isalnum(int c)
-{
-	if ((c >= 48 && c <= 57) || (c >= 65 && c <= 90) || (c >= 97 && c <= 122))
-	{
-		return (1);
-	}
-	else
-	{
-		return (0);
-	}
-}
+#include "libft.h"
 
 /*
-#include <stdio.h>
-
-int	main(void)
+** @brief  Checks for an alphanumeric character; it is equivalent to
+**         (ft_isalpha(c) || ft_isdigit(c)).
+** @param  c: The character to be checked, passed as an int.
+** @return 1 if the character is alphanumeric, 0 otherwise.
+*/
+int	ft_isalnum(int c)
 {
-	printf("%d: %s\n", ft_isalnum('H'), "H");
-	printf("%d: %s\n", ft_isalnum('4'), "4");
-	printf("%d: %s\n", ft_isalnum('*'), "*");
-}*/
+	return (ft_isalpha(c) || ft_isdigit(c));
+}

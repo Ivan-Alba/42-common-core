@@ -10,41 +10,34 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h" 
+#include "libft.h"
 
+/*
+** @brief  Copies n bytes from memory area src to memory area dest.
+**         The memory areas may overlap safely.
+** @param  dest: Pointer to the destination array.
+** @param  src: Pointer to the source of data to be copied.
+** @param  n: Number of bytes to copy.
+** @return A pointer to the destination memory area (dest).
+*/
 void	*ft_memmove(void *dest, const void *src, size_t n)
 {
 	unsigned char	*tmp_src;
 	unsigned char	*tmp_dest;
 
 	if (!dest && !src)
-		return (0);
-	tmp_src = (unsigned char *) src;
-	tmp_dest = (unsigned char *) dest;
+		return (NULL);
+	tmp_src = (unsigned char *)src;
+	tmp_dest = (unsigned char *)dest;
 	if (dest <= src)
 	{
 		while (n--)
 			*tmp_dest++ = *tmp_src++;
 	}
-	else if (dest > src)
+	else
 	{
-		tmp_dest += n - 1;
-		tmp_src += n - 1;
 		while (n--)
-			*tmp_dest-- = *tmp_src--;
+			tmp_dest[n] = tmp_src[n];
 	}
 	return (dest);
 }
-
-/*
-#include <stdio.h>
-int	main(void)
-{
-	char	src[] = "Hello world";
-	char	dest[] = "How are you";
-	char	src2[] = "Hello world";
-	char	dest2[] = "How are you";
-
-	printf("%s\n", memmove(dest, src, 5));
-	printf("%s\n", ft_memmove(dest2, src2, 5));
-}*/

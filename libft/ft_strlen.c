@@ -12,12 +12,17 @@
 
 #include "libft.h"
 
-size_t	ft_strlen(const char *str)
+/*
+** @brief  Computes the length of the string s.
+** @param  s: The string whose length is to be measured.
+** @return The number of characters that precede the terminating null character.
+*/
+size_t	ft_strlen(const char *s)
 {
-	int	count;
+	size_t	count;
 
 	count = 0;
-	while (str[count] != '\0')
+	while (s[count] != '\0')
 		count++;
-	return (count * sizeof(char));
+	return (count);
 }
