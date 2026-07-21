@@ -91,3 +91,9 @@ int main(void)
     return (0);
 }
 ```
+
+---
+
+<div align="center">
+  <p>Developed as part of the 42 School Curriculum.</p>
+</div>
