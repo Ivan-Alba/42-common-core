@@ -12,7 +12,13 @@
 
 #include "push_swap.h"
 
-//Calls the necessary function to make changes on stack
+/*
+** @brief  Executes the specified stack operation or terminates on invalid
+**         instruction.
+** @param  order: String representing the stack operation command.
+** @param  stack_a: Double pointer to stack A.
+** @param  stack_b: Double pointer to stack B.
+*/
 void	do_operation(char *order, t_list **stack_a, t_list **stack_b)
 {
 	if (ft_strcmp(order, PA))
@@ -41,7 +47,10 @@ void	do_operation(char *order, t_list **stack_a, t_list **stack_b)
 		free_both_stacks(stack_a, stack_b);
 }
 
-//Read the orders from fd 0 and apply changes to stack
+/*
+** @brief  Reads instructions line by line from standard input and applies them.
+** @param  stack_a: Double pointer to stack A.
+*/
 void	read_orders(t_list **stack_a)
 {
 	char	*next;
@@ -66,7 +75,12 @@ void	read_orders(t_list **stack_a)
 	free_stack(stack_b);
 }
 
-//Main function of checker (bonus)
+/*
+** @brief  Main entry point for the checker program (bonus).
+** @param  argc: Total number of command line arguments.
+** @param  argv: Array of argument strings.
+** @return 0 on successful verification or early exit.
+*/
 int	main(int argc, char *argv[])
 {
 	int		count;

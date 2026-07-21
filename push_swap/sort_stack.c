@@ -12,7 +12,12 @@
 
 #include "push_swap.h"
 
-//Returns all elements of stack b to the main stack
+/*
+** @brief  Pushes all elements from stack B back to stack A in sorted order.
+** @param  stack_a: Double pointer to stack A.
+** @param  stack_b: Double pointer to stack B.
+** @param  count: Total number of elements originally in stack A.
+*/
 void	get_all_stack_b(t_list **stack_a, t_list **stack_b, int count)
 {
 	int	max_mv;
@@ -42,7 +47,10 @@ void	get_all_stack_b(t_list **stack_a, t_list **stack_b, int count)
 		reverse_rotate_stack(stack_a, RRA);
 }
 
-//Sort last numbers of the main stack 
+/*
+** @brief  Sorts the final three remaining elements in stack A.
+** @param  stack_a: Double pointer to stack A.
+*/
 void	sort_last_three(t_list **stack_a)
 {
 	if ((*stack_a)->index > ((*stack_a)->next)->index
@@ -63,7 +71,12 @@ void	sort_last_three(t_list **stack_a)
 	}
 }
 
-//When there are 3 or less elements left in the stack we call this function
+/*
+** @brief  Finalizes sorting operations when three or fewer elements remain.
+** @param  stack_a: Double pointer to stack A.
+** @param  stack_b: Double pointer to stack B.
+** @param  count: Number of elements in stack A.
+*/
 void	finish_sort(t_list **stack_a, t_list **stack_b, int count)
 {
 	if (count == 2)
@@ -80,7 +93,13 @@ void	finish_sort(t_list **stack_a, t_list **stack_b, int count)
 	}
 }
 
-//Move both stacks to the necessary position to push a specific index
+/*
+** @brief  Optimizes and executes rotations on both stacks to push a
+**         specific node.
+** @param  stack_a: Double pointer to stack A.
+** @param  stack_b: Double pointer to stack B.
+** @param  idx: Target index to be positioned and moved.
+*/
 void	move_stacks(t_list **stack_a, t_list **stack_b, int idx)
 {
 	int	pos_b;
@@ -102,7 +121,12 @@ void	move_stacks(t_list **stack_a, t_list **stack_b, int idx)
 		move_stack(pos_b, stack_b, 'B');
 }
 
-//Function in charge of sorting the stack by calling other functions
+/*
+** @brief  Main algorithm controller driving the Turkish-style mechanical
+**         sorting.
+** @param  stack_a: Double pointer to stack A.
+** @param  count: Total number of elements to sort.
+*/
 void	sort_stack(t_list **stack_a, int count)
 {
 	t_list	**stack_b;

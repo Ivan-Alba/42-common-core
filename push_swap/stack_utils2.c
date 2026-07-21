@@ -12,7 +12,11 @@
 
 #include "push_swap.h"
 
-//Returns the highest index on a stack
+/*
+** @brief  Searches for and returns the highest index present in a stack.
+** @param  stack: Pointer to the head of the stack.
+** @return Highest index value found in the stack.
+*/
 int	get_highest_index(t_list *stack)
 {
 	t_list	*tmp;
@@ -30,7 +34,12 @@ int	get_highest_index(t_list *stack)
 	return (highest);
 }
 
-//Moves stack to an specific position (index)
+/*
+** @brief  Rotates the target stack until the specified index reaches the top.
+** @param  index: Target element index to bring to top.
+** @param  stack: Double pointer to the target stack.
+** @param  stack_id: Identifier character ('A' or 'B') for instruction output.
+*/
 void	move_stack(int index, t_list **stack, char stack_id)
 {
 	if (up_or_down(*stack, index))
@@ -55,7 +64,12 @@ void	move_stack(int index, t_list **stack, char stack_id)
 	}
 }
 
-//Returns 0 if better rotate (up) or 1 if better reverse rotate (down)
+/*
+** @brief  Determines whether rotate (0) or reverse rotate (1) is optimal.
+** @param  stack: Pointer to the head of the stack.
+** @param  index: Target element index to check.
+** @return 0 for upward rotation, 1 for downward reverse rotation.
+*/
 int	up_or_down(t_list *stack, int index)
 {
 	t_list	*tmp;
@@ -74,7 +88,12 @@ int	up_or_down(t_list *stack, int index)
 	return (1);
 }
 
-//Returns the highest index below the one received by parameter
+/*
+** @brief  Finds the target position index in stack B for a given element in A.
+** @param  index: Element index from stack A.
+** @param  stack: Pointer to the head of stack B.
+** @return Corresponding target position index in stack B.
+*/
 int	search_previous_position(int index, t_list *stack)
 {
 	int		res;

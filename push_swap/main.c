@@ -12,12 +12,17 @@
 
 #include "push_swap.h"
 
-//Main function
+/*
+** @brief  Main entry point for the push_swap program.
+** @param  argc: The number of command line arguments.
+** @param  argv: Array of string pointers holding the argument values.
+** @return 0 on successful execution or clean early termination.
+*/
 int	main(int argc, char *argv[])
 {
-	int				count;
-	int				*array;
-	t_list			**stack_a;
+	int		count;
+	int		*array;
+	t_list	**stack_a;
 
 	if (argc == 1)
 		return (0);

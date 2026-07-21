@@ -12,7 +12,11 @@
 
 #include "push_swap.h"
 
-//Returns the number of nodes in a list
+/*
+** @brief  Counts the total number of elements in a linked list.
+** @param  lst: Pointer to the head of the list.
+** @return Total node count, or 0 if the list is empty.
+*/
 int	ft_lstsize(t_list *lst)
 {
 	int	count;
@@ -22,13 +26,17 @@ int	ft_lstsize(t_list *lst)
 		return (0);
 	while (lst)
 	{
-		lst = lst -> next;
+		lst = lst->next;
 		count++;
 	}
 	return (count);
 }
 
-//Adds a new item to the end of a list
+/*
+** @brief  Adds a new node to the end of a linked list.
+** @param  lst: Double pointer to the head of the list.
+** @param  new: Pointer to the new node to be appended.
+*/
 void	ft_lstadd_back(t_list **lst, t_list *new)
 {
 	t_list	*last;
@@ -42,12 +50,16 @@ void	ft_lstadd_back(t_list **lst, t_list *new)
 		else
 		{
 			last = ft_lstlast(*lst);
-			last -> next = new;
+			last->next = new;
 		}
 	}
 }
 
-//Adds a new item to the beggining of a list
+/*
+** @brief  Adds a new node to the beginning of a linked list.
+** @param  lst: Double pointer to the head of the list.
+** @param  new: Pointer to the new node to be prepended.
+*/
 void	ft_lstadd_front(t_list **lst, t_list *new)
 {
 	if (*lst)

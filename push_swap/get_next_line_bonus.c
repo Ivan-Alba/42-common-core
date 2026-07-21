@@ -12,7 +12,11 @@
 
 #include "get_next_line_bonus.h"
 
-//Removes the content up to a line break and returns the rest
+/*
+** @brief  Trims a string up to the newline character and keeps the rest.
+** @param  str: Double pointer to the target string buffer.
+** @return Pointer to the allocated remaining substring, or NULL if empty.
+*/
 char	*cut_after_next_line(char **str)
 {
 	int		i;
@@ -39,7 +43,11 @@ char	*cut_after_next_line(char **str)
 	return (res);
 }
 
-//Searches and returns the content up to the line break (included)
+/*
+** @brief  Extracts a complete line including the terminating newline character.
+** @param  saved: Double pointer to the static accumulator buffer.
+** @return Allocated string containing the extracted line, or NULL on error.
+*/
 char	*search_for_next_line(char **saved)
 {
 	int		i;
@@ -65,7 +73,13 @@ char	*search_for_next_line(char **saved)
 	return (free_and_out(&*saved));
 }
 
-//Function that concatenates the saved data with the new buffer reading
+/*
+** @brief  Concatenates saved buffer string with newly read input data.
+** @param  saved: Pointer to existing accumulated buffer string.
+** @param  buff: Read block buffer containing fresh content bytes.
+** @param  buff_size: Exact number of bytes successfully read into memory.
+** @return Reallocated string with combined content, or NULL on failure.
+*/
 char	*ft_strcat(char **saved, char *buff, int buff_size)
 {
 	char	*res;
@@ -91,13 +105,18 @@ char	*ft_strcat(char **saved, char *buff, int buff_size)
 	return (res);
 }
 
-//Function that reads from the file a maximum of [BUFFER_SIZE] characters
+/*
+** @brief  Reads chunks from disk until a full line or EOF is reached.
+** @param  saved: Double pointer to the persistent accumulator buffer.
+** @param  fd: Target file descriptor to read input stream from.
+** @return Extracted full line string, raw unparsed buffer, or NULL.
+*/
 char	*read_next_line(char **saved, int fd)
 {
 	int		readed;
 	char	*buffer;
 
-	buffer = malloc (BUFFER_SIZE);
+	buffer = malloc(BUFFER_SIZE);
 	while (is_next_line(*saved) == 0)
 	{
 		readed = read(fd, buffer, BUFFER_SIZE);
@@ -121,7 +140,11 @@ char	*read_next_line(char **saved, int fd)
 	return (search_for_next_line(&*saved));
 }
 
-//Main function
+/*
+** @brief  Reads and returns a line from the specified file descriptor.
+** @param  fd: Target file descriptor stream index to read from.
+** @return Allocated string containing the line, or NULL on EOF or error.
+*/
 char	*get_next_line(int fd)
 {
 	char			*next_line;
@@ -143,46 +166,3 @@ char	*get_next_line(int fd)
 		saved[fd].line = NULL;
 	return (next_line);
 }
-
-/*
-int	main(void)
-{
-	int	i = 1;
-	int	fd1 = open("a", O_RDONLY);
-	int	fd2 = open("b", O_RDONLY);
-
-	printf("FD: %d\n", fd1);
-	printf("FD: %d\n", fd2);
-
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-
-	i++;
-	printf("%d:%s\n", i, get_next_line(fd1));
-	printf("%d:%s\n", i, get_next_line(fd2));
-}*/

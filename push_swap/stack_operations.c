@@ -12,7 +12,11 @@
 
 #include "push_swap.h"
 
-//Swaps the first two elements of a stack (sa/sb)
+/*
+** @brief  Swaps the first two elements at the top of a stack (sa/sb).
+** @param  stack: Double pointer to the target stack.
+** @param  order: String representing the operation command to write.
+*/
 void	swap_stack(t_list **stack, char *order)
 {
 	t_list	*tmp;
@@ -26,7 +30,13 @@ void	swap_stack(t_list **stack, char *order)
 	protected_write(order, 3);
 }
 
-//Moves an element from the src stack to the dst stack (pa/pb)
+/*
+** @brief  Pushes the top element from source stack to destination
+**         stack (pa/pb).
+** @param  stack_src: Double pointer to the source stack.
+** @param  stack_dst: Double pointer to the destination stack.
+** @param  order: String representing the operation command to write.
+*/
 void	push_stack(t_list **stack_src, t_list **stack_dst, char *order)
 {
 	t_list	*tmp;
@@ -40,7 +50,11 @@ void	push_stack(t_list **stack_src, t_list **stack_dst, char *order)
 	protected_write(order, 3);
 }
 
-//Rotates down all elements of the stack (ra/rb)
+/*
+** @brief  Rotates all elements of a stack upwards by one position (ra/rb).
+** @param  stack: Double pointer to the target stack.
+** @param  order: String representing the operation command to write.
+*/
 void	rotate_stack(t_list **stack, char *order)
 {
 	t_list	*tmp;
@@ -54,7 +68,11 @@ void	rotate_stack(t_list **stack, char *order)
 	protected_write(order, 3);
 }
 
-//Rotates down all elements of the stack (rra/rrb)
+/*
+** @brief  Rotates all elements of a stack downwards by one position (rra/rrb).
+** @param  stack: Double pointer to the target stack.
+** @param  order: String representing the operation command to write.
+*/
 void	reverse_rotate_stack(t_list **stack, char *order)
 {
 	t_list	*tmp;

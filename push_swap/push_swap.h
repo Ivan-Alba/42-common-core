@@ -32,6 +32,10 @@
 # define RR "rr\n"
 # define RRR "rrr\n"
 
+/*
+** @struct s_list
+** @brief  Represents a single node in a stack linked list.
+*/
 typedef struct s_list
 {
 	int				value;
@@ -40,15 +44,35 @@ typedef struct s_list
 	struct s_list	*next;
 }	t_list;
 
+/*
+** -----------------------------------------------------------------------------
+**                               CORE / PARSING
+** -----------------------------------------------------------------------------
+*/
+
 int		*check_args(int argc, char *argv[], int *count);
 t_list	**create_stack(int **array, int count);
 void	sort_stack(t_list **stack_a, int count);
+
+/*
+** -----------------------------------------------------------------------------
+**                              LIST UTILITIES
+** -----------------------------------------------------------------------------
+*/
+
 void	ft_lstadd_back(t_list **lst, t_list *new);
 void	ft_lstadd_front(t_list **lst, t_list *new);
 t_list	*ft_lstnew(int value);
 t_list	*ft_lstlast(t_list *lst);
 int		ft_lstsize(t_list *lst);
 void	ft_lstclear(t_list **lst);
+
+/*
+** -----------------------------------------------------------------------------
+**                             STACK OPERATIONS
+** -----------------------------------------------------------------------------
+*/
+
 void	swap_stack(t_list **stack, char *order);
 void	push_stack(t_list **src, t_list **dst, char *order);
 void	rotate_stack(t_list **stack, char *order);
@@ -56,8 +80,13 @@ void	reverse_rotate_stack(t_list **stack, char *order);
 void	swap_both_stacks(t_list **stack_a, t_list **stack_b, char *order);
 void	rotate_both_stacks(t_list **stack_a, t_list **stack_b, char *order);
 void	rev_rotate_both_stacks(t_list **stack_a, t_list **stack_b, char *order);
-void	free_and_exit(void *ptr);
-void	free_stack(t_list **stack);
+
+/*
+** -----------------------------------------------------------------------------
+**                              ALGORITHM HELPERS
+** -----------------------------------------------------------------------------
+*/
+
 int		get_highest_index(t_list *stack);
 void	move_stack(int index, t_list **stack, char stack_id);
 int		search_closest_index(int index, t_list **stack, int count);
@@ -65,10 +94,25 @@ int		up_or_down(t_list *stack, int index);
 void	preview_moves(t_list **stack_a, t_list **stack_b);
 int		search_previous_position(int index, t_list *stack);
 int		get_cheap_idx(t_list **stack_a);
+
+/*
+** -----------------------------------------------------------------------------
+**                             GENERAL UTILITIES
+** -----------------------------------------------------------------------------
+*/
+
+void	free_and_exit(void *ptr);
+void	free_stack(t_list **stack);
 void	*ft_calloc(size_t nelem, size_t elsize);
 void	ft_bzero(void *s, size_t n);
 void	protected_write(char *order, int size);
-//Bonus
+
+/*
+** -----------------------------------------------------------------------------
+**                             BONUS (CHECKER)
+** -----------------------------------------------------------------------------
+*/
+
 int		is_sorted(t_list **stack_a, int count);
 int		ft_strcmp(char *next, char *order);
 void	free_both_stacks(t_list **stack_a, t_list **stack_b);

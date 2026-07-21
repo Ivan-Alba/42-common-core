@@ -12,7 +12,11 @@
 
 #include "push_swap.h"
 
-//Sort array with bubble to store index in lists
+/*
+** @brief  Sorts an integer array using bubble sort to generate element indexes.
+** @param  array: Pointer to the array of integers to be ordered.
+** @param  count: Total number of elements in the array.
+*/
 void	order_array(int **array, int count)
 {
 	int	i;
@@ -36,12 +40,14 @@ void	order_array(int **array, int count)
 		}
 		i++;
 	}
-	i = 0;
-	while (i < count)
-		i++;
 }
 
-//We append the index value to the list elements
+/*
+** @brief  Assigns normalized position indexes to the stack elements.
+** @param  stack_a: Pointer to the head of stack A.
+** @param  array: Sorted array of integers used to determine indexes.
+** @param  count: Total number of elements in the stack.
+*/
 void	add_index(t_list **stack_a, int **array, int count)
 {
 	int		i;
@@ -51,15 +57,21 @@ void	add_index(t_list **stack_a, int **array, int count)
 	current = (*stack_a);
 	while (i < count)
 	{
-		while ((*array)[i] != current -> value)
-			current = current -> next;
-		current -> index = i;
+		while ((*array)[i] != current->value)
+			current = current->next;
+		current->index = i;
 		current = (*stack_a);
 		i++;
 	}
 }
 
-//We initialize the stack_a with all the values of the args
+/*
+** @brief  Allocates and builds stack A from parsed arguments and assigns
+**         indexes.
+** @param  array: Pointer to the array containing parsed input numbers.
+** @param  count: Total number of elements in the array.
+** @return Double pointer to the newly created and indexed stack A.
+*/
 t_list	**create_stack(int **array, int count)
 {
 	t_list	**stack_a;
@@ -69,6 +81,7 @@ t_list	**create_stack(int **array, int count)
 	stack_a = malloc(sizeof(t_list *));
 	if (!stack_a)
 		free_and_exit(*array);
+	*stack_a = NULL;
 	while (i < count)
 	{
 		ft_lstadd_back(stack_a, ft_lstnew((*array)[i]));

@@ -1,0 +1,154 @@
+# 42 Push_swap
+
+<div align="center">
+
+  <h1><code>push_swap</code></h1>
+  <p><i>Because Swap_push doesn't sound as good</i></p>
+
+  <p>A highly efficient sorting algorithm using a limited set of instructions and two stacks (Stack A and Stack B).</p>
+
+  <!-- REPLACE THIS PLACEHOLDER WITH YOUR TESTER GIF/IMAGE -->
+  <a href="https://github.com/your-username/push_swap">
+    <img src="README_assets/visualizer.gif" alt="Push_swap Visualizer Demo" width="600" />
+  </a>
+
+  <br/><br/>
+
+  <img src="https://img.shields.io/badge/Score-125%2F100-success?style=for-the-badge&logo=42" alt="125/100 Score" />
+  <img src="https://img.shields.io/badge/Language-C-00599C?style=for-the-badge&logo=c" alt="Language C" />
+  <img src="https://img.shields.io/badge/Norminette-Passing-brightgreen?style=for-the-badge" alt="Norminette Passed" />
+
+</div>
+
+---
+
+## 📌 About the Project
+
+**Push_swap** is a key algorithmic project in the 42 curriculum that challenges you to solve a classic sorting problem under strict constraints regarding environment and performance:
+
+* You have two stacks (`Stack A` and `Stack B`).
+* Initially, `Stack A` contains an unsorted list of unique integers (both positive and negative) passed as arguments. `Stack B` is empty.
+* The goal is to sort the numbers in `Stack A` in ascending order using only a restricted set of stack manipulation operations.
+* The program must output the **smallest possible sequence** of instructions to standard output (`stdout`).
+
+Additionally, the project includes a **`checker`** program (Bonus) that reads an instruction sequence from `stdin` and verifies if it successfully leaves the stack perfectly sorted.
+
+---
+
+## 🛠️ Available Instructions
+
+| Instruction | Operation | Description |
+| :---: | :---: | :--- |
+| **`sa`** | *Swap A* | Swaps the first two elements at the top of `Stack A`. |
+| **`sb`** | *Swap B* | Swaps the first two elements at the top of `Stack B`. |
+| **`ss`** | *Swap Both* | Executes `sa` and `sb` simultaneously. |
+| **`pa`** | *Push A* | Takes the top element from `Stack B` and places it on top of `Stack A`. |
+| **`pb`** | *Push B* | Takes the top element from `Stack A` and places it on top of `Stack B`. |
+| **`ra`** | *Rotate A* | Shifts up all elements of `Stack A` by 1. The first element becomes the last. |
+| **`rb`** | *Rotate B* | Shifts up all elements of `Stack B` by 1. The first element becomes the last. |
+| **`rr`** | *Rotate Both* | Executes `ra` and `rb` simultaneously. |
+| **`rra`** | *Reverse Rotate A* | Shifts down all elements of `Stack A` by 1. The last element becomes the first. |
+| **`rrb`** | *Reverse Rotate B* | Shifts down all elements of `Stack B` by 1. The last element becomes the first. |
+| **`rrr`** | *Rev Rotate Both* | Executes `rra` and `rrb` simultaneously. |
+
+---
+
+## 🧠 Algorithm Breakdown (Cost Analysis / Mechanical Turk)
+
+This project implements an optimized variation of the **Mechanical Turk / Cost-Based Greedy Algorithm**. Instead of attempting to sort elements directly within `A`, it pre-calculates the mechanical cost of pushing each number to its optimal position in `B`, iteratively choosing the "cheapest" node.
+
+### 1. Normalized Indexing
+Before moving any nodes, a bubble sort pass is performed on an auxiliary array to map every integer to its absolute rank ($0, 1, 2, \dots, N-1$). This simplifies relative comparison logic and eliminates edge cases caused by large integers or negative numbers.
+
+### 2. Strategic Emptying to Stack B (`push_stack` & `preview_moves`)
+* If $N \le 3$, the stack is solved in 1 or 2 moves using hardcoded conditional logic (`sort_last_three`).
+* If $N > 3$, the first two elements are pushed to `Stack B` to initialize the supporting stack.
+* While `Stack A` contains more than 3 elements:
+  1. **Cost Calculation (`preview_moves`):** For each node in `A`, it measures the required rotations in `A` and the target insertion index in `B` (`search_previous_position`).
+  2. **Double Rotation Optimization (`move_stacks`):** If both target positions require moving in the same direction (both upwards or both downwards), the algorithm uses dual operations like `rr` or `rrr` to cut rotation cost in half.
+  3. **Greedy Selection (`get_cheap_idx`):** Executes the move requiring the lowest total amount of operations and performs `pb`.
+
+### 3. Base Sorting of the Remaining 3 Elements
+When only 3 nodes remain in `Stack A`, they are sorted in-place using deterministic combinations of `ra`, `sa`, and `rra` (`sort_last_three`).
+
+### 4. Clean Re-insertion into Stack A (`get_all_stack_b`)
+Once the base trio in `A` is sorted, the algorithm pushes elements back from `B` to `A` while ensuring proper alignment through targeted reverse rotations (`rra`).
+
+---
+
+## 🚀 Compilation and Usage
+
+### Requirements
+* `gcc` or `clang` compiler
+* POSIX `make` toolchain
+
+### Compilation
+
+To compile the main `push_swap` binary:
+[PLACEHOLDER: CODE BLOCK -> make]
+
+To compile the bonus `checker` program:
+[PLACEHOLDER: CODE BLOCK -> make bonus]
+
+To clean compiled object files and binaries:
+[PLACEHOLDER: CODE BLOCK -> make fclean]
+
+---
+
+### Execution Examples
+
+#### Push_swap
+Run the program by passing a space-separated sequence of unsorted integers:
+
+[PLACEHOLDER: CODE BLOCK -> ./push_swap 4 67 3 1 23]
+
+Expected output (sequence of operations):
+[PLACEHOLDER: CODE BLOCK ->
+pb
+pb
+sa
+rra
+pa
+pa
+]
+
+To count the total number of instructions generated:
+[PLACEHOLDER: CODE BLOCK -> ./push_swap 4 67 3 1 23 | wc -l]
+
+#### Checker (Bonus)
+The `checker` executable validates whether the sequence generated by `push_swap` successfully sorts the numbers:
+
+[PLACEHOLDER: CODE BLOCK -> ARG="4 67 3 1 23"; ./push_swap $ARG | ./checker $ARG]
+
+Output when correctly sorted:
+[PLACEHOLDER: CODE BLOCK -> OK]
+
+If the sequence fails to sort the stack:
+[PLACEHOLDER: CODE BLOCK -> KO]
+
+---
+
+## 🛡️ Error Handling
+
+The program strictly validates input arguments. If an anomaly is detected, it writes `Error\n` to standard error (`stderr` / `fd 2`) and gracefully exits while freeing all allocated memory without leaks:
+
+* Non-numeric input (e.g., `abc`, `21b`).
+* Numbers out of the 32-bit signed integer range (`INT_MAX` / `INT_MIN`).
+* Duplicate numbers in the arguments.
+* If the input list is already sorted, the program exits immediately without printing any operations.
+
+---
+
+## 🧪 Visualizer & Testers
+
+To visually analyze the algorithm execution and benchmark instruction counts on lists of 100 and 500 numbers:
+
+* **o-mOMO/push_swap_visualizer**: Graphical visualizer written in C++ / SFML to inspect stack behavior step-by-step.
+
+*(Place your animated demo GIF in `README_assets/visualizer.gif` to render the header player).*
+
+---
+
+<div align="center">
+  <p>Developed as part of the 42 School Curriculum.</p>
+</div>

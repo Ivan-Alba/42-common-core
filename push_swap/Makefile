@@ -10,50 +10,52 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = push_swap
-BONUS_NAME = checker
+NAME		= push_swap
+BONUS_NAME	= checker
 
-MAIN = main.c
-BONUS_MAIN = main_bonus.c
+MAIN		= main.c
+BONUS_MAIN	= main_bonus.c
 
-SRC = check_args.c create_stack.c list_utils.c list_utils2.c stack_utils2.c utils.c \
-		  sort_stack.c stack_operations.c stack_both_operations.c stack_utils.c
-BONUS_SRC = $(SRC) get_next_line_bonus.c get_next_line_utils_bonus.c utils_bonus.c
+SRC			= check_args.c create_stack.c list_utils.c list_utils2.c \
+			  stack_utils2.c utils.c sort_stack.c stack_operations.c \
+			  stack_both_operations.c stack_utils.c
 
-DEPS = $(SRC:.c=.d) $(MAIN:.c=.d)
-DEPS_BONUS = $(BONUS_SRC:.c=.d) $(BONUS_MAIN:.c=.d)
+BONUS_SRC	= get_next_line_bonus.c get_next_line_utils_bonus.c utils_bonus.c
 
-MAIN_OBJ = $(MAIN:.c=.o)
-OBJ = $(SRC:.c=.o)
+DEPS		= $(SRC:.c=.d) $(MAIN:.c=.d)
+DEPS_BONUS	= $(BONUS_SRC:.c=.d) $(BONUS_MAIN:.c=.d)
 
-MAIN_BONUS_OBJ = $(BONUS_MAIN:.c=.o)
-BONUS_OBJ = $(BONUS_SRC:.c=.o)
+MAIN_OBJ	= $(MAIN:.c=.o)
+OBJ			= $(SRC:.c=.o)
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-RM = rm -f
+MAIN_BONUS_OBJ	= $(BONUS_MAIN:.c=.o)
+BONUS_OBJ		= $(BONUS_SRC:.c=.o)
 
-all:	$(NAME)
+CC			= gcc
+CFLAGS		= -Wall -Wextra -Werror
+RM			= rm -f
+
+all: $(NAME)
 
 %.o: %.c Makefile
-	$(CC) $(CFLAGS) -c -MMD $<	
+	$(CC) $(CFLAGS) -c -MMD $< -o $@
 
 $(NAME): $(OBJ) $(MAIN_OBJ)
-	$(CC) -o $(NAME) $(OBJ) $(MAIN_OBJ)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(MAIN_OBJ)
 
-bonus:	$(BONUS_NAME)
-   
-$(BONUS_NAME): $(BONUS_OBJ) $(MAIN_BONUS_OBJ)
-	$(CC) -o $(BONUS_NAME) $(BONUS_OBJ) $(MAIN_BONUS_OBJ)
+bonus: $(BONUS_NAME)
 
-clean:	
+$(BONUS_NAME): $(OBJ) $(BONUS_OBJ) $(MAIN_BONUS_OBJ)
+	$(CC) $(CFLAGS) -o $(BONUS_NAME) $(OBJ) $(BONUS_OBJ) $(MAIN_BONUS_OBJ)
+
+clean:
 	$(RM) $(OBJ) $(BONUS_OBJ) $(MAIN_OBJ) $(MAIN_BONUS_OBJ) $(DEPS) $(DEPS_BONUS)
 
 fclean: clean
-		$(RM) $(NAME) $(BONUS_NAME) 
+	$(RM) $(NAME) $(BONUS_NAME)
 
 re: fclean all
 
 -include $(DEPS) $(DEPS_BONUS)
 
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re

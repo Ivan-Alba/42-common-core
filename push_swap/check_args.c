@@ -12,7 +12,10 @@
 
 #include "push_swap.h"
 
-//If we have any errors in the args we terminate the program
+/*
+** @brief  Frees allocated memory, prints the standard error message, and exits.
+** @param  array: Pointer to the allocated integer array to be freed.
+*/
 void	args_error(int **array)
 {
 	if (array && *array)
@@ -24,7 +27,13 @@ void	args_error(int **array)
 	exit(0);
 }
 
-//Receives an arg, checks for correct formatting and transforms it to int
+/*
+** @brief  Validates number formatting, checks integer overflow, and converts
+**         to int.
+** @param  arg: String representation of the input argument.
+** @param  array: Pointer to the integer array storing parsed numbers.
+** @param  pos: Index position within the destination array.
+*/
 void	check_int(char *arg, int **array, int pos)
 {
 	long	num;
@@ -54,7 +63,11 @@ void	check_int(char *arg, int **array, int pos)
 	(*array)[pos] = (int)num;
 }
 
-//Check that there are no duplicate integers
+/*
+** @brief  Checks for duplicate values within the integer array.
+** @param  array: Pointer to the array containing parsed integers.
+** @param  len: Total number of elements stored in the array.
+*/
 void	check_duplicate(int **array, int len)
 {
 	int	i;
@@ -75,7 +88,12 @@ void	check_duplicate(int **array, int len)
 	}
 }
 
-//Function that checks if the args are ordered and exits the program
+/*
+** @brief  Verifies if array is already sorted; if true, frees memory and
+**         exits.
+** @param  array: Pointer to the array containing parsed integers.
+** @param  count: Total number of integer elements.
+*/
 void	is_ordered(int **array, int count)
 {
 	int	i;
@@ -91,7 +109,14 @@ void	is_ordered(int **array, int count)
 	exit(0);
 }
 
-//Check args function
+/*
+** @brief  Validates command-line arguments, converts them, and checks
+**         duplicates.
+** @param  argc: Total number of input arguments.
+** @param  argv: Array of string arguments.
+** @param  count: Pointer storing the total count of valid numbers parsed.
+** @return Pointer to the populated array of unique, unsorted integers.
+*/
 int	*check_args(int argc, char *argv[], int *count)
 {
 	int	i;

@@ -12,7 +12,12 @@
 
 #include "push_swap.h"
 
-//Returns the number of moves required to move a stack to a specific position.
+/*
+** @brief  Calculates total rotation moves needed to bring an element to top.
+** @param  stack: Double pointer to the target stack.
+** @param  index: Target element index to calculate moves for.
+** @return Total number of rotation operations required.
+*/
 int	calc_moves_stack(t_list **stack, int index)
 {
 	int		moves;
@@ -42,7 +47,11 @@ int	calc_moves_stack(t_list **stack, int index)
 	return (moves);
 }
 
-//Calculates the moves it costs to move an item from one stack to another
+/*
+** @brief  Calculates and stores optimal combined move costs for each node in A.
+** @param  stack_a: Double pointer to stack A.
+** @param  stack_b: Double pointer to stack B.
+*/
 void	preview_moves(t_list **stack_a, t_list **stack_b)
 {
 	int		mvs_a;
@@ -72,7 +81,11 @@ void	preview_moves(t_list **stack_a, t_list **stack_b)
 	*stack_a = tmp;
 }
 
-//Returns the index of the cheapest element to move from the stack
+/*
+** @brief  Identifies the element index in stack A that requires minimum moves.
+** @param  stack_a: Double pointer to stack A.
+** @return Index of the cheapest node to relocate.
+*/
 int	get_cheap_idx(t_list **stack_a)
 {
 	int		cheaper;
@@ -95,7 +108,10 @@ int	get_cheap_idx(t_list **stack_a)
 	return (cheaper);
 }
 
-//Fuction to free an stack
+/*
+** @brief  Clears all nodes and frees allocated memory for a stack container.
+** @param  stack: Double pointer to the stack structure to free.
+*/
 void	free_stack(t_list **stack)
 {
 	if (stack && *stack)

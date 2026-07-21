@@ -12,7 +12,11 @@
 
 #include "push_swap.h"
 
-//Frees the memory of parameter ptr and exit with error message
+/*
+** @brief  Frees allocated memory pointer, prints error message, and exits
+**         program.
+** @param  ptr: Pointer to memory address to be freed.
+*/
 void	free_and_exit(void *ptr)
 {
 	if (ptr)
@@ -24,7 +28,12 @@ void	free_and_exit(void *ptr)
 	exit(0);
 }
 
-//Allocates memory and set content to \0
+/*
+** @brief  Allocates memory for an array and initializes all bytes to zero.
+** @param  nelem: Number of elements to allocate.
+** @param  elsize: Size in bytes of each element.
+** @return Pointer to allocated memory, or NULL if allocation fails.
+*/
 void	*ft_calloc(size_t nelem, size_t elsize)
 {
 	void	*res;
@@ -37,7 +46,11 @@ void	*ft_calloc(size_t nelem, size_t elsize)
 	return (res);
 }
 
-//Set n elements from void *s to 0
+/*
+** @brief  Erases data in the n bytes of memory starting at the given location.
+** @param  s: Pointer to target memory block.
+** @param  n: Number of bytes to set to zero.
+*/
 void	ft_bzero(void *s, size_t n)
 {
 	char	*tmp;
@@ -51,7 +64,11 @@ void	ft_bzero(void *s, size_t n)
 	}
 }
 
-//Prints a char * or exit if error
+/*
+** @brief  Writes a string command to standard output; exits on write error.
+** @param  order: Instruction string to be printed.
+** @param  size: Length of string in bytes to write.
+*/
 void	protected_write(char *order, int size)
 {
 	if (order)

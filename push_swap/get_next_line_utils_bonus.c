@@ -12,7 +12,11 @@
 
 #include "get_next_line_bonus.h"
 
-//Checks if there is a '\n' in the string and returns true (1) or false (0)
+/*
+** @brief  Checks whether a given string contains a newline character.
+** @param  str: Target string to inspect.
+** @return 1 if newline is found, 0 if not or if string is NULL.
+*/
 int	is_next_line(char *str)
 {
 	int	i;
@@ -29,7 +33,11 @@ int	is_next_line(char *str)
 	return (0);
 }
 
-//Frees the memory of the received string, assigns NULL and returns NULL
+/*
+** @brief  Frees allocated string memory, sets pointer to NULL, and returns NULL.
+** @param  str: Double pointer to the string buffer to free.
+** @return Always returns NULL.
+*/
 char	*free_and_out(char **str)
 {
 	if (*str)
@@ -40,7 +48,13 @@ char	*free_and_out(char **str)
 	return (NULL);
 }
 
-//Checks if there is content in *saved after *saved[i] and saves or releases it
+/*
+** @brief  Manages remaining memory buffer after a full line has been extracted.
+** @param  saved: Double pointer to the persistent accumulator buffer.
+** @param  i: Index offset where the newline was identified.
+** @param  res: Double pointer to the extracted line result string.
+** @return 1 on successful extraction/cleanup, 0 on memory allocation error.
+*/
 int	check_stack(char **saved, int i, char **res)
 {
 	if ((*saved)[i] != '\0')
