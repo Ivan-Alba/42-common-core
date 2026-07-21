@@ -12,7 +12,12 @@
 
 #include "pipex.h"
 
-//Function that sets the default input channel
+/*
+** @brief  Redirects standard input to either the input file or the
+**         previous pipe.
+** @param  data: Pointer to the main pipex data structure.
+** @param  i: Index of the current command to execute.
+*/
 void	set_stdin(t_pipex *data, int i)
 {
 	int	fd;
@@ -30,12 +35,18 @@ void	set_stdin(t_pipex *data, int i)
 			exit(1);
 	}
 	else
+	{
 		if (dup2(data->pipes[(i + data->is_heredoc) * 2 - 2],
 				STDIN_FILENO) == -1)
 			perror("Dup Error");
+	}
 }
 
-//Function that sets the default output channel
+/*
+** @brief  Redirects standard output to either the output file or the next pipe.
+** @param  data: Pointer to the main pipex data structure.
+** @param  i: Index of the current command to execute.
+*/
 void	set_stdout(t_pipex *data, int i)
 {
 	int	fd;
@@ -53,12 +64,19 @@ void	set_stdout(t_pipex *data, int i)
 			exit(1);
 	}
 	else
+	{
 		if (dup2(data->pipes[(i + data->is_heredoc) * 2 + 1],
 				STDOUT_FILENO) == -1)
 			perror("Dup Error");
+	}
 }
 
-//Manages the incoming and outgoing fd's and executes the command
+/*
+** @brief  Configures input/output file descriptors and executes command
+**         via execve.
+** @param  data: Pointer to the main pipex data structure.
+** @param  i: Index of the current command to execute.
+*/
 void	execute(t_pipex *data, int i)
 {
 	set_stdin(data, i);

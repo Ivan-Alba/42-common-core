@@ -21,14 +21,23 @@
 # include <fcntl.h>
 # include <stddef.h>
 
+/*
+** @struct s_cmd
+** @brief  Represents a single command with its arguments, path, and
+**         position flags.
+*/
 typedef struct s_cmd
 {
 	char	**cmd_flags;
 	char	*path;
 	int		first;
 	int		last;
-}		t_cmd;
+}	t_cmd;
 
+/*
+** @struct s_pipex
+** @brief  Main data structure holding state, pipes, files, and command list.
+*/
 typedef struct s_pipex
 {
 	char	*in_file;
@@ -41,12 +50,32 @@ typedef struct s_pipex
 	int		cmd_num;
 	int		*pipes;
 	t_cmd	*cmds;
-}		t_pipex;
+}	t_pipex;
+
+/*
+** -----------------------------------------------------------------------------
+**                             INITIALIZATION
+** -----------------------------------------------------------------------------
+*/
 
 void	init_data(t_pipex *data, int argc, char **argv, char **env);
+
+/*
+** -----------------------------------------------------------------------------
+**                           EXECUTION & PIPELINES
+** -----------------------------------------------------------------------------
+*/
+
+void	execute(t_pipex *data, int i);
+
+/*
+** -----------------------------------------------------------------------------
+**                        CLEANUP & ERROR HANDLING
+** -----------------------------------------------------------------------------
+*/
+
 void	free_data(t_pipex *data, char *error);
 void	error_exit(char *error);
 void	free_close_pipes(t_pipex *data);
-void	execute(t_pipex *data, int i);
 
 #endif

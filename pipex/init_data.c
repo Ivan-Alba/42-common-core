@@ -12,7 +12,10 @@
 
 #include "pipex.h"
 
-//Create the necessary pipes for communication between processes
+/*
+** @brief  Creates inter-process communication pipes for all commands.
+** @param  data: Pointer to the main pipex data structure.
+*/
 void	generate_pipes(t_pipex *data)
 {
 	int	i;
@@ -26,7 +29,12 @@ void	generate_pipes(t_pipex *data)
 	}
 }
 
-//Split command name and flags
+/*
+** @brief  Splits an argument string into command name and flag array.
+** @param  arg: Command argument string to split.
+** @param  data: Pointer to the main pipex data structure.
+** @return Array of strings representing command and flags.
+*/
 char	**get_cmd_flags(char *arg, t_pipex *data)
 {
 	char	**cmd_flags;
@@ -37,7 +45,12 @@ char	**get_cmd_flags(char *arg, t_pipex *data)
 	return (cmd_flags);
 }
 
-//Search within the environment paths where the command is located
+/*
+** @brief  Searches for executable binary path within PATH directories.
+** @param  data: Pointer to the main pipex data structure.
+** @param  cmd: Command name to resolve.
+** @return Full executable path string, or NULL if not found.
+*/
 char	*get_cmd_path(t_pipex *data, char *cmd)
 {
 	int		i;
@@ -67,7 +80,11 @@ char	*get_cmd_path(t_pipex *data, char *cmd)
 	return (NULL);
 }
 
-//Searches for the PATH environment variable and stores it
+/*
+** @brief  Extracts and splits the PATH variable from environment variables.
+** @param  env: Array of environment variable strings.
+** @param  data: Pointer to the main pipex data structure.
+*/
 void	get_path(char **env, t_pipex *data)
 {
 	int	i;
@@ -94,7 +111,13 @@ void	get_path(char **env, t_pipex *data)
 		data->path = NULL;
 }
 
-//Initializes the structures with the necessary data
+/*
+** @brief  Initializes data structures, allocations, pipes, and command paths.
+** @param  data: Pointer to the main pipex data structure.
+** @param  argc: Total command line argument count.
+** @param  argv: Command line argument vector.
+** @param  env: Array of environment variables.
+*/
 void	init_data(t_pipex *data, int argc, char **argv, char **env)
 {
 	int	i;

@@ -12,7 +12,10 @@
 
 #include "pipex.h"
 
-//Function that manages the reading of data when using a limiter
+/*
+** @brief  Reads input lines from stdin until reaching the limiter string.
+** @param  data: Pointer to the pipex structure containing file descriptors.
+*/
 void	read_heredoc(t_pipex *data)
 {
 	char	*line;
@@ -32,7 +35,11 @@ void	read_heredoc(t_pipex *data)
 	close(STDOUT_FILENO);
 }
 
-//Checks if the input file exists and we have access to it
+/*
+** @brief  Validates existence and read permissions for the input file.
+** @param  argv: Array of command line arguments.
+** @param  data: Pointer to the main pipex data structure.
+*/
 void	set_infile(char **argv, t_pipex *data)
 {
 	if (!data->is_heredoc)
@@ -50,10 +57,16 @@ void	set_infile(char **argv, t_pipex *data)
 	}
 }
 
-////Checks if the output file exists and we have access to it
+/*
+** @brief  Validates write permissions and creates or opens the output file.
+** @param  argc: Total number of command line arguments.
+** @param  argv: Array of command line arguments.
+** @param  data: Pointer to the main pipex data structure.
+*/
 void	set_outfile(int argc, char **argv, t_pipex *data)
 {
-	if (access(argv[argc - 1], F_OK) == 0 && access(argv[argc - 1], W_OK) == -1)
+	if (access(argv[argc - 1], F_OK) == 0
+		&& access(argv[argc - 1], W_OK) == -1)
 	{
 		if (data->out_file)
 		{
@@ -70,12 +83,21 @@ void	set_outfile(int argc, char **argv, t_pipex *data)
 				perror("File error");
 		}
 		else
+		{
 			if (open(argv[argc - 1], O_WRONLY | O_CREAT, 0666) == -1)
 				perror("File error");
+		}
 	}
 }
 
-//Calls the necessary functions depending on whether it is here_doc or not
+/*
+** @brief  Initializes pipex structure and prepares heredoc or standard input
+**         files.
+** @param  data: Pointer to the main pipex data structure.
+** @param  argc: Total number of command line arguments.
+** @param  argv: Array of command line arguments.
+** @param  env: Environment variables array.
+*/
 void	pipex(t_pipex *data, int argc, char **argv, char **env)
 {
 	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
@@ -94,7 +116,14 @@ void	pipex(t_pipex *data, int argc, char **argv, char **env)
 	set_outfile(argc, argv, data);
 }
 
-//Main function
+/*
+** @brief  Main entry point for pipex. Spawns child processes for command
+**         execution.
+** @param  argc: Total number of command line arguments.
+** @param  argv: Array of command line arguments.
+** @param  env: Environment variables array.
+** @return 0 on completion.
+*/
 int	main(int argc, char **argv, char **env)
 {
 	int		i;

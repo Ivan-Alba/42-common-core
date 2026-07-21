@@ -12,14 +12,20 @@
 
 #include "pipex.h"
 
-//Writes an error message and ends the program
+/*
+** @brief  Outputs an error message to standard error and terminates process.
+** @param  error: String containing the error message to display.
+*/
 void	error_exit(char *error)
 {
 	write(2, error, ft_strlen(error));
 	exit(1);
 }
 
-//Free the memory of a char*
+/*
+** @brief  Safely frees allocated memory for a string pointer.
+** @param  str: Pointer to string memory block to free.
+*/
 void	free_str(char *str)
 {
 	if (str)
@@ -29,7 +35,10 @@ void	free_str(char *str)
 	}
 }
 
-//Free the memory of a char**
+/*
+** @brief  Safely frees a NULL-terminated array of strings.
+** @param  str: Double pointer to string array memory block to free.
+*/
 void	free_split(char **str)
 {
 	int	i;
@@ -48,7 +57,10 @@ void	free_split(char **str)
 	str = NULL;
 }
 
-//Free and closes all pipes
+/*
+** @brief  Closes all open pipe file descriptors and frees the pipe array.
+** @param  data: Pointer to the main pipex data structure.
+*/
 void	free_close_pipes(t_pipex *data)
 {
 	int	i;
@@ -67,7 +79,11 @@ void	free_close_pipes(t_pipex *data)
 	}
 }
 
-//Function that manages all the data release of the structures
+/*
+** @brief  Frees all dynamically allocated resources within the pipex structure.
+** @param  data: Pointer to the main pipex data structure.
+** @param  error: Optional error message string to trigger error_exit.
+*/
 void	free_data(t_pipex *data, char *error)
 {
 	int	i;
