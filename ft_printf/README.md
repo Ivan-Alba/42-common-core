@@ -121,3 +121,8 @@ Compile your code linking against the libftprintf.a static archive path:
 gcc main.c libftprintf.a -o project_run
 ```
 
+---
+
+<div align="center">
+  <p>Developed as part of the 42 School Curriculum.</p>
+</div>
