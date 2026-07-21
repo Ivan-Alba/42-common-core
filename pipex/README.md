@@ -85,7 +85,7 @@ make fclean
 
 To perform a complete clean rebuild of all targets:
 ```bash
-make re]
+make re
 ```
 
 ---
@@ -111,7 +111,9 @@ To chain an arbitrary number of command pipes:
 ```
 
 Equivalence in standard shell:
-[PLACEHOLDER: CODE BLOCK -> < infile cat | grep 42 | wc -l > outfile]
+```bash
+< infile cat | grep 42 | wc -l > outfile
+```
 
 ---
 
@@ -133,7 +135,7 @@ Equivalence in standard shell:
 
 The program handles edge cases gracefully, exiting safely without leaving dangling child processes or leaking open file descriptors or allocated heap memory:
 
-* Non-existent input files (`in_file`).
+* Non-existent input files (`infile`).
 * Permission denied errors for reading or writing files (`EACCES`).
 * Invalid command execution paths (`Command not found`).
 * Allocation failures (`malloc`) or system pipe/fork creation errors (`pipe`, `fork`).
