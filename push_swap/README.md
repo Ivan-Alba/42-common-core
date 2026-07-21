@@ -153,13 +153,6 @@ The program strictly validates input arguments. If an anomaly is detected, it wr
 
 ---
 
-## 🧪 Visualizer & Testers
-
-To visually analyze the algorithm execution and benchmark instruction counts on lists of 100 and 500 numbers:
-
-* **o-mOMO/push_swap_visualizer**: Graphical visualizer written in C++ / SFML to inspect stack behavior step-by-step.
----
-
 <div align="center">
   <p>Developed as part of the 42 School Curriculum.</p>
 </div>
