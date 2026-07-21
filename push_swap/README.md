@@ -1,8 +1,12 @@
 # push_swap — Because swap_push doesn't sound as good
 
-<a href="https://github.com/your-username/push_swap">
-    <img src="README_assets/visualizer.gif" alt="Push_swap Visualizer Demo" width="600" />
-</a>
+<table align="center">
+  <tr>
+    <td align="center" width="100%">
+    <img src="README_assets/visualizer.gif" alt="Push_swap Visualizer Demo" align="center" width="100%" />
+     </td>
+  </tr>
+</table>
 
   <p align="center">
     <img src="https://img.shields.io/badge/Project-push__swap-000000?style=for-the-badge&logo=42&logoColor=white" alt="push_swap" />
