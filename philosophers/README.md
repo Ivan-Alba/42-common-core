@@ -10,20 +10,22 @@
 ---
 
 ## 📖 Overview
-**Philosophers** is a multi-threaded and multi-process C implementation of Edsger Dijkstra's classic Dining Philosophers Problem. The project explores the core principles of concurrent programming, resource allocation, race condition prevention, and deadlock avoidance.
+**Philosophers** is a multi-threaded and multi-process C implementation of Edsger Dijkstra's classic Dining Philosophers Problem. The project explores core system programming concepts including concurrent execution, resource allocation strategies, race condition prevention, and deadlock avoidance.
 
-The mandatory implementation utilizes POSIX Threads (`pthreads`) and **Mutexes** with shared memory, while the bonus implementation approaches the problem using **Child Processes** (`fork`) and **POSIX Semaphores** to enforce strict process isolation and inter-process synchronization.
+The mandatory module implements thread-based parallelism with shared memory using POSIX Threads (`pthreads`) and **Mutexes**. The bonus module approaches the problem through strict process isolation using **Child Processes** (`fork`), inter-process communication, and named **POSIX Semaphores**.
 
 ---
 
 ## 📋 Technical Specifications & Key Features
 
-*   **Concurrency Models**: Dual architecture featuring thread-based parallelism with shared memory (`pthreads`) in mandatory and process-based isolation (`fork`) in bonus.
-*   **Thread Synchronization & Safety**: Complete protection against race conditions using POSIX Mutexes (`pthread_mutex`) to lock critical sections (e.g., fork resources, state updates, timestamp logging).
-*   **Inter-Process Communication & Semaphores**: Named POSIX semaphores (`sem_open`, `sem_wait`, `sem_post`) managing shared resource pools across isolated process boundaries.
-*   **Real-Time Monitoring Thread**: Asynchronous monitor routines dedicated to tracking starvation thresholds ($time\_to\_die$) and verifying global meal saturation limits without blocking action routines.
-*   **High-Precision Time Tracking**: Microsecond-precision timekeeping utilities built on `gettimeofday` to prevent drift and ensure accurate event logging.
-*   **Clean Resource Lifecycle Management**: Deterministic cleanup routines ensuring zero memory leaks (`valgrind`), leak-free mutex destruction, and proper process termination routines (`waitpid`, `kill`).
+*   **Dual Concurrency Models**: Multithreading with shared memory (`pthreads`) in mandatory vs. process-level isolation (`fork`) without shared memory in bonus.
+*   **Algorithmic Deadlock Avoidance**:
+    *   *Mandatory*: Even/Odd asymmetric fork locking logic breaks circular wait conditions across ring-topology mutexes.
+    *   *Bonus*: Resource-counting pool managed by a single central named POSIX semaphore (`/forks_sem`).
+*   **Synchronized Barrier Launch & Phase Throttling**: Gate-locking barrier mechanism (`start_lock` / `start_sem`) ensures all threads/processes launch simultaneously at $t = 0$. Micro-delays prevent initial CPU scheduling bottlenecks.
+*   **Hybrid Per-Process Supervisor**: Asynchronous monitoring routines running as dedicated threads/sub-threads that inspect starvation thresholds ($time\_to\_die$) with microsecond-precision polling ($200\mu\text{s}$) without blocking execution loops.
+*   **Atomic Logging & Lock-on-Death**: Dedicated mutexes/semaphores protect output streams against data races. The write lock is permanently retained upon a philosopher's death, freezing the console to prevent garbled or out-of-order trace logs.
+*   **Inter-Process Signaling & IPC Cleanups**: Process tree supervision via `waitpid` inspecting exit status codes, propagating fast termination via `SIGKILL`, and defensive Kernel IPC cleanup (`sem_unlink`).
 
 ---
 
@@ -33,23 +35,23 @@ The mandatory implementation utilizes POSIX Threads (`pthreads`) and **Mutexes**
 .
 ├── philo/                      # Mandatory module: Multithreading & Mutexes
 │   ├── Makefile                # Compilation rules for mandatory binary
-│   ├── philosophers.h          # Header defining t_philo, t_table structures, and prototypes
-│   ├── main.c                  # Entry point, argument parsing initialization, and execution trigger
-│   ├── check_args.c            # Strict numeric input validation and boundary checking
-│   ├── run.c                   # Thread creation loops, simulation lifecycle, and join routines
-│   ├── actions.c               # Core state machine routines (eat, sleep, think) with mutex locking
-│   ├── monitor.c               # Dedicated asynchronous supervisor thread checking for starvation
-│   └── utils.c                 # Precision timestamp calculators, custom sleep routines, and string utilities
+│   ├── philosophers.h          # Header defining t_philo, t_data structures, and prototypes
+│   ├── main.c                  # Entry point, circular ring topology linking, and cleanup
+│   ├── check_args.c            # Strict numeric input validation and threshold checks (>= 60ms)
+│   ├── run.c                   # Thread creation loops, start barrier synchronization, and execution
+│   ├── actions.c               # Core state machine (eat, sleep, think) with asymmetric mutex locking
+│   ├── monitor.c               # Asynchronous supervisor thread tracking starvation and meal quotas
+│   └── utils.c                 # Timestamp calculators (gettimeofday), error loggers, and memory release
 │
 └── philo_bonus/                # Bonus module: Multiprocessing & Semaphores
     ├── Makefile                # Compilation rules for bonus binary
-    ├── philosophers.h          # Bonus header with process/semaphore structural definitions
-    ├── main.c                  # Bonus entry point and parent process supervisor routing
-    ├── run.c                   # Process spawning loops (fork) and process exit wait handlers
-    ├── actions.c               # Isolated child process lifecycle execution loops
-    ├── monitor.c               # Per-process starvation monitoring routine
-    ├── proccess_utils.c        # Semaphore management wrappers, creation, and unlink handlers
-    └── utils.c                 # Timestamping utilities and atomic printing protections
+    ├── philosophers.h          # Bonus header defining process contexts and semaphore handles
+    ├── main.c                  # Bonus entry point, child waitpid supervisor, and signal propagation
+    ├── run.c                   # Process spawning loops (fork), start barrier, and sub-thread launch
+    ├── actions.c               # Isolated child process action loops using POSIX counting semaphores
+    ├── monitor.c               # Per-process monitoring thread triggering exit codes on starvation
+    ├── proccess_utils.c        # Semaphore initialization, sem_unlink cleanup handlers, and SIGKILL routines
+    └── utils.c                 # Precision time utilities, defensive memory free, and IPC unlinking
 ```
 
 ---
