@@ -34,13 +34,13 @@ This extended implementation, titled **Four Seasons Adventures**, evolves the co
 
 ## 📋 Technical Specifications & Key Features
 
-*   **DDA Raycasting & Perspective Correction**: High-performance raycasting engine projecting 1D slice samples into 3D vertical wall segments. Fish-eye perspective distortion is corrected dynamically using angular trigonometric offsets ($\cos(\Delta\theta)$).
-*   **Dynamic Map Configuration Linker**: Custom `.cub` parser capable of reading a `NEXT_MAP` attribute to dynamically chain level transitions, seamlessly unloading and loading new map states without memory leaks.
-*   **Horizontal Floor & Ceiling Texturing**: 2D plane projection mapping horizontal textures relative to the player's spatial orientation vector and field of view.
-*   **Atmospheric Distance Depth Shading**: Software-calculated distance shading engine that dynamically blends texture RGB values toward black based on ray impact distance.
-*   **Interactive Entities & Procedural Sliding Doors**: Dynamic wall collision detection for sliding doors with fractional offsets, alongside distance-sorted 2D billboard sprites (keys, coins) with clip-prevention depth ordering.
-*   **Multi-Threaded Audio Infrastructure**: Native integration of the **BASS Audio Library**, executing synchronized 8-bit chiptune arrangements of Vivaldi's Four Seasons and event-triggered audio FX (doors, collectibles, portal teleports).
-*   **Real-Time Vector Minimap & Retro HUD**: Top-right vector minimap displaying player direction and field of view cone, accompanied by a retro alphanumeric HUD blitting scores and status icons onto the frame buffer.
+* **DDA Raycasting & Perspective Correction**: High-performance raycasting engine projecting 1D slice samples into 3D vertical wall segments. Fish-eye perspective distortion is corrected dynamically using angular trigonometric offsets ($\cos(\Delta\theta)$).
+* **Dynamic Map Configuration Linker**: Custom `.cub` parser capable of reading a `NEXT_MAP` attribute to dynamically chain level transitions, seamlessly unloading and loading new map states without memory leaks.
+* **Horizontal Floor & Ceiling Texturing**: 2D plane projection mapping horizontal textures relative to the player's spatial orientation vector and field of view.
+* **Atmospheric Distance Depth Shading**: Software-calculated distance shading engine that dynamically blends texture RGB values toward black based on ray impact distance.
+* **Interactive Entities & Procedural Sliding Doors**: Dynamic wall collision detection for sliding doors with fractional offsets, alongside distance-sorted 2D billboard sprites (keys, coins) with clip-prevention depth ordering.
+* **Multi-Threaded Audio Infrastructure**: Native integration of the **BASS Audio Library**, executing synchronized 8-bit chiptune arrangements of Vivaldi's Four Seasons and event-triggered audio FX (doors, collectibles, portal teleports).
+* **Real-Time Vector Minimap & Retro HUD**: Top-right vector minimap displaying player direction and field of view cone, accompanied by a retro alphanumeric HUD blitting scores and status icons onto the frame buffer.
 
 ---
 
