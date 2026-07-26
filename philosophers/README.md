@@ -29,7 +29,7 @@ The mandatory implementation utilizes POSIX Threads (`pthreads`) and **Mutexes**
 
 ## 🛠️ Project Architecture
 
-[TRIPLE_BACKTICKS]text
+```text
 .
 ├── philo/                      # Mandatory module: Multithreading & Mutexes
 │   ├── Makefile                # Compilation rules for mandatory binary
@@ -50,7 +50,7 @@ The mandatory implementation utilizes POSIX Threads (`pthreads`) and **Mutexes**
     ├── monitor.c               # Per-process starvation monitoring routine
     ├── proccess_utils.c        # Semaphore management wrappers, creation, and unlink handlers
     └── utils.c                 # Timestamping utilities and atomic printing protections
-[TRIPLE_BACKTICKS]
+```
 
 ---
 
@@ -58,9 +58,9 @@ The mandatory implementation utilizes POSIX Threads (`pthreads`) and **Mutexes**
 
 The program accepts the following command-line parameters:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 ./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
-[TRIPLE_BACKTICKS]
+```
 
 | Argument | Description | Unit |
 | :--- | :--- | :--- |
@@ -78,21 +78,21 @@ The program accepts the following command-line parameters:
 
 Navigate to the `philo/` directory and compile using the included `Makefile`:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 cd philo
 make
 ./philo 4 410 200 200
-[TRIPLE_BACKTICKS]
+```
 
 ### Bonus (Processes & Semaphores)
 
 Navigate to the `philo_bonus/` directory and compile the process-isolated version:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 cd philo_bonus
 make
 ./philo_bonus 5 800 200 200 7
-[TRIPLE_BACKTICKS]
+```
 
 ### Build Rules (Both Modules)
 
