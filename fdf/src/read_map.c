@@ -12,8 +12,12 @@
 
 #include "fdf.h"
 
-//Reads map in .txt format and separates it by lines with split
-char	**read_map(char	*file)
+/*
+** @brief  Reads a map file line by line and splits it into a 2D string array.
+** @param  file: Path to the map file.
+** @return Pointer to a NULL-terminated array of strings containing lines.
+*/
+char	**read_map(char *file)
 {
 	int		fd;
 	char	*content;
@@ -37,6 +41,6 @@ char	**read_map(char	*file)
 	res = ft_split(all_content, '\n');
 	free(all_content);
 	if (!res)
-		exit_error("Split error\n");
+		exit_error(SPLIT_ERROR);
 	return (res);
 }

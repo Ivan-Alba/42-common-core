@@ -12,7 +12,14 @@
 
 #include "fdf.h"
 
-//Function that returns the color to print the lines.
+/*
+** @brief  Calculates color interpolation between two points for gradient lines.
+** @param  point1: Starting point containing initial RGB color.
+** @param  point2: Ending point containing target RGB color.
+** @param  i: Current step index along the line.
+** @param  max: Total number of steps/pixels in the line segment.
+** @return Interpolated RGB color value.
+*/
 int	get_color(t_points point1, t_points point2, int i, int max)
 {
 	float	red_inc;
@@ -32,7 +39,13 @@ int	get_color(t_points point1, t_points point2, int i, int max)
 	return (color);
 }
 
-//Minilibx function to print pixels on screen
+/*
+** @brief  Puts a single pixel of specified color into the image buffer.
+** @param  data: Pointer to image buffer structure.
+** @param  x: X coordinate on screen.
+** @param  y: Y coordinate on screen.
+** @param  color: RGB color value to write.
+*/
 void	putpixel(t_data *data, int x, int y, int color)
 {
 	char	*dst;
@@ -45,15 +58,25 @@ void	putpixel(t_data *data, int x, int y, int color)
 	}
 }
 
-//Function that rounds off a float and returns it as int
+/*
+** @brief  Rounds a floating-point number to the nearest integer.
+** @param  num: Floating-point value to round.
+** @return Rounded integer value.
+*/
 int	round_float(float num)
 {
-	if (num - (int) num >= 0.5)
-		return ((int) num + 1);
-	return ((int) num);
+	if (num - (int)num >= 0.5)
+		return ((int)num + 1);
+	return ((int)num);
 }
 
-//Function that draws lines between two points
+/*
+** @brief  Draws a line between two projected 2D points using DDA algorithm.
+** @param  data: Pointer to image buffer structure.
+** @param  pnt1: Starting point structure.
+** @param  pnt2: Ending point structure.
+** @param  vars: Pointer to main environment state.
+*/
 void	print_lines(t_data *data, t_points pnt1, t_points pnt2, t_vars *vars)
 {
 	int		max;
@@ -67,21 +90,26 @@ void	print_lines(t_data *data, t_points pnt1, t_points pnt2, t_vars *vars)
 		max = abs(pnt2.y_iso - pnt1.y_iso);
 	if (max > 0)
 	{
-		x = (float) pnt1.x_iso + ((pnt2.x_iso - pnt1.x_iso) / (float) max);
-		y = (float) pnt1.y_iso + ((pnt2.y_iso - pnt1.y_iso) / (float) max);
+		x = (float)pnt1.x_iso + ((pnt2.x_iso - pnt1.x_iso) / (float)max);
+		y = (float)pnt1.y_iso + ((pnt2.y_iso - pnt1.y_iso) / (float)max);
 		i = 0;
 		while (i < max)
 		{
 			putpixel(data, round_float(x) + vars->pos_x, round_float(y)
 				+ vars->pos_y, get_color(pnt1, pnt2, i, max));
-			x = x + ((pnt2.x_iso - pnt1.x_iso) / (float) max);
-			y = y + ((pnt2.y_iso - pnt1.y_iso) / (float) max);
+			x = x + ((pnt2.x_iso - pnt1.x_iso) / (float)max);
+			y = y + ((pnt2.y_iso - pnt1.y_iso) / (float)max);
 			i++;
 		}
 	}
 }
 
-//Function that prints the pixels on the screen based on the map
+/*
+** @brief  Iterates through map points and draws grid points and
+**         connecting lines.
+** @param  data: Pointer to image buffer structure.
+** @param  vars: Pointer to main environment state.
+*/
 void	print_pixels(t_data *data, t_vars *vars)
 {
 	int		i;

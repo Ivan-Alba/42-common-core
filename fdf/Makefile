@@ -13,32 +13,43 @@
 NAME = fdf
 
 SRC = src/main.c src/utils.c src/read_map.c src/event_controller.c \
-	  src/print_pixels.c src/map_info.c src/menu.c
+      src/print_pixels.c src/map_info.c src/menu.c src/exit.c
 
 DEPS = $(SRC:.c=.d)
-
 OBJ = $(SRC:.c=.o)
 
 LIBFT = src/libft/libft.a
-
 MAKE_LIBFT = src/libft/Makefile
 
 CC = gcc
-CFLAGS = -Wextra -Werror -Wall 
+CFLAGS = -Wextra -Werror -Wall
 RM = rm -f
 
-all:	$(NAME)
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S), Linux)
+	MLX_FLAGS = -Lmlx -lmlx -lXext -lX11 -lm -lbsd
+else ifeq ($(UNAME_S), Darwin)
+	MLX_FLAGS = -Lmlx -lmlx -framework OpenGL -framework AppKit
+endif
+
+all: $(NAME)
+
+# Regla bonus requerida por la norma de 42
+bonus: $(NAME)
 
 %.o: %.c Makefile
 	$(CC) $(CFLAGS) -MMD -Imlx -c $< -o $@
 
 $(NAME): $(OBJ) $(LIBFT)
-	$(CC) $(OBJ) $(LIBFT) -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
+	make -C mlx
+	$(CC) $(OBJ) $(LIBFT) $(MLX_FLAGS) -o $(NAME)
 
 $(LIBFT): src/libft/libft.h $(MAKE_LIBFT)
 	make -C src/libft
 
-clean:	libft_clean
+clean: libft_clean
+	make -C mlx clean
 	$(RM) $(OBJ) $(DEPS)
 
 libft_clean:
@@ -54,4 +65,4 @@ re: fclean all
 
 -include $(DEPS)
 
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re libft_clean libft_fclean

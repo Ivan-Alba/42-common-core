@@ -12,20 +12,43 @@
 
 #include "fdf.h"
 
-//Function that transforms vertex positions in isometric view
-void	get_iso_values(t_points *pnt, int angle)
+/*
+** @brief  Calculates 2D projected coordinates based on rotation and ISO mode.
+** @param  pnt: Pointer to the point structure to transform.
+** @param  vars: Pointer to main environment structure.
+*/
+void	get_iso_values(t_points *pnt, t_vars *vars)
 {
-	pnt->x_iso = pnt->x;
-	pnt->y_iso = pnt->y;
-	if (angle > 0)
+	float	rad;
+	int		rot_x;
+	int		rot_y;
+	int		c_x;
+	int		c_y;
+
+	rad = vars->rotation_angle * M_PI / 180.0;
+	c_x = (vars->map->width * vars->scale) / 2;
+	c_y = (vars->map->height * vars->scale) / 2;
+	rot_x = c_x + (pnt->x - c_x) * cos(rad) - (pnt->y - c_y) * sin(rad);
+	rot_y = c_y + (pnt->x - c_x) * sin(rad) + (pnt->y - c_y) * cos(rad);
+	if (vars->is_iso)
 	{
-		pnt->x_iso = (pnt->x_iso - pnt->y_iso) * cos(angle * M_PI / 180);
-		pnt->y_iso = (pnt->x_iso + pnt->y_iso) * sin(angle * M_PI / 180)
+		pnt->x_iso = (rot_x - rot_y) * cos(INIT_Z_ANGLE * M_PI / 180.0);
+		pnt->y_iso = (rot_x + rot_y) * sin(INIT_Z_ANGLE * M_PI / 180.0)
 			- pnt->z;
+	}
+	else
+	{
+		pnt->x_iso = rot_x;
+		pnt->y_iso = rot_y;
 	}
 }
 
-//Function that stores in each vertex the reference color
+/*
+** @brief  Determines vertex color based on hexadecimal string or Z altitude.
+** @param  str: String representation of vertex data.
+** @param  z: Altitude value of the vertex.
+** @return Integer representing the RGB color value.
+*/
 int	set_color(char *str, int z)
 {
 	int		color;
@@ -47,7 +70,11 @@ int	set_color(char *str, int z)
 	return (color);
 }
 
-//Function that configures the vertices read from the map
+/*
+** @brief  Parses string map grid into structured 3D point array with scaled Z.
+** @param  map: Pointer to map structure.
+** @param  vars: Pointer to main environment structure.
+*/
 void	set_points_values(t_map *map, t_vars *vars)
 {
 	int		i;
@@ -67,9 +94,9 @@ void	set_points_values(t_map *map, t_vars *vars)
 		{
 			map->points[h].x = j * vars->scale;
 			map->points[h].y = i * vars->scale;
-			map->points[h].z = ft_atoi(line[j]);
-			map->points[h].color = set_color(line[j], map->points[h].z);
-			get_iso_values(&(map->points[h]), vars->z_angle);
+			map->points[h].z = ft_atoi(line[j]) * (vars->scale / 2.0);
+			map->points[h].color = set_color(line[j], ft_atoi(line[j]));
+			get_iso_values(&(map->points[h]), vars);
 			h++;
 		}
 		i++;
@@ -77,67 +104,40 @@ void	set_points_values(t_map *map, t_vars *vars)
 	}
 }
 
-//Function that initializes the rendering configuration values
+/*
+** @brief  Sets default scale factor, Z angle, and initial camera coordinates.
+** @param  vars: Pointer to main environment structure.
+*/
 void	initialize_settings(t_vars *vars)
 {
 	t_map	*map;
+	int		max_dim;
 
 	map = vars->map;
-	vars->scale = INIT_SCALE;
-	while (vars->scale * map->width < WIN_X / 2)
-		vars->scale += 1;
-	while (vars->scale * map->width > WIN_X / 2)
-		vars->scale -= 1;
-	vars->pos_x = 500;
-	vars->pos_y = 500;
-	vars->z_angle = INIT_Z_ANGLE;
+	if (map->width > map->height)
+		max_dim = map->width;
+	else
+		max_dim = map->height;
+	vars->scale = (WIN_X / 3) / max_dim;
+	if (vars->scale < 1)
+		vars->scale = 1;
+	vars->initial_scale = vars->scale;
+	vars->pos_x = WIN_X / 2;
+	vars->pos_y = WIN_Y / 2;
+	vars->is_iso = 1;
+	vars->rotation_angle = 0;
 }
 
+/*
+** @brief  Calculates X and Y offsets to visually center map rendering.
+** @param  vars: Pointer to main environment structure.
+*/
 void	center_render(t_vars *vars)
 {
-	int	min_x;
-	int	max_x;
-	int	i;
-	
-	i = 0;
-	min_x = WIN_X;
-	max_x = 0;
-	while (i < (vars->map)->width * (vars->map)->height)
-	{
-		if ((vars->map)->points[i].x_iso < min_x)
-			min_x = (vars->map)->points[i].x_iso;
-		if ((vars->map)->points[i].x_iso > max_x)
-			max_x = (vars->map)->points[i].x_iso;
-		i++;
-	}
-	vars->pos_x = (WIN_X / 2) - ((max_x - min_x) / 2);
-	vars->pos_x += (vars->map)->points[0].x_iso - min_x;
-	ft_printf("min_x: %d, max_x: %d, pos_x: %d\n", min_x, max_x, vars->pos_x);
+	int	bounds[4];
+
+	get_map_bounds(vars->map, bounds);
+	vars->pos_x = (WIN_X / 2) - ((bounds[0] + bounds[1]) / 2);
+	vars->pos_y = (WIN_Y / 2) - ((bounds[2] + bounds[3]) / 2);
 	refresh_render(vars);
-}
-
-//Function that initializes the map configuration values
-void	initialize_map_info(t_map *map, t_vars *vars)
-{
-	int		i;
-	char	**line;
-
-	i = 0;
-	while (map->map[i])
-		i++;
-	map->height = i;
-	i = 0;
-	line = ft_split(map->map[i], ' ');
-	if (!line)
-		exit_error("ERROR");
-	while (line[i])
-		i++;
-	map->width = i;
-	map->points = malloc((map->width * map->height) * sizeof(t_points));
-	if (!map->points)
-		exit_error("ERROR");
-	free_split(line);
-	vars->map = map;
-	initialize_settings(vars);
-	set_points_values(map, vars);
 }

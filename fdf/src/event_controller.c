@@ -12,41 +12,76 @@
 
 #include "fdf.h"
 
-//Function that close program execution
-int	close_win(t_vars *vars)
+/*
+** @brief  Toggles projection state between Isometric and Orthographic mode.
+** @param  vars: Pointer to main environment structure.
+** @param  keycode: Identifier of the pressed key (KEY_SPACE).
+*/
+void	toogle_projection(t_vars *vars, int keycode)
 {
-	mlx_destroy_window(vars->mlx, vars->win);
-	free_split((vars->map)->map);
-	free((vars->map)->points);
-	exit(0);
+	if (keycode == KEY_SPACE)
+	{
+		vars->is_iso = !(vars->is_iso);
+		set_points_values(vars->map, vars);
+		center_render(vars);
+		refresh_render(vars);
+	}
 }
 
-//Function that rotates the rendering at the angle z
-void	rotate_z_img(t_vars *vars, int keycode)
+/*
+** @brief  Translates rendered image with dynamic speed and boundary limits.
+** @param  vars: Pointer to main environment structure.
+** @param  keycode: Identifier of the pressed directional key (W/A/S/D).
+*/
+void	move_img(t_vars *vars, int keycode)
 {
-	if (keycode == 43 && vars->z_angle > 0)
-		vars->z_angle -= 1;
-	else if (keycode == 43 && vars->z_angle == 0)
-		vars->z_angle = 360;
-	else if (keycode == 47 && vars->z_angle < 360)
-		vars->z_angle += 1;
-	else if (keycode == 47 && vars->z_angle == 360)
-		vars->z_angle = 0;
-	else if (keycode == 49)
+	int	b[4];
+	int	step;
+
+	step = 10 + (vars->scale / 2);
+	get_map_bounds(vars->map, b);
+	if (keycode == KEY_A && (b[1] + vars->pos_x) - step > 100)
+		vars->pos_x -= step;
+	else if (keycode == KEY_D && (b[0] + vars->pos_x) + step < WIN_X - 100)
+		vars->pos_x += step;
+	else if (keycode == KEY_S && (b[2] + vars->pos_y) + step < WIN_Y - 100)
+		vars->pos_y += step;
+	else if (keycode == KEY_W && (b[3] + vars->pos_y) - step > 100)
+		vars->pos_y -= step;
+	refresh_render(vars);
+}
+
+/*
+** @brief  Rotates map horizontally around central axis in 5-degree steps.
+** @param  vars: Pointer to main environment structure.
+** @param  keycode: Identifier of the pressed key (KEY_Q or KEY_E).
+*/
+void	rotate_horizontal(t_vars *vars, int keycode)
+{
+	if (keycode == KEY_Q)
 	{
-		if (vars->z_angle != 0)
-			vars->z_angle = 0;
-		else
-			vars->z_angle = INIT_Z_ANGLE;
+		vars->rotation_angle -= 5;
+		if (vars->rotation_angle < 0)
+			vars->rotation_angle += 360;
+	}
+	else if (keycode == KEY_E)
+	{
+		vars->rotation_angle += 5;
+		if (vars->rotation_angle >= 360)
+			vars->rotation_angle -= 360;
 	}
 	set_points_values(vars->map, vars);
 	refresh_render(vars);
 }
 
-//Function that scales the rendering up or down
+/*
+** @brief  Increases or decreases rendering zoom scale within safe bounds.
+** @param  vars: Pointer to main environment structure.
+** @param  is_plus: Flag indicating zoom in (1) or zoom out (0).
+*/
 void	change_scale(t_vars *vars, int is_plus)
 {
-	if (is_plus && vars->scale < 60)
+	if (is_plus && vars->scale < 500)
 		vars->scale += 1;
 	else if (!is_plus && vars->scale > 1)
 		vars->scale -= 1;
@@ -54,21 +89,11 @@ void	change_scale(t_vars *vars, int is_plus)
 	refresh_render(vars);
 }
 
-//Function that moves the rendering when the corresponding key is pressed
-void	move_img(t_vars *vars, int keycode)
-{
-	if (keycode == 0)
-		vars->pos_x -= MOVE_QTY;
-	else if (keycode == 2)
-		vars->pos_x += MOVE_QTY;
-	else if (keycode == 1)
-		vars->pos_y += MOVE_QTY;
-	else if (keycode == 13)
-		vars->pos_y -= MOVE_QTY;
-	refresh_render(vars);
-}
-
-//Function that increases or decreases the height of the vertices
+/*
+** @brief  Modifies Z-height altitude of map points and updates projection.
+** @param  vars: Pointer to main environment structure.
+** @param  keycode: Identifier of key controlling height modification.
+*/
 void	modify_z(t_vars *vars, int keycode)
 {
 	int	i;
@@ -76,7 +101,7 @@ void	modify_z(t_vars *vars, int keycode)
 
 	i = 0;
 	change = 1;
-	if (keycode == 6)
+	if (keycode == KEY_Z)
 		change = -1;
 	while (i < vars->map->height * vars->map->width)
 	{
@@ -84,7 +109,7 @@ void	modify_z(t_vars *vars, int keycode)
 			(vars->map)->points[i].z += change;
 		else if (change && (vars->map)->points[i].z >= 5)
 			(vars->map)->points[i].z += change;
-		get_iso_values(&(vars->map->points[i]), vars->z_angle);
+		get_iso_values(&(vars->map->points[i]), vars);
 		i++;
 	}
 	refresh_render(vars);

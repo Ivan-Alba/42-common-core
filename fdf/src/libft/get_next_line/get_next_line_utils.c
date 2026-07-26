@@ -47,7 +47,10 @@ int	check_stack(char **saved, int i, char **res)
 	{
 		*saved = cut_after_next_line(&*saved);
 		if (!*saved)
-			return ((int)free_and_out_nl(&*res));
+		{
+			free_and_out_nl(&*res);
+			return (0);
+		}
 	}
 	else
 	{
