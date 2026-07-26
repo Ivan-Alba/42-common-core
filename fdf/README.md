@@ -1,4 +1,4 @@
-# FdF — Fil de Fer (3D Wireframe Viewer)
+# FdF — Trigonometric 3D Wireframe Engine in C
 
 <p align="center">
   <img src="README_assets/demo.gif" alt="FdF Demo" width="100%" />
