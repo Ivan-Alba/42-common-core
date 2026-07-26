@@ -77,7 +77,7 @@ sudo apt-get install build-essential libx11-dev libxext-dev zlib1g-dev
 *   **fdf.h**: Central header file containing structural definitions (`t_vars`, `t_map`, `t_points`), macros, library inclusions, and global function prototypes.
 *   **main.c**: Entry point initializing environment configuration, map allocation routines (`initialize_map_info`), event hooks (`mlx_hook`), and primary execution loops.
 *   **map_info.c**: Core trigonometric conversion pipeline (`get_iso_values`), initial map coordinate generation (`set_points_values`), and auto-centering calculation (`center_render`).
-*   **render.c**: Bresenham line-drawing algorithms, image pixel pushing routines, and window buffer refresh pipelines (`refresh_render`).
+*   **print_pixels.c**: Bresenham line-drawing algorithms, image pixel pushing routines, and window buffer refresh pipelines (`refresh_render`).
 *   **event_controller.c**: Key event dispatchers handling horizontal rotation (`rotate_horizontal`), scale adjustments (`change_scale`), projection toggle (`toggle_projection`), and altitude scaling (`modify_z`).
 *   **menu.c**: On-screen dynamic HUD interface rendering live metrics (camera position, angle, and relative zoom percentage).
 *   **utils.c**: General helper functions including hexadecimal color parsers (`hex_to_int`), integer-to-string formatters, and global bounding box calculation helpers (`get_map_bounds`).
@@ -96,6 +96,7 @@ make
 ```
 
 Additional `Makefile` rules:
+*   `make bonus`: Compile the executable with bonus features.
 *   `make clean`: Removes intermediate object files (`.o`).
 *   `make fclean`: Removes object files and the final `fdf` binary executable.
 *   `make re`: Recompiles the entire project from scratch.
