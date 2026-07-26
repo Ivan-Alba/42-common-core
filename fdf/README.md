@@ -22,11 +22,13 @@ Built using **MiniLibX** (the 42 School internal graphics library), this impleme
 
 ## 📋 Technical Specifications & Key Features
 
-*   **Projection Engines**: Dynamic switching between **Isometric Projection** (30° default tilt) and top-down **Orthographic View** using isometric coordinate matrix transformations.
-*   **3D Mesh Manipulation**: Full horizontal rotation on the $X-Y$ plane around the map's geometric center, real-time zoom scaling proportional to map dimensions, and $Z$-altitude scaling.
-*   **Bounding-Box Camera Containment**: Intelligent translation algorithms (panning) with dynamic speed steps and boundary checks to prevent losing visual tracking of the map.
-*   **Color Parsing**: Native support for explicit hexadecimal color codes embedded in target map files (`0xFF0000`), with fallback elevation-based color gradients.
-*   **Performance Optimization**: Direct pixel buffering rendered via MiniLibX image buffer pointers before pushing frames to the display canvas to eliminate flickering.
+*   **Applied Trigonometric Engine**: Vector transformation algorithms converting 3D grid space $(X, Y, Z)$ into 2D screen coordinates using custom trigonometric rotation matrices (yaw angle calculation via $\cos/\sin$ transformations) and isometric projection mapping.
+*   **Projection Engines**: Dynamic switching between 3D **Isometric Projection** (30° tilt) and top-down **Orthographic View** using real-time coordinate transformations.
+*   **3D Mesh Manipulation**: Real-time horizontal rotation around the map's centroid, adaptive zoom scaling tailored to grid dimensions, and interactive $Z$-altitude scaling.
+*   **Memory Efficiency & Parsing Architecture**: Low-overhead parsing pipeline with strict $O(N)$ dynamic memory management, ensuring zero memory leaks during execution, continuous map loading, or termination.
+*   **Bounding-Box Camera Containment**: Intelligent translation algorithms (panning) with adaptive step speed and boundary checks to prevent losing visual tracking of the rendered model.
+*   **Color Parsing & Interpolation**: Native support for explicit hexadecimal color values embedded in map data (`0xFF0000`) with height-based color fallback logic.
+*   **Performance Optimization**: Off-screen direct pixel buffering using MiniLibX raw memory pointers, writing pixels directly to the image buffer before pushing frames to avoid rendering flicker.
 
 ---
 
@@ -62,26 +64,21 @@ sudo apt-get install build-essential libx11-dev libxext-dev zlib1g-dev
 
 ```text
 .
-├── fdf.h
-├── main.c
-├── map_info.c
-├── read_map.c
-├── event_controller.c
-├── menu.c
-├── print_pixels.c
-├── utils.c
-├── exit.c
-└── Makefile
+├── libft/              # Custom C utility library for fundamental operations
+├── mlx/                # MiniLibX graphical library for windowing and frame rendering
+├── test_maps/          # Collection of .fdf topographical map files for testing
+├── Makefile            # Automation build script for compilation and rules (including bonus)
+└── src/                # Project source code directory
+    ├── fdf.h           # Central header file containing data structures, macros, and prototypes
+    ├── main.c          # Entry point, environment initialization, and event loop hook
+    ├── map_info.c      # Trigonometric projections, point values initialization, and auto-centering
+    ├── read_map.c      # File parser and reader converting .fdf maps into 2D memory arrays
+    ├── print_pixels.c  # Bresenham line-drawing algorithm and direct pixel-to-image buffering
+    ├── event_controller.c # Key event dispatchers for rotation, scale, altitude, and projection
+    ├── menu.c          # On-screen dynamic HUD interface rendering live performance metrics
+    ├── utils.c         # Hexadecimal color conversion, string tools, and map boundary calculations
+    └── exit.c          # Clean termination procedures, window destruction, and memory cleanup
 ```
-
-*   **fdf.h**: Central header file containing structural definitions (`t_vars`, `t_map`, `t_points`), macros, library inclusions, and global function prototypes.
-*   **main.c**: Entry point initializing environment configuration, map allocation routines (`initialize_map_info`), event hooks (`mlx_hook`), and primary execution loops.
-*   **map_info.c**: Core trigonometric conversion pipeline (`get_iso_values`), initial map coordinate generation (`set_points_values`), and auto-centering calculation (`center_render`).
-*   **print_pixels.c**: Bresenham line-drawing algorithms, image pixel pushing routines, and window buffer refresh pipelines (`refresh_render`).
-*   **event_controller.c**: Key event dispatchers handling horizontal rotation (`rotate_horizontal`), scale adjustments (`change_scale`), projection toggle (`toggle_projection`), and altitude scaling (`modify_z`).
-*   **menu.c**: On-screen dynamic HUD interface rendering live metrics (camera position, angle, and relative zoom percentage).
-*   **utils.c**: General helper functions including hexadecimal color parsers (`hex_to_int`), integer-to-string formatters, and global bounding box calculation helpers (`get_map_bounds`).
-*   **exit.c**: Program termination procedures handling window destruction, MiniLibX resource clearing, and dynamic map memory deallocation (`close_win`).
 
 ---
 
