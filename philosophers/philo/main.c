@@ -12,7 +12,11 @@
 
 #include "philosophers.h"
 
-//Link philosophers forks to l_fork pointer
+/*
+** @brief  Links circular left fork pointers to neighbor philosopher's
+**         right fork.
+** @param  data: Pointer to global simulation environment structure.
+*/
 void	init_forks(t_data *data)
 {
 	int	i;
@@ -34,7 +38,12 @@ void	init_forks(t_data *data)
 	}
 }
 
-//Initializes the data of the structures
+/*
+** @brief  Initializes individual philosopher fields, state locks, and forks.
+** @param  data: Pointer to global simulation environment structure.
+** @param  argc: Total command-line argument count.
+** @param  argv: Command-line argument vector.
+*/
 void	init_data(t_data *data, int argc, char **argv)
 {
 	int	i;
@@ -64,7 +73,13 @@ void	init_data(t_data *data, int argc, char **argv)
 	init_forks(data);
 }
 
-//Main function
+/*
+** @brief  Main entry point parsing inputs, initializing resources,
+**         and launching.
+** @param  argc: Command-line argument count.
+** @param  argv: Command-line argument array.
+** @return 0 on successful run, 1 on argument/allocation error.
+*/
 int	main(int argc, char **argv)
 {
 	t_data	*data;

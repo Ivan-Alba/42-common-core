@@ -12,7 +12,12 @@
 
 #include "philosophers.h"
 
-//Function that prints on the screen the actions of the philosophers
+/*
+** @brief  Thread-safe logger printing state changes with relative timestamps.
+** @param  txt: Action message to be logged on standard output.
+** @param  action_time: Current timestamp in milliseconds.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	print_log(char *txt, long action_time, t_philo *philo)
 {
 	int	dead;
@@ -26,7 +31,12 @@ void	print_log(char *txt, long action_time, t_philo *philo)
 	pthread_mutex_unlock(philo->write_lock);
 }
 
-//Function that manages the locking of the philosophers' forks
+/*
+** @brief  Locks left and right forks preventing deadlocks via even/odd logic.
+** @param  philo: Pointer to philosopher structure.
+** @param  is_first_fork: Flag indicating whether picking up first or
+**         second fork.
+*/
 void	lock_forks(t_philo *philo, int is_first_fork)
 {
 	if (is_first_fork)
@@ -47,7 +57,10 @@ void	lock_forks(t_philo *philo, int is_first_fork)
 	}
 }
 
-//Function that manages the philosophers' eating action
+/*
+** @brief  Executes eating sequence, updates meal timestamps, and unlocks forks.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	philo_eat(t_philo *philo)
 {
 	lock_forks(philo, 1);
@@ -75,7 +88,11 @@ void	philo_eat(t_philo *philo)
 	}
 }
 
-//Function that manages the philosophers' sleeping action
+/*
+** @brief  Executes sleeping sequence for specified duration or single-philo
+**         edge case.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	philo_sleep(t_philo *philo)
 {
 	if (philo->l_fork)
@@ -93,7 +110,10 @@ void	philo_sleep(t_philo *philo)
 		usleep(philo->die_time * 1001);
 }
 
-//Function that manages the philosophers' thinking action
+/*
+** @brief  Logs thinking status prior to attempting next fork acquisition.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	philo_think(t_philo *philo)
 {
 	if (philo->l_fork)

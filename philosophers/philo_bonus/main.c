@@ -12,7 +12,11 @@
 
 #include "philosophers.h"
 
-//Receives an arg, checks for correct formatting and transforms it to int
+/*
+** @brief  Validates character array string and converts it to positive integer.
+** @param  arg: String input argument to validate and convert.
+** @return Converted integer value on success, 0 on format/overflow error.
+*/
 int	check_int(char *arg)
 {
 	long	num;
@@ -39,7 +43,13 @@ int	check_int(char *arg)
 	return ((int)num);
 }
 
-//Initializes the data of the structures
+/*
+** @brief  Unlinks stale semaphores and opens named POSIX semaphores
+**         for execution.
+** @param  data: Pointer to global simulation environment structure.
+** @param  argc: Total command-line argument count.
+** @param  argv: Command-line argument vector.
+*/
 void	init_data(t_data *data, int argc, char **argv)
 {
 	int	i;
@@ -67,7 +77,13 @@ void	init_data(t_data *data, int argc, char **argv)
 	}
 }
 
-//Checks the arguments and calls the necessary functions to store the data
+/*
+** @brief  Validates CLI argument formats and allocates philosopher array.
+** @param  argc: Total argument count.
+** @param  argv: Array of argument strings.
+** @param  data: Pointer to global simulation environment structure.
+** @return 0 on success, 1 on argument error, 2 on allocation failure.
+*/
 int	check_args(int argc, char **argv, t_data *data)
 {
 	if (argc < 5 || argc > 6)
@@ -85,7 +101,13 @@ int	check_args(int argc, char **argv, t_data *data)
 	return (0);
 }
 
-//Main function
+/*
+** @brief  Bonus entry point launching process execution and tracking
+**         child exit codes.
+** @param  argc: Command-line argument count.
+** @param  argv: Command-line argument array.
+** @return 0 on successful execution, 1 on error.
+*/
 int	main(int argc, char **argv)
 {
 	t_data	*data;

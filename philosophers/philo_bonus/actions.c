@@ -12,7 +12,12 @@
 
 #include "philosophers.h"
 
-//Function that prints on the screen the actions of the philosophers
+/*
+** @brief  Process-safe logger printing state changes using named semaphores.
+** @param  txt: Action message to be logged on standard output.
+** @param  action_time: Current timestamp in milliseconds.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	print_log(char *txt, long action_time, t_philo *philo)
 {
 	sem_wait(philo->write_sem);
@@ -21,7 +26,11 @@ void	print_log(char *txt, long action_time, t_philo *philo)
 		sem_post(philo->write_sem);
 }
 
-//Function that manages the philosophers' eating action
+/*
+** @brief  Acquires two forks from central semaphore pool, updates meal state,
+**         and releases.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	philo_eat(t_philo *philo)
 {
 	sem_wait(philo->forks_sem);
@@ -46,7 +55,11 @@ void	philo_eat(t_philo *philo)
 	sem_post(philo->meals_eaten_sem);
 }
 
-//Function that manages the philosophers' sleeping action
+/*
+** @brief  Executes sleeping sequence for specified duration using
+**         precise polling.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	philo_sleep(t_philo *philo)
 {
 	philo->act_time = get_time_ms();
@@ -59,7 +72,11 @@ void	philo_sleep(t_philo *philo)
 	}
 }
 
-//Function that manages the philosophers' thinking action
+/*
+** @brief  Logs thinking status before attempting next semaphore fork
+**         acquisition.
+** @param  philo: Pointer to philosopher structure.
+*/
 void	philo_think(t_philo *philo)
 {
 	philo->act_time = get_time_ms();

@@ -12,7 +12,10 @@
 
 #include "philosophers.h"
 
-//Check if the philosophers have taken the necessary amount of meals
+/*
+** @brief  Checks if all philosophers reached target meal completion quota.
+** @param  data: Pointer to global simulation environment structure.
+*/
 void	check_if_meals_eaten(t_data *data)
 {
 	int	i;
@@ -38,7 +41,10 @@ void	check_if_meals_eaten(t_data *data)
 	}
 }
 
-//Check if any philosopher dies 
+/*
+** @brief  Inspects individual philosopher meal timestamps for starvation.
+** @param  data: Pointer to global simulation environment structure.
+*/
 void	check_if_dead(t_data *data)
 {
 	int	i;
@@ -61,7 +67,10 @@ void	check_if_dead(t_data *data)
 	}
 }
 
-//Function that monitors the status of the philosophers
+/*
+** @brief  Asynchronous supervisor loop verifying starvation and meal targets.
+** @param  data: Pointer to global simulation environment structure.
+*/
 void	monitoring(t_data *data)
 {
 	int	i;

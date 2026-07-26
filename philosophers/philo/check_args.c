@@ -12,7 +12,11 @@
 
 #include "philosophers.h"
 
-//Receives an arg, checks for correct formatting and transforms it to int
+/*
+** @brief  Validates character array string and converts it to positive integer.
+** @param  arg: String input argument to validate and convert.
+** @return Converted integer value on success, 0 on format/overflow error.
+*/
 int	check_int(char *arg)
 {
 	long	num;
@@ -39,7 +43,14 @@ int	check_int(char *arg)
 	return ((int)num);
 }
 
-//Checks the arguments and calls the necessary functions to store the data
+/*
+** @brief  Validates CLI argument formats, allocates philosopher array,
+**         and inits.
+** @param  argc: Total argument count.
+** @param  argv: Array of argument strings.
+** @param  data: Pointer to global simulation environment data structure.
+** @return 0 on success, 1 on argument error, 2 on allocation failure.
+*/
 int	check_args(int argc, char **argv, t_data *data)
 {
 	data->philo_num = check_int(argv[1]);
@@ -56,6 +67,12 @@ int	check_args(int argc, char **argv, t_data *data)
 	return (0);
 }
 
+/*
+** @brief  Verifies minimum timing thresholds (>= 60ms) to ensure simulation
+**         stability.
+** @param  data: Pointer to global simulation environment data structure.
+** @return 1 if any timing parameter is below 60ms, 0 otherwise.
+*/
 int	check_min_values(t_data *data)
 {
 	if (data->philos[0].die_time < 60 || data->philos[0].eat_time < 60

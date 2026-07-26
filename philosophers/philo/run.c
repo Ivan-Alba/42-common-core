@@ -12,7 +12,12 @@
 
 #include "philosophers.h"
 
-//Manages the threads that represent the philosophers, who manage their actions
+/*
+** @brief  Main routine executed by each philosopher thread managing
+**         action loops.
+** @param  param: Generic pointer cast to individual t_philo structure.
+** @return Always NULL upon routine exit.
+*/
 void	*philo_run(void *param)
 {
 	t_philo	*philo;
@@ -42,7 +47,10 @@ void	*philo_run(void *param)
 	return (NULL);
 }
 
-//Initializes the necessary mutex
+/*
+** @brief  Initializes global state mutexes and acquires start gate lock.
+** @param  data: Pointer to global simulation environment structure.
+*/
 void	init_mutexs(t_data *data)
 {
 	pthread_mutex_init(&(data->write_lock), NULL);
@@ -51,7 +59,11 @@ void	init_mutexs(t_data *data)
 	pthread_mutex_lock(&(data->start_lock));
 }
 
-//Initialize threads for each philosopher
+/*
+** @brief  Spawns philosopher threads, releases start barrier, and triggers
+**         monitor.
+** @param  data: Pointer to global simulation environment structure.
+*/
 void	philos_start(t_data *data)
 {
 	int	i;

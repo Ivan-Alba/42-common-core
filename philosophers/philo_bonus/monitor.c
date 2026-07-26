@@ -12,7 +12,11 @@
 
 #include "philosophers.h"
 
-//Check if the philosophers have taken the necessary amount of meals
+/*
+** @brief  Verifies if child philosopher process satisfied meal requirement
+**         quota.
+** @param  philo: Pointer to individual philosopher context structure.
+*/
 void	check_if_meals_eaten(t_philo *philo)
 {
 	sem_wait(philo->meals_eaten_sem);
@@ -25,7 +29,10 @@ void	check_if_meals_eaten(t_philo *philo)
 	sem_post(philo->meals_eaten_sem);
 }
 
-//Check if any philosopher dies 
+/*
+** @brief  Inspects philosopher starvation limit and exits process on death.
+** @param  philo: Pointer to individual philosopher context structure.
+*/
 void	check_if_dead(t_philo *philo)
 {
 	sem_wait(philo->last_meal_sem);
@@ -39,7 +46,11 @@ void	check_if_dead(t_philo *philo)
 		sem_post(philo->last_meal_sem);
 }
 
-//Function that monitors the status of the philosophers
+/*
+** @brief  Per-process thread supervisor routine checking starvation and quota.
+** @param  param: Generic pointer cast to individual t_philo structure.
+** @return Always NULL upon thread completion.
+*/
 void	*monitoring(void *param)
 {
 	t_philo	*philo;

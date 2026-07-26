@@ -12,7 +12,11 @@
 
 #include "philosophers.h"
 
-//Controls the loop of philosophers' actions
+/*
+** @brief  Executes infinite lifecycle loop (eat, sleep, think) for
+**         child process.
+** @param  philo: Pointer to individual philosopher context structure.
+*/
 void	philo_action_loop(t_philo *philo)
 {
 	while (1)
@@ -24,7 +28,12 @@ void	philo_action_loop(t_philo *philo)
 	}
 }
 
-//Manages the creation of threads for processes and process actions
+/*
+** @brief  Child process entry point initializing monitor thread and
+**         action loop.
+** @param  philo: Pointer to individual philosopher context structure.
+** @param  data: Pointer to global simulation environment structure.
+*/
 void	philo_run(t_philo *philo, t_data *data)
 {
 	sem_wait(data->start_sem);
@@ -43,7 +52,12 @@ void	philo_run(t_philo *philo, t_data *data)
 	philo_action_loop(philo);
 }
 
-//Function that handles the creation of philosopher's processes
+/*
+** @brief  Spawns child processes using fork and releases start barrier
+**         semaphore.
+** @param  data: Pointer to global simulation environment structure.
+** @return 0 on successful process creation, 1 on fork failure.
+*/
 int	philos_start(t_data *data)
 {
 	int	i;

@@ -12,7 +12,9 @@
 
 #include "philosophers.h"
 
-//Deletes the semaphore files before and after each program execution
+/*
+** @brief  Unlinks named POSIX semaphores from filesystem to prevent leakage.
+*/
 void	unlink_sem(void)
 {
 	sem_unlink("/last_meal_sem");
@@ -22,7 +24,11 @@ void	unlink_sem(void)
 	sem_unlink("/start_sem");
 }
 
-//Kills all processes in case of a philosopher death or error
+/*
+** @brief  Terminates all child processes using SIGKILL upon failure or death.
+** @param  data: Pointer to global simulation environment structure.
+** @param  error_code: ID of philosopher process that triggered termination.
+*/
 void	kill_all_proccesses(t_data *data, int error_code)
 {
 	int	i;
@@ -35,7 +41,10 @@ void	kill_all_proccesses(t_data *data, int error_code)
 	}
 }
 
-//Displays details on the exit status of a terminated process
+/*
+** @brief  Utility debugging function logging process exit status details.
+** @param  status: Integer status mask returned by waitpid execution.
+*/
 void	status_info(int status)
 {
 	int	exit_status;
@@ -59,7 +68,10 @@ void	status_info(int status)
 	}
 }
 
-//Initializes the required semaphores for each philosopher
+/*
+** @brief  Opens individual process-level semaphores for state protection.
+** @param  philo: Pointer to individual philosopher context structure.
+*/
 void	init_philos_sem(t_philo *philo)
 {
 	philo->last_meal_sem = sem_open("/last_meal_sem", O_CREAT, 0644, 1);
