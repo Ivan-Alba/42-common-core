@@ -9,23 +9,6 @@
 
 ---
 
-<table align="center">
-  <tr>
-    <td align="center" width="50%">
-      <img src="./README_assets/network_topology.png" width="100%" alt="Network Topology Simulation" />
-      <i>Network Topology (Hosts, Switches, and Routers)</i>
-    </td>
-    <td align="center" width="50%">
-      <img src="./README_assets/routing_table.png" width="100%" alt="Routing Table Configuration" />
-      <i>Routing Table Resolution</i>
-    </td>
-  </tr>
-</table>
-
-> **Note:** *The images above are placeholders. If you have screenshots of your own solved levels, store them in the `README_assets/` directory and update the relative paths above.*
-
----
-
 ## 📖 Overview
 
 **NetPractice** is a theoretical and practical networking problem-solving project. Unlike traditional 42 C programming projects, NetPractice does not involve writing source code. Instead, it provides a web-based network simulator where the primary objective is to configure network interfaces to establish successful communication across various devices.
@@ -92,10 +75,10 @@ No compilers or system libraries are required. Only a modern web browser is need
 2. Extract the provided simulator archive.
 3. Open the `index.html` file in any web browser:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 # Example command for Linux / macOS
 open index.html
-[TRIPLE_BACKTICKS]
+```
 
 4. Select a level, calculate the necessary IP ranges, and input the correct configuration across all device nodes until connection tests (*pings*) pass successfully.
 
