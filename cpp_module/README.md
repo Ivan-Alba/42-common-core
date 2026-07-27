@@ -32,24 +32,24 @@ All exercises across every module strictly comply with the following architectur
 
 A breakdown of the core computer science concepts covered in each module:
 
-| Module | Core Topic | Key Concepts & Applied Mechanics |
-| :--- | :--- | :--- |
-| **`cpp_00`** | **Namespaces & Classes** | Basic syntax, `std::cout`/`std::cin`, member functions, static members, class attributes, and member initialization lists. |
-| **`cpp_01`** | **Memory & Pointers** | Stack vs. Heap allocation, pointers to members, references, `new`/`delete`, string streams, and file I/O operations (`std::ifstream`/`std::ofstream`). |
-| **`cpp_02`** | **Fixed-Point & Overloading** | Ad-hoc polymorphism, operator overloading (`+`, `-`, `*`, `/`, `++`, `--`, etc.), and Fixed-Point number representation. |
-| **`cpp_03`** | **Inheritance** | Base and derived classes, access specifiers (`public`, `protected`, `private`), initialization chains, and constructor/destructor ordering. |
-| **`cpp_04`** | **Subtype Polymorphism** | Virtual functions, abstract base classes (ABCs), pure virtual methods, interfaces, deep vs. shallow copying, and virtual destructors. |
-| **`cpp_05`** | **Exceptions & Nested Classes** | Exception handling (`try`, `catch`, `throw`), custom exception classes inheriting from `std::exception`, and form/bureaucracy state machines. |
-| **`cpp_06`** | **C++ Casts** | Explicit type conversion: `static_cast`, `dynamic_cast`, `reinterpret_cast`, and `const_cast`, along with runtime type identification (RTTI). |
-| **`cpp_07`** | **Templates** | Function templates, class templates, template instantiation, and explicit specialization. |
-| **`cpp_08`** | **STL Containers & Algorithms** | Standard Template Library containers (`std::vector`, `std::list`, `std::deque`), iterators, and generic algorithms (`std::find`, `std::for_each`). |
-| **`cpp_09`** | **Advanced STL Applications** | Complex algorithmic problems using targeted containers (`std::stack`, `std::map`, `std::deque`) like Reverse Polish Notation and Ford-Johnson sorting. |
+| Module | Core Topic | Key Concepts & Applied Mechanics | Grade |
+| :--- | :--- | :--- | :---: |
+| **`cpp_00`** | **Namespaces & Classes** | Basic syntax, `std::cout`/`std::cin`, member functions, static members, class attributes, and member initialization lists. | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_01`** | **Memory & Pointers** | Stack vs. Heap allocation, pointers to members, references, `new`/`delete`, string streams, and file I/O operations (`std::ifstream`/`std::ofstream`). | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_02`** | **Fixed-Point & Overloading** | Ad-hoc polymorphism, operator overloading (`+`, `-`, `*`, `/`, `++`, `--`, etc.), and Fixed-Point number representation. | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_03`** | **Inheritance** | Base and derived classes, access specifiers (`public`, `protected`, `private`), initialization chains, and constructor/destructor ordering. | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_04`** | **Subtype Polymorphism** | Virtual functions, abstract base classes (ABCs), pure virtual methods, interfaces, deep vs. shallow copying, and virtual destructors. | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_05`** | **Exceptions & Nested Classes** | Exception handling (`try`, `catch`, `throw`), custom exception classes inheriting from `std::exception`, and form/bureaucracy state machines. | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_06`** | **C++ Casts** | Explicit type conversion: `static_cast`, `dynamic_cast`, `reinterpret_cast`, and `const_cast`, along with runtime type identification (RTTI). | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_07`** | **Templates** | Function templates, class templates, template instantiation, and explicit specialization. | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_08`** | **STL Containers & Algorithms** | Standard Template Library containers (`std::vector`, `std::list`, `std::deque`), iterators, and generic algorithms (`std::find`, `std::for_each`). | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
+| **`cpp_09`** | **Advanced STL Applications** | Complex algorithmic problems using targeted containers (`std::stack`, `std::map`, `std::deque`) like Reverse Polish Notation and Ford-Johnson sorting. | ![100/100](https://img.shields.io/badge/100%2F100-success?style=flat) |
 
 ---
 
 ## 🛠️ Repository Directory Structure
 
-[TRIPLE_BACKTICKS]text
+```text
 cpp_module/
 ├── cpp_00/          # Namespaces, Classes, Member Functions, std::iostream
 │   ├── ex00/        # Megaphone (string manipulation & output streams)
@@ -108,7 +108,7 @@ cpp_module/
     ├── ex00/        # Bitcoin Exchange (std::map evaluation engine)
     ├── ex01/        # Reverse Polish Notation (std::stack expression parser)
     └── ex02/        # PmergeMe (Ford-Johnson merge-insert sort with std::deque/std::vector)
-[TRIPLE_BACKTICKS]
+```
 
 ---
 
@@ -116,7 +116,7 @@ cpp_module/
 
 Starting in `cpp_02`, every instantiated class adheres to the **Orthodox Canonical Form**. This ensures robust resource management, safe object copying, and memory leak prevention across complex class hierarchies:
 
-[TRIPLE_BACKTICKS]cpp
+```cpp
 class CanonicalClass {
 public:
     CanonicalClass();                                      // Default Constructor
@@ -124,7 +124,7 @@ public:
     CanonicalClass &operator=(const CanonicalClass &rhs);  // Copy Assignment Operator
     ~CanonicalClass();                                     // Destructor
 };
-[TRIPLE_BACKTICKS]
+```
 
 ---
 
@@ -136,11 +136,11 @@ Each exercise directory contains its own self-contained `Makefile` enforcing str
 
 Navigate to the target exercise directory within any module and run `make`:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 cd cpp_01/ex00
 make
 ./zombie
-[TRIPLE_BACKTICKS]
+```
 
 ### Common Makefile Rules
 
