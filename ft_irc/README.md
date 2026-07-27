@@ -5,25 +5,8 @@
   <img src="https://img.shields.io/badge/Language-C%2B%2B98-00599C?style=for-the-badge&logo=cplusplus&logoColor=white" alt="C++98" />
   <img src="https://img.shields.io/badge/Networking-TCP%2FIP%20Sockets%20%7C%20poll()-FF6F00?style=for-the-badge" alt="Sockets & poll()" />
   <img src="https://img.shields.io/badge/Protocol-RFC%201459%20%2F%202812-0071C5?style=for-the-badge" alt="RFC 1459/2812" />
-  <img src="https://img.shields.io/badge/Grade-125%20%2F%20100-success?style=for-the-badge" alt="125/100" />
+  <img src="https://img.shields.io/badge/Grade-125%20%2F%20125-success?style=for-the-badge" alt="125/100" />
 </p>
-
----
-
-<table align="center">
-  <tr>
-    <td align="center" width="50%">
-      <img src="./README_assets/irc_client_chat.png" width="100%" alt="IRC Client Connection & Channel Chat" />
-      <i>IRSSI / LimeChat Client Connection & Real-Time Messaging</i>
-    </td>
-    <td align="center" width="50%">
-      <img src="./README_assets/botserv_interaction.png" width="100%" alt="BotServ Automated Interactive Bot" />
-      <i>Bonus Feature: Interactive Channel BotServ (!help, !roll, !choose)</i>
-    </td>
-  </tr>
-</table>
-
-> **Note:** *The images above are placeholders. You can place your custom terminal execution logs or IRC client screenshots (e.g., IRSSI, LimeChat, HexChat) in the `README_assets/` directory.*
 
 ---
 
@@ -92,7 +75,7 @@ The diagram below outlines the asynchronous event loop driving socket acceptance
 
 ## 🛠️ Repository Directory Structure
 
-[TRIPLE_BACKTICKS]text
+```text
 ft_irc/
 ├── Makefile                # Compilation rules (-Wall -Wextra -Werror -std=c++98 -fsanitize=address)
 └── src/
@@ -111,7 +94,7 @@ ft_irc/
     ├── Utils.hpp           # String trimming, splitting, and conversion helper routines
     ├── Utils.cpp           # Vector splitting and string stream utility implementations
     └── config.hpp          # Network constants (AF_INET, SOCK_STREAM, SO_REUSEADDR, BUFFER_SIZE)
-[TRIPLE_BACKTICKS]
+```
 
 ---
 
@@ -131,9 +114,9 @@ ft_irc/
 | **`KICK`** | `KICK <channel> <user> [:<reason>]` | Removes a user from a channel (Operator privilege required). |
 | **`INVITE`**| `INVITE <user> <channel>` | Invites a target user to an invite-only channel (`+i`). |
 | **`TOPIC`** | `TOPIC <channel> [:<topic>]` | Views or sets the channel topic (`+t` operator lock enforced). |
-| **`MODE`**  | `MODE <channel> {[+|-]|i|t|k|o|l} [<params>]` | Configures channel authorization and limitation flags. |
-| **`PING`**  | `PING <token>` | Health check request; returns `PONG :<token>`. |
-| **`QUIT`**  | `QUIT [:<reason>]` | Closes socket session and removes client from all joined channels. |
+| **`MODE`** | <code>MODE &lt;channel&gt; [+&#124;-][i&#124;t&#124;k&#124;o&#124;l] [&lt;params&gt;]</code> | Configures channel authorization and limitation flags. |
+| **`PING`** | `PING <token>` | Health check request; returns `PONG :<token>`. |
+| **`QUIT`** | `QUIT [:<reason>]` | Closes socket session and removes client from all joined channels. |
 
 ### Supported Channel Modes (`MODE`)
 
@@ -167,9 +150,9 @@ The server automatically instantiates an integrated bot named `BotServ` upon lau
 
 Compile the `ircserv` executable binary using the included `Makefile`:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 make
-[TRIPLE_BACKTICKS]
+```
 
 *The build process applies `-Wall -Wextra -Werror -std=c++98 -fsanitize=address -g` to guarantee strict memory safety and C++98 compliance.*
 
@@ -177,29 +160,29 @@ make
 
 Launch the server by supplying a target port number and connection password:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 ./ircserv <port> <password>
-[TRIPLE_BACKTICKS]
+```
 
 **Example:**
-[TRIPLE_BACKTICKS]bash
+```bash
 ./ircserv 6667 mysecretpassword
-[TRIPLE_BACKTICKS]
+```
 
 ### Connecting via IRC Client (IRSSI Example)
 
 Connect to your local server instance using `irssi` or any standard IRC client:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 irssi
-[TRIPLE_BACKTICKS]
+```
 
 Inside the `irssi` interface, run:
 
-[TRIPLE_BACKTICKS]text
+```text
 /connect localhost 6667 mysecretpassword mynickname
 /join #welcome
-[TRIPLE_BACKTICKS]
+```
 
 ---
 
