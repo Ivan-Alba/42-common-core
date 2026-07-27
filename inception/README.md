@@ -9,23 +9,6 @@
 
 ---
 
-<table align="center">
-  <tr>
-    <td align="center" width="50%">
-      <img src="./README_assets/architecture_diagram.png" width="100%" alt="Inception Network Architecture" />
-      <i>Multi-Container Infrastructure & Custom Network Topology</i>
-    </td>
-    <td align="center" width="50%">
-      <img src="./README_assets/wordpress_ssl.png" width="100%" alt="WordPress SSL Verification" />
-      <i>TLS v1.2/v1.3 Encrypted HTTPS Connection (igarcia2.42.fr)</i>
-    </td>
-  </tr>
-</table>
-
-> **Note:** *The images above are placeholders. You can place your custom network architecture diagrams and SSL validation screenshots in the `README_assets/` directory.*
-
----
-
 ## 📖 Overview
 
 **Inception** is a system administration and DevOps infrastructure project developed by **igarcia2** as part of the 42 curriculum. The project focuses on building and orchestrating a secure, production-ready WordPress web infrastructure from scratch using **Docker** and **Docker Compose**.
@@ -96,50 +79,63 @@ Adhering strictly to the 42 School constraints and best security practices, the 
 
 ## 🛠️ Repository Directory Structure
 
-[TRIPLE_BACKTICKS]text
+```text
 inception/
+├── DEV_DOC.md                      # Developer documentation & infrastructure guidelines
+├── USER_DOC.md                     # End-user operations & deployment guide
 ├── Makefile                        # Master orchestration (directory setup, SSL, secrets, build)
 └── srcs/
-    ├── .env                        # Configuration variables (DOMAIN_NAME, MYSQL_USER, etc.)
+    ├── .env                        # Environment configuration (DOMAIN_NAME, MYSQL_USER, etc.)
     ├── docker-compose.yml          # Master service orchestration manifest & secrets mounting
     ├── secrets/                    # Non-indexed directory storing Docker Secrets (.txt files)
     └── requirements/
         ├── mariadb/
         │   ├── Dockerfile          # Custom MariaDB image based on Debian Bullseye
-        │   ├── conf/50-server.cnf  # MariaDB server configuration file
-        │   └── tools/entrypoint.sh # Database setup reading passwords from /run/secrets/
+        │   └── tools/              # Database initialization scripts reading from /run/secrets/
         │
         ├── nginx/
         │   ├── Dockerfile          # Custom NGINX image based on Debian Bullseye
-        │   ├── conf/nginx.conf     # TLS 1.2/1.3 reverse proxy configuration
-        │   └── tools/              # Self-signed SSL certificate generation scripts
+        │   └── conf/               # TLS 1.2/1.3 reverse proxy configuration
         │
-        └── wordpress/
-            ├── Dockerfile          # Custom PHP-FPM image based on Debian Bullseye
-            ├── conf/www.conf       # FastCGI pool configuration (listens on 0.0.0.0:9000)
-            └── tools/setup.sh      # wp-cli auto-installation & configuration script
-[TRIPLE_BACKTICKS]
-
----
+        ├── wordpress/
+        │   ├── Dockerfile          # Custom PHP-FPM image based on Debian Bullseye
+        │   ├── conf/               # FastCGI pool configuration (listens on 0.0.0.0:9000)
+        │   └── tools/              # wp-cli auto-installation & configuration script
+        │
+        └── bonus/                  # Extended Infrastructure Services
+            ├── adminer/
+            │   └── Dockerfile      # Lightweight database management interface
+            ├── ftp/
+            │   ├── Dockerfile      # vsftpd server accessing WordPress volume
+            │   └── conf/           # FTP server access and network configuration
+            ├── portainer/
+            │   └── Dockerfile      # Container management UI dashboard
+            ├── redis/
+            │   └── Dockerfile      # In-memory database cache for WordPress performance
+            └── static/
+                ├── Dockerfile      # Isolated lightweight static Web server
+                ├── conf/           # Web server configuration
+                └── site/           # Static website source assets
+```
 
 ## 🚀 Setup & Execution
 
 ### 1. Host Network Setup
 Map your local IP address to the project's target domain in your `/etc/hosts` file:
 
-[TRIPLE_BACKTICKS]bash
+```bash
 echo "127.0.0.1 igarcia2.42.fr" | sudo tee -a /etc/hosts
-[TRIPLE_BACKTICKS]
+```
 
 ### 2. Environment Configuration
 Create the `srcs/.env` file containing the core infrastructure parameters:
 
-[TRIPLE_BACKTICKS]env
+```env
 DOMAIN_NAME=igarcia2.42.fr
 MYSQL_DATABASE=wordpress
 MYSQL_USER=wp_user
 FTP_USER=ftp_user
-[TRIPLE_BACKTICKS]
+```
 
 ### 3. Operational Commands
 
@@ -157,15 +153,15 @@ All stack actions are managed via the root `Makefile`:
 Once the stack is deployed, verify the installation by testing access and volume state:
 
 1.  **Check Running Containers**:
-    [TRIPLE_BACKTICKS]bash
+    ```bash
     docker ps
-    [TRIPLE_BACKTICKS]
+    ```
 2.  **Access Web Application**:
     Open a web browser and navigate to `https://igarcia2.42.fr` (accept the self-signed SSL certificate warning).
 3.  **Inspect Active Secrets inside Containers**:
-    [TRIPLE_BACKTICKS]bash
+    ```bash
     docker exec -it wordpress ls -la /run/secrets/
-    [TRIPLE_BACKTICKS]
+    ```
 
 ---
 
