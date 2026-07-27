@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Compilation prerequisites and temporaries
 *.swp
 *.o
@@ -15,3 +16,6 @@ valgrind-out*
 # System and garbage files
 .DS_Store
 Thumbs.db
+=======
+*.swp
+>>>>>>> ft_irc_branch
