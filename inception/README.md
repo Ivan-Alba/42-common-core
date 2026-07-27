@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/Project-Inception-000000?style=for-the-badge&logo=42&logoColor=white" alt="Inception" />
   <img src="https://img.shields.io/badge/Author-igarcia2-00599C?style=for-the-badge&logo=github&logoColor=white" alt="igarcia2" />
   <img src="https://img.shields.io/badge/Base_OS-Debian_Bullseye-A81D33?style=for-the-badge&logo=debian&logoColor=white" alt="Debian Bullseye" />
-  <img src="https://img.shields.io/badge/Grade-100%20%2F%20100-success?style=for-the-badge" alt="100/100" />
+  <img src="https://img.shields.io/badge/Grade-125%20%2F%20125-success?style=for-the-badge" alt="125/125" />
 </p>
 
 ---
