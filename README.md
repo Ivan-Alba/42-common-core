@@ -1,7 +1,7 @@
-# Common Core Portfolio
+# 42 Common Core Portfolio
 
 <p align="center">
-  <img src="https://img.shields.io/badge/School-42%20Barcelona-000000?style=for-the-badge&logo=42&logoColor=white" alt="42 Barcelona" />
+<img width="3148" height="648" alt="Image" src="https://github.com/user-attachments/assets/9f217b87-b4cb-43b7-9489-81636bc3f381" />  <img src="https://img.shields.io/badge/School-42%20Barcelona-000000?style=for-the-badge&logo=42&logoColor=white" alt="42 Barcelona" />
   <img src="https://img.shields.io/badge/Language-C%20%2F%20C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="C/C++" />
   <img src="https://img.shields.io/badge/Focus-Systems%20%26%20Algorithms-orange?style=for-the-badge" alt="Systems & Algorithms" />
 </p>
